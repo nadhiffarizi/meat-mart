@@ -12,3 +12,5 @@ config({ path: resolve(__dirname, `../${envFile}.local`), override: true });
 
 export const PORT = process.env.PORT || 8000;
 export const DATABASE_URL = process.env.DATABASE_URL || '';
+export const jwtAccessSecret = process.env.ACCESS_SECRET || ""
+export const jwtRefreshSecret = process.env.REFRESH_SECRET || ""
