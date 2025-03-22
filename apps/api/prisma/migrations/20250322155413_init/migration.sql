@@ -25,7 +25,7 @@ CREATE TABLE "users" (
     "password" TEXT,
     "image_url" TEXT,
     "role" "E_Role" NOT NULL,
-    "phone_number" INTEGER,
+    "phone_number" TEXT,
     "is_verified" BOOLEAN NOT NULL,
     "verification_link" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
@@ -40,12 +40,12 @@ CREATE TABLE "addresses" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "recipent_name" TEXT NOT NULL,
-    "recipient_phone_number" INTEGER NOT NULL,
+    "recipient_phone_number" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "province" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "district" TEXT NOT NULL,
-    "postal_code" INTEGER NOT NULL,
+    "postal_code" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
     "longitude" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE "stores" (
     "province" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "district" TEXT NOT NULL,
-    "postal_code" INTEGER NOT NULL,
+    "postal_code" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
     "longitude" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
@@ -136,10 +136,10 @@ CREATE TABLE "discounts" (
     "end_date" TIMESTAMP(3) NOT NULL,
     "discount_code" TEXT NOT NULL,
     "promotion_type" "E_PromotionType" NOT NULL,
-    "discount_percentage" INTEGER,
-    "discount_amount" INTEGER,
-    "maximum_discount_amount" INTEGER,
-    "minimum_purchase" INTEGER,
+    "discount_percentage" DOUBLE PRECISION,
+    "discount_amount" DOUBLE PRECISION,
+    "maximum_discount_amount" DOUBLE PRECISION,
+    "minimum_purchase" DOUBLE PRECISION,
     "is_valied" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE "carts" (
 -- CreateTable
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
-    "total_price" INTEGER NOT NULL,
+    "total_price" DOUBLE PRECISION NOT NULL,
     "minimum_buy" BOOLEAN,
     "amount_discount" INTEGER,
     "deadline_payment" TIMESTAMP(3) NOT NULL,
@@ -245,6 +245,9 @@ ALTER TABLE "productpictures" ADD CONSTRAINT "productpictures_product_id_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "stocks" ADD CONSTRAINT "stocks_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "stocks" ADD CONSTRAINT "stocks_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "stores" ADD CONSTRAINT "stores_storeadmin_id_fkey" FOREIGN KEY ("storeadmin_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
