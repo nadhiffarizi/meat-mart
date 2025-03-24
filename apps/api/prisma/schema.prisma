@@ -47,7 +47,7 @@ enum E_OrderStatus {
 
 enum E_StockStatus {
   ADD
-  SUBSTRACT
+  SUBTRACT
   SNAPSHOT
 }
 
@@ -79,7 +79,7 @@ model UserAddresses {
   id                     String    @id @default(uuid())
   user_id                String
   users                  Users     @relation(fields: [user_id], references: [id])
-  recipent_name          String
+  recipient_name         String
   recipient_phone_number String
   is_selected            Boolean
   address                String
@@ -194,7 +194,7 @@ model Discounts {
   discount_amount         Float?
   maximum_discount_amount Float?
   minimum_purchase        Float?
-  is_valied               Boolean
+  is_valid                Boolean
   created_at              DateTime
   updated_at              DateTime
   deleted_at              DateTime?
