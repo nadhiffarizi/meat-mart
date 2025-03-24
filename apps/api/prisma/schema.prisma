@@ -81,6 +81,7 @@ model UserAddresses {
   users                  Users     @relation(fields: [user_id], references: [id])
   recipent_name          String
   recipient_phone_number String
+  is_selected            Boolean
   address                String
   province               String
   city                   String

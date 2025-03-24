@@ -10,8 +10,13 @@
     "test": "npx cypress verify & cypress run --component"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@types/tailwindcss": "^3.0.11",
+    "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
     "next": "^14.2.25",
+    "package.json": "^2.0.1",
+    "postcss": "^8.5.3",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -22,6 +27,9 @@
     "cypress": "^13.6.2",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "postcss-import": "^16.1.0",
+    "postcss-nesting": "^13.0.1",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
 }

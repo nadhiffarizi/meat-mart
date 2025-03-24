@@ -1,0 +1,27 @@
+import authController, { AuthController } from '@/controllers/auth.controller';
+import orderController from '@/controllers/order.controller';
+import productController from '@/controllers/product.controller';
+import { Router } from 'express';
+
+export class ProductRouter {
+  private router: Router;
+
+  constructor() {
+    this.router = Router();
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes(): void {
+    // dont forget to include middleware function before SIT 
+
+    this.router.get('/', productController.getProducts);
+    // .... continue api
+  }
+
+
+  getRouter(): Router {
+    return this.router;
+  }
+}
+
+export default new ProductRouter()
