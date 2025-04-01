@@ -1,6 +1,9 @@
 import adminController from '@/controllers/admin.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
-import { validateAdminLoginBody } from '@/middleware/user.middleware';
+import {
+  validateAdminLoginBody,
+  validateAdminUpdateBody,
+} from '@/middleware/user.middleware';
 import { Router } from 'express';
 
 export class AdminRouter {
@@ -18,6 +21,17 @@ export class AdminRouter {
       verifyToken,
       validateAdminLoginBody,
       adminController.createUsers,
+    );
+    this.router.patch(
+      '/users/:email',
+      verifyToken,
+      validateAdminUpdateBody,
+      adminController.updateUsers,
+    );
+    this.router.delete(
+      '/users/:email',
+      verifyToken,
+      adminController.deleteUsers,
     );
     // .... continue api
   }

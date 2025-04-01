@@ -45,6 +45,46 @@ export class AdminController {
       next(error);
     }
   }
+
+  async updateUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (req.user?.role !== 'SUPER_ADMIN') {
+        return responseHandler(
+          res,
+          `You have insufficient permission to access.`,
+          statusEnum.FAILED,
+          null,
+          403,
+        );
+      }
+
+      let data: serviceFeedback = await adminService.updateAdmin(req);
+
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (req.user?.role !== 'SUPER_ADMIN') {
+        return responseHandler(
+          res,
+          `You have insufficient permission to access.`,
+          statusEnum.FAILED,
+          null,
+          403,
+        );
+      }
+
+      let data: serviceFeedback = await adminService.deleteAdmin(req);
+
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AdminController();
