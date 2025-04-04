@@ -1,13 +1,28 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import SearchIcon from './svg/SearchIcon';
 import MenuIcon from './svg/MenuIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import React from 'react';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     const handleScroll = (): void => {
@@ -69,18 +84,62 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/login"
-              className="text-primaryText  h-[48px] bg-primaryBackground hover:bg-gray-400 px-4 py-[14px] text-sm font-medium rounded-full "
-            >
-              Masuk
-            </Link>
-            <Link
-              href="/register"
-              className="bg-orangeAccent h-[48px] hover:bg-[rgb(194,99,36)] rounded-full  text-white px-4 py-[14px] text-sm font-medium transition-colors"
-            >
-              Daftar
-            </Link>
+            {isLogin ? (
+              <>
+                {' '}
+                <Link
+                  href={'/cart'}
+                  className="flex w-[26] mx-auto bg-primaryBackground px-4 py-[14px] rounded-full hover:bg-slate-300"
+                >
+                  <ShoppingCartIcon
+                    width={18}
+                    height={18}
+                    className="mx-2 text-orangeAccent cursor-pointer "
+                  ></ShoppingCartIcon>
+                </Link>
+                <button
+                  // onClick={handleClick}
+                  className="flex items-center justify-between px-2  h-[48px]"
+                >
+                  <Image
+                    src={'/no-profile.svg'}
+                    alt="avatar"
+                    width={25}
+                    height={25}
+                    className="mr-2 h-full rounded-full aspect-square object-fill"
+                  />
+                  {/* <div>{session.user.first_name}</div> */}
+                  <div>hello</div>
+                </button>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                >
+                  <MenuItem onClick={handleClose}>My Account</MenuItem>
+                  <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-primaryText  h-[48px] bg-primaryBackground hover:bg-gray-400 px-4 py-[14px] text-sm font-medium rounded-full "
+                >
+                  Masuk
+                </Link>
+                <Link
+                  href="/register"
+                  className="bg-orangeAccent h-[48px] hover:bg-[rgb(194,99,36)] rounded-full  text-white px-4 py-[14px] text-sm font-medium transition-colors"
+                >
+                  Daftar
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
