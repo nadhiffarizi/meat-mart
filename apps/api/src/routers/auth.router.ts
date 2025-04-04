@@ -11,13 +11,12 @@ export class AuthRouter {
 
   private initializeRoutes(): void {
     this.router.post('/register', authController.register);
-    // .... continue api
+    this.router.post('/login', authController.login);
   }
-
 
   getRouter(): Router {
     return this.router;
   }
 }
 
-export default new AuthRouter()
+export default new AuthRouter();
