@@ -89,8 +89,8 @@ model UserAddresses {
   postal_code            String
   latitude               String
   longitude              String
-  created_at             DateTime
-  updated_at             DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at             DateTime?
 
   @@map("addresses")
@@ -102,8 +102,8 @@ model Products {
   slug               String               @unique
   price              Float
   weight             Float
-  created_at         DateTime
-  updated_at         DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at         DateTime?
   ProductPictures    ProductPictures[]
   Stocks             Stocks[]
@@ -120,8 +120,8 @@ model Categories {
   name       String
   product_id String
   products   Products  @relation(fields: [product_id], references: [id])
-  created_at DateTime
-  updated_at DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at DateTime?
 
   @@map("categories")
@@ -133,8 +133,8 @@ model ProductPictures {
   products         Products  @relation(fields: [product_id], references: [id])
   link             String
   thumbnail_status Boolean
-  created_at       DateTime
-  updated_at       DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at       DateTime?
 
   @@map("productpictures")
@@ -147,8 +147,8 @@ model Stocks {
   store_id           String
   stores             Stores               @relation(fields: [store_id], references: [id])
   quantity           Int
-  created_at         DateTime
-  updated_at         DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at         DateTime?
   Carts              Carts[]
   TransactionDetails TransactionDetails[]
@@ -169,8 +169,8 @@ model Stores {
   postal_code        String
   latitude           String
   longitude          String
-  created_at         DateTime
-  updated_at         DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at         DateTime?
   Discounts          Discounts[]
   TransactionDetails TransactionDetails[]
@@ -195,8 +195,8 @@ model Discounts {
   maximum_discount_amount Float?
   minimum_purchase        Float?
   is_valid                Boolean
-  created_at              DateTime
-  updated_at              DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at              DateTime?
 
   @@map("discounts")
@@ -209,8 +209,8 @@ model Carts {
   stock_id   String
   stocks     Stocks    @relation(fields: [stock_id], references: [id])
   quantity   Int
-  created_at DateTime
-  updated_at DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at DateTime?
 
   @@map("carts")
@@ -226,8 +226,8 @@ model Transactions {
   payment_proof      String?
   users_id           String
   users              Users                @relation(fields: [users_id], references: [id])
-  created_at         DateTime
-  updated_at         DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at         DateTime?
   TransactionDetails TransactionDetails[]
 
@@ -252,8 +252,8 @@ model TransactionDetails {
   products          Products             @relation(fields: [product_id], references: [id])
   discounted        Boolean
   discount_code     String?
-  created_at        DateTime
-  updated_at        DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at        DateTime?
   OrderStatus       OrderStatusHistory[]
 
@@ -265,8 +265,8 @@ model OrderStatusHistory {
   transaction_detail_id String
   transaction_details   TransactionDetails @relation(fields: [transaction_detail_id], references: [id])
   status                E_OrderStatus
-  created_at            DateTime
-  updated_at            DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at            DateTime?
 
   @@map("orderstatushistory")
@@ -280,8 +280,8 @@ model StockHistory {
   stores     Stores        @relation(fields: [store_id], references: [id])
   quantity   Int
   status     E_StockStatus
-  created_at DateTime
-  updated_at DateTime
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
   deleted_at DateTime?
 
   @@map("stockhistory")
