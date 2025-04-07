@@ -1,7 +1,7 @@
 import adminController from '@/controllers/admin.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import {
-  validateAdminLoginBody,
+  validateAdminCreateBody,
   validateAdminUpdateBody,
 } from '@/middleware/user.middleware';
 import { Router } from 'express';
@@ -19,7 +19,7 @@ export class AdminRouter {
     this.router.post(
       '/users',
       verifyToken,
-      validateAdminLoginBody,
+      validateAdminCreateBody,
       adminController.createUsers,
     );
     this.router.patch(

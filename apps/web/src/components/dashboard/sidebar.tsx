@@ -34,15 +34,15 @@ const navItems = [
 
 function Sidebar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <>
+    <div className="z-10 bg-blue-500">
       {/* hamburger */}
       <button
-        className="md:hidden p-2 bg-green-200"
+        className="md:hidden p-2 bg-green-200 ml-6 mt-7"
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <Menu />
+        <Menu className="text-red-400" />
       </button>
 
       {/* sidebar */}
@@ -60,7 +60,7 @@ function Sidebar() {
             src={meatMart}
             width={500}
             height={500}
-            className="object-fit"
+            className="object-cover"
             alt="Meat Mart Logo"
           ></Image>
 
@@ -92,7 +92,7 @@ function Sidebar() {
           Logout
         </button>
       </div>
-    </>
+    </div>
   );
 }
 

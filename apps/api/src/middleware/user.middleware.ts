@@ -3,7 +3,7 @@ import { responseHandler } from '@/helper/responseHandler.helper';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 
-const adminLoginSchema = z.object({
+const adminCreateSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   first_name: z.string(),
@@ -12,9 +12,6 @@ const adminLoginSchema = z.object({
   role: z.literal('ADMIN'),
   phone_number: z.string().optional(),
   is_verified: z.literal(true),
-  verification_link: z.string(),
-  created_at: z.string().transform((val) => new Date(val).toISOString),
-  updated_at: z.string().transform((val) => new Date(val).toISOString),
 });
 
 const adminUpdateSchema = z.object({
@@ -27,23 +24,15 @@ const adminUpdateSchema = z.object({
   phone_number: z.string().optional(),
   is_verified: z.literal(true).optional(),
   verification_link: z.string().optional(),
-  created_at: z
-    .string()
-    .transform((val) => new Date(val).toISOString)
-    .optional(),
-  updated_at: z
-    .string()
-    .transform((val) => new Date(val).toISOString)
-    .optional(),
 });
 
-export const validateAdminLoginBody = (
+export const validateAdminCreateBody = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    adminLoginSchema.parse(req.body);
+    adminCreateSchema.parse(req.body);
     next();
   } catch (error) {
     return responseHandler(
