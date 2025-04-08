@@ -52,7 +52,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
+    <div className="overflow-x-auto">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."

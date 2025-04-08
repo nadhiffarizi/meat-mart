@@ -5,11 +5,17 @@ import { Toaster, toast } from 'sonner';
 import { useFormik } from 'formik';
 
 const validationSchema = Yup.object({
-  email: Yup.string().required('Please enter a email for your event.'),
-  password: Yup.string().required('Please enter a description for your event.'),
-  firstName: Yup.string().required(),
-  lastName: Yup.string().required(),
-  phoneNumber: Yup.string().required(),
+  email: Yup.string().required('(Please enter a valid email)'),
+  password: Yup.string().required('(Please enter a password for this account)'),
+  firstName: Yup.string().required(
+    '(Please enter a first name for this account)',
+  ),
+  lastName: Yup.string().required(
+    '(Please enter a last name for this account)',
+  ),
+  phoneNumber: Yup.string().required(
+    '(Please enter a valid number for this account)',
+  ),
 });
 
 function CreateAdminForm() {
@@ -31,7 +37,13 @@ function CreateAdminForm() {
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
       <div className="flex flex-col gap-2">
-        <label htmlFor="email">Email</label>
+        <div className="flex gap-2 items-center">
+          <label htmlFor="email">Email</label>
+          {formik.touched.email && formik.errors.email && (
+            <div className="text-red-500 text-sm">{formik.errors.email}</div>
+          )}
+        </div>
+
         <input
           type="text"
           name="email"
@@ -41,13 +53,17 @@ function CreateAdminForm() {
           value={formik.values.email}
           onChange={formik.handleChange}
         />
-        {formik.touched.email && formik.errors.email && (
-          <div className="text-red-500 text-sm">{formik.errors.email}</div>
-        )}
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="firstName">First Name</label>
+        <div className="flex gap-2 items-center">
+          <label htmlFor="email">First Name</label>
+          {formik.touched.firstName && formik.errors.firstName && (
+            <div className="text-red-500 text-sm">
+              {formik.errors.firstName}
+            </div>
+          )}
+        </div>
         <input
           type="text"
           name="firstName"
@@ -57,13 +73,15 @@ function CreateAdminForm() {
           value={formik.values.firstName}
           onChange={formik.handleChange}
         />
-        {formik.touched.firstName && formik.errors.firstName && (
-          <div className="text-red-500 text-sm">{formik.errors.firstName}</div>
-        )}
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="lastName">Last Name</label>
+        <div className="flex gap-2 items-center">
+          <label htmlFor="email">Last Name</label>
+          {formik.touched.lastName && formik.errors.lastName && (
+            <div className="text-red-500 text-sm">{formik.errors.lastName}</div>
+          )}
+        </div>
         <input
           type="text"
           name="lastName"
@@ -73,13 +91,15 @@ function CreateAdminForm() {
           value={formik.values.lastName}
           onChange={formik.handleChange}
         />
-        {formik.touched.lastName && formik.errors.lastName && (
-          <div className="text-red-500 text-sm">{formik.errors.lastName}</div>
-        )}
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="password">Password</label>
+        <div className="flex gap-2 items-center">
+          <label htmlFor="email">Password</label>
+          {formik.touched.password && formik.errors.password && (
+            <div className="text-red-500 text-sm">{formik.errors.password}</div>
+          )}
+        </div>
         <input
           type="text"
           name="password"
@@ -89,13 +109,17 @@ function CreateAdminForm() {
           value={formik.values.password}
           onChange={formik.handleChange}
         />
-        {formik.touched.password && formik.errors.password && (
-          <div className="text-red-500 text-sm">{formik.errors.password}</div>
-        )}
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="phoneNumber">Phone Number</label>
+        <div className="flex gap-2 items-center">
+          <label htmlFor="email">Phone Number</label>
+          {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+            <div className="text-red-500 text-sm">
+              {formik.errors.phoneNumber}
+            </div>
+          )}
+        </div>
         <input
           type="text"
           name="phoneNumber"
@@ -105,11 +129,6 @@ function CreateAdminForm() {
           value={formik.values.phoneNumber}
           onChange={formik.handleChange}
         />
-        {formik.touched.phoneNumber && formik.errors.phoneNumber && (
-          <div className="text-red-500 text-sm">
-            {formik.errors.phoneNumber}
-          </div>
-        )}
       </div>
 
       <button
