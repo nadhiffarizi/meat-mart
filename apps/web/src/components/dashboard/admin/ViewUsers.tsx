@@ -6,6 +6,13 @@ import { api } from '@/helpers/api';
 import { DataTable } from '../DataTable';
 import { columns, User } from './columns';
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+
 function ViewUsers() {
   const [users, setUsers] = useState<User[]>([]);
 
@@ -146,9 +153,20 @@ function ViewUsers() {
   }, []);
 
   return (
-    <Dropdown buttonLabel="View all Users">
-      <DataTable columns={columns} data={dummyUsers} />
-    </Dropdown>
+    // <Dropdown buttonLabel="View all Users">
+    //   <DataTable columns={columns} data={dummyUsers} />
+    // </Dropdown>
+
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger className="bg-red-200">
+          View All Users
+        </AccordionTrigger>
+        <AccordionContent>
+          <DataTable columns={columns} data={dummyUsers} />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
