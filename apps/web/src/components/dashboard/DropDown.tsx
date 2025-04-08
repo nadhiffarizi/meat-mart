@@ -13,10 +13,14 @@ function Dropdown({ children, buttonLabel }: IHtmlDropdown) {
   const [height, setHeight] = useState('0px');
 
   useEffect(() => {
-    if (contentRef.current) {
-      setHeight(isOpen ? `${contentRef.current.scrollHeight}px` : '0px');
-    }
-  }, [isOpen]);
+    const timeout = setTimeout(() => {
+      if (contentRef.current) {
+        setHeight(isOpen ? `${contentRef.current.scrollHeight}px` : '0px');
+      }
+    }, 50); // Delay to allow inner content to finish rendering
+
+    return () => clearTimeout(timeout);
+  }, [isOpen, children]); // watch children too
 
   return (
     <div>
