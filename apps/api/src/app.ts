@@ -10,6 +10,7 @@ import express, {
 import cors from 'cors';
 import { PORT } from './config';
 import authRouter from './routers/auth.router';
+import adminRouter from './routers/admin.router';
 import cartRouter from './routers/cart.router';
 import productRouter from './routers/product.router';
 import userRouter from './routers/user.router';
@@ -58,6 +59,7 @@ export default class App {
 
   private routes(): void {
     this.app.use('/api/auth', authRouter.getRouter());
+    this.app.use('/api/admin', adminRouter.getRouter());
     this.app.use('/api/order', orderRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
     this.app.use('/api/products', productRouter.getRouter());
