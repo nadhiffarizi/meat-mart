@@ -9,11 +9,22 @@ class UserService {
 
         try {
             const user = await prisma.users.findFirst({
+                select: {
+                    id: true,
+                    first_name: true,
+                    last_name: true,
+                    email: true,
+                    role: true,
+                    UserAddresses: {
+                        where: {
+                            is_selected: true
+                        }
+                    }
+                },
                 where: {
                     role: E_Role.CUSTOMER
                 }
             })
-
             // feedback from service
             const feedback: serviceFeedback = {
                 code: 200,

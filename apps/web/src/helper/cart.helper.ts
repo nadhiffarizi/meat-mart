@@ -1,10 +1,97 @@
-"use server"
 import IProduct from "@/interface/product.interface";
 import { apiRequest } from "./api.helper";
+import { ICart, payloadCartService } from "@/interface/cart.interface";
+import IStock from "@/interface/stocks.interface";
 
-export const addToCart = async (apiRoute: string, productId: string) => {
-    const response = await apiRequest(apiRoute, 'POST', { productId: productId })
+export const addToCartAPI = async (apiRoute: string, payload: payloadCartService) => {
 
-    console.log(await response.json());
+    const response = await apiRequest(apiRoute, 'POST', { ...payload }, { "Content-Type": "application/json", 'Accept': 'application/json' })
+    // console.log(await response.json());
+    return response
+}
+
+export const subtractCartAPI = async (apiRouter: string, payload: payloadCartService) => {
+    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+    return response
+}
+
+export const getCartData = async (apiRoute: string, userId: string) => {
+    const response = await apiRequest(apiRoute, 'GET', { userId: userId }, { "Content-Type": "application/json" })
+    return response
+}
+
+export const indexProductInCart = (cartState: ICart[], product: IProduct) => {
+    // returns -1 if product not available in current Cart. Returns index if product found in current cart
+
+    const indexProductInCart = cartState.findIndex((cartData) => cartData.product.id === product.id)
+
+    if (indexProductInCart === -1) return -1
+
+    return indexProductInCart
+}
+
+export const createNewCartItem = (product: IProduct, quantity: number, stock?: IStock) => {
+    const newCartItem: ICart = {
+        product: { ...product },
+        quantity: 1,
+    }
+    return newCartItem
+}
+
+export const isMaxAddedToCart = (productInCart: ICart, productFromDB: IProduct) => {
+    // returns true or false. False, can add to cart with the same product&stock
+
+    // new  item registered in cart
+    if (!productInCart) return false
+
+    if (productInCart.quantity === maxStockAvailable(productFromDB).maxStockAvailable - 1) {
+        return true
+    } else {
+        return false
+    }
 
 }
+
+export const maxStockAvailable = (productFromDB: IProduct) => {
+    // checks both stocks in the productfrom DB. Apply
+
+    // get stocks in a certain product
+    const stocksInProduct = productFromDB.Stocks
+    let maxStockAvailable: number = 0
+    let maxStockIndex: number = -1
+
+    // assign which max stock available
+    stocksInProduct.map((stock, index: number) => {
+        if (stock.quantity > maxStockAvailable) {
+            maxStockAvailable = stock.quantity
+            maxStockIndex = index
+        }
+    })
+
+    return {
+        maxStockAvailable,
+        maxStockIndex
+    }
+
+}
+
+export const whichStockApplied = (productFromDB: IProduct): IStock => {
+    // find branch store
+    const findIndexBranch = productFromDB.Stocks.findIndex((stock) => stock.stores.status === 'BRANCH')
+    if (findIndexBranch == -1) { // cannot get branch store, refer to CENTRAL
+        return productFromDB.Stocks[0]
+    } else {
+        return productFromDB.Stocks[findIndexBranch]
+    }
+}
+
+export const countTotalInCart = (cartState: ICart[]): number => {
+    let totalCountInCart: number = 0
+
+    cartState.map((cart) => {
+        totalCountInCart += cart.quantity
+    })
+
+    return totalCountInCart
+}
+

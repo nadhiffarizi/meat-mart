@@ -194,7 +194,7 @@ model Discounts {
   discount_amount         Float?
   maximum_discount_amount Float?
   minimum_purchase        Float?
-  is_valied               Boolean
+  is_valid                Boolean
   created_at              DateTime
   updated_at              DateTime
   deleted_at              DateTime?
@@ -218,16 +218,15 @@ model Carts {
 
 model Transactions {
   id                 String               @id @default(uuid())
-  total_price        Float
-  minimum_buy        Boolean?
-  amount_discount    Float?
-  deadline_payment   DateTime
+  total_price        Float?
+  deadline_payment   DateTime?
   transaction_status E_TransactionStatus
   payment_proof      String?
   users_id           String
   users              Users                @relation(fields: [users_id], references: [id])
-  created_at         DateTime
-  updated_at         DateTime
+  invoice_number     String?
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
   deleted_at         DateTime?
   TransactionDetails TransactionDetails[]
 
@@ -252,6 +251,7 @@ model TransactionDetails {
   products          Products             @relation(fields: [product_id], references: [id])
   discounted        Boolean
   discount_code     String?
+  status            E_OrderStatus
   created_at        DateTime
   updated_at        DateTime
   deleted_at        DateTime?

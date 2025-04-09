@@ -1,5 +1,5 @@
 import authController, { AuthController } from '@/controllers/auth.controller';
-import orderController from '@/controllers/order.controller';
+import orderController from '@/controllers/transaction.controller';
 import productController from '@/controllers/product.controller';
 import { Router } from 'express';
 

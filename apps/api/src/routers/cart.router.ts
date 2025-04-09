@@ -1,6 +1,6 @@
 import authController, { AuthController } from '@/controllers/auth.controller';
 import cartController from '@/controllers/cart.controller';
-import orderController from '@/controllers/order.controller';
+import orderController from '@/controllers/transaction.controller';
 import { Router } from 'express';
 
 export class CartRouter {
@@ -15,6 +15,8 @@ export class CartRouter {
     // dont forget to include middleware function before SIT
 
     this.router.post('/add', cartController.add);
+    this.router.post('/subtract', cartController.subtract);
+    this.router.get("/get", cartController.getCart);
     // .... continue api
   }
 
