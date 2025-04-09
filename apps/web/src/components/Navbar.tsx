@@ -36,12 +36,12 @@ const Navbar = () => {
   return (
     <div
       className={`fixed w-full z-40 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md' : 'bg-white'
+        isScrolled ? 'bg-primaryBackground shadow-md' : 'bg-primaryBackground'
       }`}
     >
-      <div className="w-7xl px-2 md:px-6 lg:px-8">
-        <div className="flex justify-between h-20  items-center">
-          <div className="flex items-center justify-between md:gap-16">
+      <div className="w-7xl px-4 md:px-6 lg:px-8">
+        <div className="flex justify-between gap-2 h-20  items-center">
+          <div className="flex items-center justify-between md:gap-6 lg:gap-14">
             <div className="flex-shrink-0 pb-1">
               <Link href="/">
                 <Image
@@ -56,7 +56,7 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
 
-            <button className="hidden md:flex items-center justify-center md:gap-0 max-w-[200px]">
+            <button className="hidden md:flex items-center justify-end md:gap-0 max-w-[200px]">
               <Image
                 src="/location-icon.png"
                 alt="Location Icon"
@@ -64,13 +64,13 @@ const Navbar = () => {
                 height={8}
                 className="h-4 w-auto flex-shrink-0"
               />
-              <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1">
+              <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1 mr-6">
                 Masjid Agung Sunda Kelapa kelurahannnsdj jkijwjqlkwjekqlwjekwjek
               </span>
             </button>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-md md:max-w-full mx-8  pl-8">
+          <div className="hidden md:flex flex-1 max-w-md md:max-w-full">
             <div className="relative w-full">
               <input
                 type="text"
@@ -83,17 +83,17 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 md:space-x-3 lg:space-x-4">
+          <div className="flex items-center justify-end ml-4">
             {isLogin ? (
               <>
                 {' '}
                 <Link
                   href={'/cart'}
-                  className="flex items-center gap-2 w-[26] bg-primaryBackground py-3 px-4 rounded-full hover:bg-slate-300"
+                  className="flex items-center gap-2 bg-primaryBackground py-3 px-4 rounded-full hover:bg-slate-300"
                 >
                   <ShoppingCartIcon
-                    width={14}
-                    height={14}
+                    width={8}
+                    height={8}
                     className=" text-orangeAccent cursor-pointer "
                   ></ShoppingCartIcon>
                   <div className="text-sm">0</div>
@@ -110,7 +110,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-orangeAccent h-[48px] hover:bg-[rgb(194,99,36)] rounded-full  text-white px-4 py-4 md:py-[14px] text-xs md:text-sm font-medium transition-colors "
+                  className="bg-orangeAccent h-[48px] hover:bg-[rgb(194,99,36)] rounded-full  text-white px-4 py-4 md:py-[14px] text-xs md:text-sm font-medium transition-colors ml-2"
                 >
                   Daftar
                 </Link>
