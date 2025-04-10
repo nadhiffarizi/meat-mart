@@ -10,12 +10,23 @@ import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
+import { useAppSelector } from '@/redux/store';
+import { countTotalInCart } from '@/helper/cart.helper';
+import { Button, IconButton } from '@mui/material';
+import CartButtonNavbar from './Cart/CartButton.component';
 
-const Navbar = () => {
+const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
+  // global state cart
+  const cartState = useAppSelector((state) => state.cartState);
+  const adressState = useAppSelector((state) => state.addressState);
+
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [totalCartQtty, setCartQtty] = useState<number>();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [cartDropdownEl, setCartDropdownEl] =
+    React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -33,13 +44,18 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const totalQtty = countTotalInCart(cartState);
+    setCartQtty(totalQtty);
+  }, [cartState]);
+
   return (
     <div
-      className={`fixed w-full z-40 transition-all duration-300 ${
+      className={` w-full z-40 transition-all duration-300  ${
         isScrolled ? 'bg-white shadow-md' : 'bg-white'
-      }`}
+      } ${isFixed ? 'fixed' : 'relative'}`}
     >
-      <div className="w-7xl px-2 md:px-6 lg:px-8">
+      <div className="w-7xl px-2 md:px-6 lg:px-8 ">
         <div className="flex justify-between h-20  items-center">
           <div className="flex items-center justify-between md:gap-16">
             <div className="flex-shrink-0 pb-1">
@@ -64,8 +80,8 @@ const Navbar = () => {
                 height={8}
                 className="h-4 w-auto flex-shrink-0"
               />
-              <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1">
-                Masjid Agung Sunda Kelapa kelurahannnsdj jkijwjqlkwjekqlwjekwjek
+              <span className="text-[#1495e6] px-3 text-sm break-words overflow-hidden text-ellipsis line-clamp-1">
+                {adressState.address}
               </span>
             </button>
           </div>
@@ -87,17 +103,11 @@ const Navbar = () => {
             {isLogin ? (
               <>
                 {' '}
-                <Link
+                <CartButtonNavbar />
+                {/* <Link
                   href={'/cart'}
                   className="flex items-center gap-2 w-[26] bg-primaryBackground py-3 px-4 rounded-full hover:bg-slate-300"
-                >
-                  <ShoppingCartIcon
-                    width={14}
-                    height={14}
-                    className=" text-orangeAccent cursor-pointer "
-                  ></ShoppingCartIcon>
-                  <div className="text-sm text-primaryText">0</div>
-                </Link>
+                ></Link> */}
                 <AccountMenu />
               </>
             ) : (

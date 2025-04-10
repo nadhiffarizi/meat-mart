@@ -22,19 +22,6 @@ export default function NavBar() {
     const totalQtty = countTotalInCart(cartState);
     setTotalLength(totalQtty);
   }, [cartState]);
-
-  // useEffect(() => {
-  //   document.body.addEventListener('click', (event: MouseEvent) => {
-  //     console.log(event.composedPath());
-  //     console.log(dropdownRef.current);
-
-  //     if (dropdownRef.current) {
-  //       console.log('here');
-  //       setToggle(false);
-  //     }
-  //   });
-  // }, []);
-
   return (
     <div className="w-full lg:h-[80px] bg-white shadow-md py-2 lg:px-10">
       <div className="flex justify-between w-full h-full ">

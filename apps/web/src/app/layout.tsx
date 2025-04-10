@@ -22,9 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`bg-[#F5F5F5] ${inter.className}`}>
         <StoreProviderComponent>
-          <InitialState> {children}</InitialState>
+          <InitialState>{children}</InitialState>
         </StoreProviderComponent>
       </body>
     </html>

@@ -45,6 +45,7 @@
 
   /* PLEASE DON'T DELETE */
   --primaryGreen: theme('colors.primaryGreen');
+  --secondaryGreen: theme('colors.secondaryGreen');
   --primaryBackground: theme('colors.primaryBackground');
   --primaryIcon: theme('colors.primaryIcon');
   --orangeAccent: theme('colors.orangeAccent');
