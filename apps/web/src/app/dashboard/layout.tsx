@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Sidebar from '@/components/dashboard/Sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/dashboard/app-sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,8 +21,15 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="flex justify-center w-full bg-gray-500 min-h-screen">
           <div className="flex w-full max-w-[1440px] min-w-[320px]">
-            <Sidebar />
-            <main className="flex-1 py-8 px-10 bg-white">{children}</main>
+            {/* <Sidebar />
+            <main className="flex-1 py-8 px-10 bg-white">{children}</main> */}
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="flex flex-col flex-1">
+                <SidebarTrigger />
+                <div className="py-8 px-10  bg-white">{children}</div>
+              </main>
+            </SidebarProvider>
           </div>
         </div>
       </body>
