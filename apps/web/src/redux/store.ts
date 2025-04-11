@@ -2,12 +2,14 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import cartSlice from './slice/cart.slice'
 import userSlice from './slice/user.slice'
 import addressSlice from './slice/address.slice'
+import checkoutSlice from './slice/checkout.slice'
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const reducerCombined = combineReducers({
     cartState: cartSlice,
     userState: userSlice,
-    addressState: addressSlice
+    addressState: addressSlice,
+    checkoutState: checkoutSlice
 })
 
 export const store = configureStore({

@@ -1,18 +1,26 @@
 'use client';
 import ProductCart from '@/components/Cart/ProductCart.Component';
+import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
 import { ICart } from '@/interface/cart.interface';
-import { useAppSelector } from '@/redux/store';
+import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { Box, Button, Checkbox, TextField } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 export default function CartPage() {
   const cartState = useAppSelector((state) => state.cartState);
+  const checkoutState = useAppSelector((state) => state.checkoutState);
+  const dispatch = useAppDispatch();
 
   const router = useRouter();
   // React.useEffect(() => {
   //   console.log(cartState);
   // });
+
+  React.useEffect(() => {
+    dispatch(updateCheckoutProgress('CART'));
+  }, []);
 
   if (cartState.length === 0) {
     return (
@@ -33,11 +41,17 @@ export default function CartPage() {
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
-        <div className="flex flex-col gap-5 w-4/5 max-w-[2000px] min-w-[600px] py-5 px-5 ">
-          <div id="cart-title" className="w-full">
-            <h1 className="text-start text-3xl font-semibold text-secondaryGreen">
+        <div className="flex flex-col gap-7 w-4/5 max-w-[2000px] min-w-[600px] py-5 px-5 ">
+          <div
+            id="cart-title"
+            className="w-full flex items-center justify-between "
+          >
+            <h1 className="w-1/2 text-start text-3xl font-semibold text-secondaryGreen">
               Your Cart
             </h1>
+            <div className="flex w-1/2 h-[50px] justify-end">
+              <CheckoutProgress />
+            </div>
           </div>
           <div
             id="cart-table-header"

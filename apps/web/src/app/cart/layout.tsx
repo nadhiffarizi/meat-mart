@@ -1,3 +1,4 @@
+import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
 import Navbar from '@/components/Navbar';
 import * as React from 'react';
 import { ToastContainer } from 'react-toastify';
