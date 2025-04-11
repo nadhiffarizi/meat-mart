@@ -1,12 +1,35 @@
 'use client';
 import ProductCart from '@/components/Cart/ProductCart.Component';
-import Navbar from '@/components/Navbar';
+import { ICart } from '@/interface/cart.interface';
 import { useAppSelector } from '@/redux/store';
-import { Box, Checkbox, TextField } from '@mui/material';
+import { Box, Button, Checkbox, TextField } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 export default function CartPage() {
   const cartState = useAppSelector((state) => state.cartState);
+
+  const router = useRouter();
+  // React.useEffect(() => {
+  //   console.log(cartState);
+  // });
+
+  if (cartState.length === 0) {
+    return (
+      <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
+        <div className="flex flex-col items-center justify-center gap-10 w-4/5 max-w-[2000px] min-w-[600px] h-[400px] py-5 px-5 ">
+          <h1 className="text-2xl">Your cart is empty</h1>
+          <Button
+            onClick={() => router.push('./')}
+            className="!w-[300px] !bg-secondaryGreen !h-[50px] !rounded-3xl !text-white hover:"
+          >
+            Continue Shopping
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
@@ -82,18 +105,18 @@ export default function CartPage() {
             </Box>
           </div>
           <div id="cart-items" className="flex flex-col gap-7 w-full  ">
-            {cartState.map((cartItem) => {
+            {cartState.map((cartItem: ICart, index: number) => {
               return (
                 <>
                   {' '}
-                  <ProductCart cartItem={cartItem} />
+                  <ProductCart cartItem={cartItem} key={index} />
                 </>
               );
             })}
           </div>
           <div
             id="checkout-div"
-            className="sticky bottom-5 w-full h-[200px] bg-white rounded-md shadow-xl ring-secondaryGreen ring-2"
+            className="sticky bottom-0 w-full h-[150px] bg-white shadow-xl ring-secondaryGreen ring-2"
           ></div>
         </div>
       </div>

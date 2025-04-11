@@ -13,6 +13,8 @@ const cartSlice = createSlice({
         updateCartState: (state: ICart[], action: PayloadAction<ICart[]>) => {
             // sync cart from database to local global state
             state = [...action.payload]
+            console.log(state);
+
             return state
         },
 

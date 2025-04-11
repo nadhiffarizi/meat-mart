@@ -60,15 +60,21 @@ export const chooseStock = (stocks: IStock[], qtty: number, existingCart?: ICart
                     return stockId
                 }
             case 'UPDATE':
-                const alterativeStockIndex = stocks.findIndex((stock) => stock.id !== existingCart.stock_id)
-                if (qttyInCart < stocks[alterativeStockIndex].quantity) {
-                    stockId = stocks[alterativeStockIndex].id
+                const indexBranch = stocks.findIndex((stock) => stock.stores.status === 'BRANCH')
+                // sort from smalles qtty to largest qtty
+                const quantities = [{ "index": -1, "qtty": qtty }, { "index": indexBranch, "qtty": stocks[indexBranch].quantity }, { "index": indexCentral, "qtty": stocks[indexCentral].quantity }]
+                const sortedQuantities = quantities.sort((a, b) => a.qtty - b.qtty)
+                const indexQtty = sortedQuantities.findIndex((a) => a.index === -1)
+                if (indexQtty === 2) {
+                    stockId = stocks[sortedQuantities[1].index].id
+                    return stockId
+                } else if (indexQtty === 1) {
+                    stockId = stocks[sortedQuantities[2].index].id
                     return stockId
                 } else {
-                    stockId = existingCart.stock_id
-                    return stockId
+                    stockId = stocks[indexBranch]
+                    return stockId.id
                 }
-
         }
     }
 

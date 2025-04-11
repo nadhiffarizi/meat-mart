@@ -6,8 +6,5 @@ export default interface IProduct {
     slug: string
     price: number
     weight: number
-    Stocks: IStock[]
-    created_at?: string
-    updated_at?: string
-    deleted_at?: string | Object
+    availableStocks: IStock[]
 }

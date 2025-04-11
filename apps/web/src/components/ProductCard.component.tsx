@@ -1,37 +1,53 @@
 import {
   addToCartAPI,
+  getCartDataAPI,
   indexProductInCart,
   isMaxAddedToCart,
+  syncCartDataFromAPI,
 } from '@/helper/cart.helper';
 import { currencyFormatter } from '@/helper/product.helper';
 import IProduct from '@/interface/product.interface';
 import IStock from '@/interface/stocks.interface';
-import { addToCartState } from '@/redux/slice/cart.slice';
+import { addToCartState, updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { useState } from 'react';
 import * as React from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function ProductCard({ product }: { product: IProduct }) {
   const [isMaxAdded, setMaxAdded] = useState<boolean>();
   const cartState = useAppSelector((select) => select.cartState);
   const dispatch = useAppDispatch();
 
-  const handleAddToCart = (product: IProduct) => {
-    dispatch(
-      addToCartState({
-        product: product,
-        qtty: 1,
-      }),
-    );
+  //local state
+  const [errorFetch, setErrorFetch] = useState<boolean>(false);
 
-    const index = indexProductInCart(cartState, product);
-    setMaxAdded(isMaxAddedToCart(cartState[index], product));
-
-    addToCartAPI('/api/cart/add', {
+  const handleAddToCart = async (product: IProduct) => {
+    // call api first
+    const resAddCart = await addToCartAPI('/api/cart/add', {
       quantity: 1,
       productId: product.id,
       userId: '1',
     });
+
+    if (resAddCart.status !== 200) {
+      toast.error('Something went wrong, try again later');
+      return;
+    }
+
+    // get latest cart
+    const resGetCart = await getCartDataAPI('/api/cart/get', '1');
+    if (resGetCart.status !== 200) {
+      toast.error('Something went wrong, try again later');
+      return;
+    }
+
+    // sync to local state
+    const updatedCart = syncCartDataFromAPI((await resGetCart.json())['data']);
+    dispatch(updateCartState(updatedCart));
+
+    const index = indexProductInCart(cartState, product);
+    setMaxAdded(isMaxAddedToCart(cartState[index], product));
   };
 
   return (
@@ -45,8 +61,8 @@ export default function ProductCard({ product }: { product: IProduct }) {
         <small>{currencyFormatter(product.price)}</small>
         <small className="text-red-500">Available Stocks</small>
         <div className="flex gap-2">
-          {product.Stocks &&
-            product.Stocks.map((stock: IStock, index: number) => {
+          {product.availableStocks &&
+            product.availableStocks.map((stock: IStock, index: number) => {
               return (
                 <small key={index}>
                   {stock.stores.status} :{stock.quantity}
@@ -60,8 +76,8 @@ export default function ProductCard({ product }: { product: IProduct }) {
           </button>
         ) : (
           <button
-            onClick={() => {
-              handleAddToCart(product);
+            onClick={async () => {
+              await handleAddToCart(product);
             }}
             className="bg-black h-[50px] text-white"
           >

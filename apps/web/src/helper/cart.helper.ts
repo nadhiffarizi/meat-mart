@@ -15,9 +15,39 @@ export const subtractCartAPI = async (apiRouter: string, payload: payloadCartSer
     return response
 }
 
-export const getCartData = async (apiRoute: string, userId: string) => {
+export const updateCartQuantity = async (apiRouter: string, payload: payloadCartService) => {
+    const response = await apiRequest(apiRouter, 'PUT', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+    return response
+}
+
+export const getCartDataAPI = async (apiRoute: string, userId: string) => {
     const response = await apiRequest(apiRoute, 'GET', { userId: userId }, { "Content-Type": "application/json" })
     return response
+}
+
+export const syncCartDataFromAPI = (data: any) => {
+
+    const cartItems: ICart[] = data;
+    const myCartItems: ICart[] = [];
+    cartItems.map((item: any) => {
+        const cartData: ICart = {
+            id: item['id'],
+            quantity: item['quantity'],
+            Stock: {
+                id: item['stocks']['id'],
+                quantity: item['stocks']['quantity'],
+                stores: {
+                    store_id: item['stocks']['stores']['id'],
+                    distance: item['stocks']['stores']['distance'],
+                    status: item['stocks']['stores']['status'],
+                },
+            },
+            product: { ...item['stocks']['products'] },
+        };
+        myCartItems.push({ ...cartData });
+    });
+    console.log(myCartItems);
+    return myCartItems
 }
 
 export const indexProductInCart = (cartState: ICart[], product: IProduct) => {
@@ -56,7 +86,7 @@ export const maxStockAvailable = (productFromDB: IProduct) => {
     // checks both stocks in the productfrom DB. Apply
 
     // get stocks in a certain product
-    const stocksInProduct = productFromDB.Stocks
+    const stocksInProduct = productFromDB.availableStocks
     let maxStockAvailable: number = 0
     let maxStockIndex: number = -1
 
@@ -77,11 +107,11 @@ export const maxStockAvailable = (productFromDB: IProduct) => {
 
 export const whichStockApplied = (productFromDB: IProduct): IStock => {
     // find branch store
-    const findIndexBranch = productFromDB.Stocks.findIndex((stock) => stock.stores.status === 'BRANCH')
+    const findIndexBranch = productFromDB.availableStocks.findIndex((stock) => stock.stores.status === 'BRANCH')
     if (findIndexBranch == -1) { // cannot get branch store, refer to CENTRAL
-        return productFromDB.Stocks[0]
+        return productFromDB.availableStocks[0]
     } else {
-        return productFromDB.Stocks[findIndexBranch]
+        return productFromDB.availableStocks[findIndexBranch]
     }
 }
 

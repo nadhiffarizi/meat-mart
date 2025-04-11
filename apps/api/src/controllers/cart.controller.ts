@@ -40,6 +40,17 @@ export class CartController {
         }
     }
 
+    public async updateCartQuantity(req: Request, res: Response, next: NextFunction) {
+        try {
+            // try update cart quantity
+            const data: serviceFeedback = await cartService.updateQuantity(req)
+            responseHandler(res, data.message, data.status, data.data, data.code)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 export default new CartController()

@@ -1,4 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
+import { serviceFeedback } from "@/interface/serviceFeedback.interface";
 import { Response } from "express";
 
 export class ErrorHandler extends Error {
@@ -19,8 +20,17 @@ export const responseHandler = (
 ) => {
     return res.status(code || 200).send({
         message: message,
+        status: status,
         data: data
     });
 };
 
-// export const serviceFeedback = (code: number, )
+export const returnServiceFeedback = (code: number, data: any, status: statusEnum, message: string) => {
+    const feedback: serviceFeedback = {
+        code: code,
+        data: data,
+        status: status,
+        message: message
+    }
+    return feedback
+}

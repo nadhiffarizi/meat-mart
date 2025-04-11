@@ -1,7 +1,7 @@
 'use client';
 import { getReverseLoc, getUserAddress } from '@/helper/address.helper';
 import { apiRequest } from '@/helper/api.helper';
-import { getCartData } from '@/helper/cart.helper';
+import { getCartDataAPI } from '@/helper/cart.helper';
 import { getProducts } from '@/helper/product.helper';
 import { getCustomer } from '@/helper/user.helper';
 import IAddress from '@/interface/address.interface';
@@ -80,7 +80,7 @@ export default function InitialState({
         }
         setUserId(user.id);
       });
-    const resCart = getCartData('/api/cart/get', userId!);
+    const resCart = getCartDataAPI('/api/cart/get', userId!);
     resCart
       .then((v) => v.json())
       .then((values) => {
@@ -90,9 +90,6 @@ export default function InitialState({
           const cartData: ICart = {
             id: item['id'],
             quantity: item['quantity'],
-            created_at: item['created_at'].toString() || '',
-            updated_at: item['updated_at'].toString() || '',
-            deleted_at: item['deleted_at']?.toString() || '',
             Stock: {
               id: item['stocks']['id'],
               quantity: item['stocks']['quantity'],

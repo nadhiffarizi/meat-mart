@@ -17,6 +17,7 @@ export class CartRouter {
     this.router.post('/add', cartController.add);
     this.router.post('/subtract', cartController.subtract);
     this.router.get("/get", cartController.getCart);
+    this.router.put("/update", cartController.updateCartQuantity);
     // .... continue api
   }
 

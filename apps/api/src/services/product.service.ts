@@ -1,10 +1,9 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
-import { countDistance, xDistancePrisma } from "@/helper/location/distance.helper";
+import { xDistancePrisma } from "@/helper/location/distance.helper";
 import ILocation from "@/interface/location.interface";
-import { serviceFeedback } from "@/interface/serviceFeedback.interface";
-import prisma from "@/prisma";
 import { Request } from "express";
 import { findStocksByProduct } from "@/helper/stock/stock.helper";
+import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 
 class ProductService {
     async getProducts(req: Request) {
@@ -23,45 +22,20 @@ class ProductService {
                     created_at: true,
                     updated_at: true,
                     deleted_at: true,
-                    Stocks: {
-                        select: {
-                            id: true,
-                            quantity: true,
-                            stores: {
-                                select: {
-                                    id: true,
-                                    status: true,
-                                    distance: true
-                                }
-                            }
-                        }
-                    }
                 }
             })
-
+            const data: any[] = []
 
             for (let product of products) {
-                product.Stocks = [...await findStocksByProduct(product.id, loc1)]
+                const availableStocks = await findStocksByProduct(product.id, loc1)
+                const temp = { ...product, ...{ "availableStocks": availableStocks } }
+                data.push({ ...temp })
             }
 
-            const feedback: serviceFeedback = {
-                code: 200,
-                data: products,
-                status: statusEnum.SUCCESS,
-                message: "get products success"
-            }
-            return feedback
-
+            return returnServiceFeedback(200, data, statusEnum.SUCCESS, "get product success")
         } catch (error) {
-            const feedback: serviceFeedback = {
-                code: 400,
-                data: null,
-                status: statusEnum.FAILED,
-                message: "failed getting products"
-            }
-            return feedback
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get product failed")
         }
     }
 }
-
 export default new ProductService()

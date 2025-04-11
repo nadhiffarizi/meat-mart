@@ -1,17 +1,19 @@
 import { ICart } from "@/interface/cart.interface";
 import IStock from "@/interface/stocks.interface";
 import prisma from "@/prisma";
-import { chooseStock } from "../stock/stock.helper";
+import { chooseStock, findStockById } from "../stock/stock.helper";
 import { IOrderInput } from "@/interface/order.interface";
 
 export const addToCart = async (stocks: IStock[], qtty: number, userId: string, existingCart?: ICart) => {
 
     // get which stock
     const chosenStockId = chooseStock(stocks, qtty, existingCart, 'ADD')
+    // console.log(stocks);
+
 
     if (!existingCart && chosenStockId) {
         // check if stock is not 0
-        if (await isMaxAdded(chosenStockId, qtty, existingCart)) throw new Error("stock empty, cannot add to cart")
+        if (await isMaxAdded(chosenStockId, qtty, existingCart)) throw new Error("Cannot add to cart, stock is empty.")
         // add new cart item
         const data = await prisma.carts.create({
             data: {
@@ -24,7 +26,7 @@ export const addToCart = async (stocks: IStock[], qtty: number, userId: string, 
         })
         return data
     } else if (existingCart && chosenStockId) {
-        if (await isMaxAdded(chosenStockId, qtty, existingCart)) throw new Error("stock maxxed out, cannot add to cart")
+        if (await isMaxAdded(chosenStockId, qtty, existingCart)) throw new Error("Cannot add to cart, maximum stock is added.")
         // add to exisitng cart
         const data = await prisma.carts.update({
             where: {
@@ -37,7 +39,7 @@ export const addToCart = async (stocks: IStock[], qtty: number, userId: string, 
 
         return data
     } else {
-        return new Error("failed add data to cart, no stock available")
+        throw new Error("Cannot add to cart, stock insufficient.")
     }
 }
 
@@ -83,6 +85,39 @@ export const subtractCart = async (stocks: IStock[], qtty: number, userId: strin
         })
 
         return updatedCart
+    }
+}
+
+export const updateCartQuantity = async (stocks: IStock[], qtty: number, userId: string, existingCart: ICart) => {
+    // choose stock
+    const chosenStockId = chooseStock(stocks, qtty, existingCart, 'UPDATE')
+    // console.log(stocks);
+
+    if (!chosenStockId) throw new Error("Cannot find chosen stock")
+
+    const maxAvailableQuantity = (await findStockById(chosenStockId))?.quantity!
+    if (qtty > maxAvailableQuantity) {
+        const updatedCartItem = await prisma.carts.update({
+            where: {
+                id: existingCart.id
+            }, data: {
+                quantity: maxAvailableQuantity,
+                stock_id: chosenStockId,
+            }
+        })
+
+        return updatedCartItem
+    } else {
+        const updatedCartItem = await prisma.carts.update({
+            where: {
+                id: existingCart.id
+            }, data: {
+                quantity: qtty,
+                stock_id: chosenStockId,
+            }
+        })
+
+        return updatedCartItem
     }
 }
 

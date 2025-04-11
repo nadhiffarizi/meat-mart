@@ -6,9 +6,6 @@ export interface ICart {
     Stock?: IStock,
     product: IProduct,
     quantity: number,
-    created_at?: string,
-    updated_at?: string,
-    deleted_at?: string
 }
 
 export interface payloadCartService {

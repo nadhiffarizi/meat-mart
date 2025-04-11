@@ -2,10 +2,47 @@ import { currencyFormatter } from '@/helper/product.helper';
 import { ICart } from '@/interface/cart.interface';
 import { Cancel, Close, Delete } from '@mui/icons-material';
 import { Box, Checkbox, IconButton } from '@mui/material';
-import { Icon } from 'lucide-react';
 import * as React from 'react';
+import NumberFieldComponent from '../ui/numberfield';
+import {
+  getCartDataAPI,
+  subtractCartAPI,
+  syncCartDataFromAPI,
+} from '@/helper/cart.helper';
+import { callToast } from '@/helper/notify.helper';
+import { useAppDispatch } from '@/redux/store';
+import { updateCartState } from '@/redux/slice/cart.slice';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
+  // global state
+  const dispatch = useAppDispatch();
+
+  // delete cart item
+  const handleSubstractToCart = async (qtty: number) => {
+    // call api first
+    const resSubCart = await subtractCartAPI('/api/cart/subtract', {
+      quantity: qtty,
+      productId: cartItem.product.id,
+      userId: '1',
+    });
+
+    if (resSubCart.status !== 200) {
+      callToast('Something went wrong, try again later', 'ERROR', 3000);
+      return;
+    }
+
+    // get latest cart
+    const resGetCart = await getCartDataAPI('/api/cart/get', '1');
+    if (resGetCart.status !== 200) {
+      callToast('Something went wrong, try again later', 'ERROR', 3000);
+      return;
+    }
+
+    // sync to local state
+    const updatedCart = syncCartDataFromAPI((await resGetCart.json())['data']);
+    dispatch(updateCartState(updatedCart));
+  };
+
   return (
     <div
       className="w-full h-[150px] grid grid-cols-2 shadow-sm rounded-md
@@ -60,11 +97,12 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             sx={{
               width: '100%',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <p>{cartItem.quantity}</p>
+            <NumberFieldComponent cartItem={cartItem} />
           </Box>
           <Box
             sx={{
@@ -84,7 +122,11 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
               justifyContent: 'center',
             }}
           >
-            <IconButton>
+            <IconButton
+              onClick={async () =>
+                await handleSubstractToCart(cartItem.quantity)
+              }
+            >
               <Delete sx={{ fill: 'orange' }} />
             </IconButton>
           </Box>

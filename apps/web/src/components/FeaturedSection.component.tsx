@@ -29,13 +29,7 @@ export default function FeaturedProducts() {
               id: product['id'],
               slug: product['slug'],
               weight: product['weight'],
-              Stocks: product['Stocks'],
-              created_at: product.created_at?.toString() || '',
-              updated_at: product.updated_at?.toString() || '',
-              deleted_at:
-                product.deleted_at === null
-                  ? ''
-                  : product.deleted_at?.toString() || '',
+              availableStocks: product['availableStocks'],
             };
             return <ProductCard product={data} key={index} />;
           })}
