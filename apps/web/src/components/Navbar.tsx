@@ -4,16 +4,21 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import SearchIcon from './svg/SearchIcon';
-import MenuIcon from './svg/MenuIcon';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
+import LocationPickerModal from './LocationModal';
 
 const Navbar = () => {
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isLogin, setIsLogin] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!isLogin) {
+      setShowLocationModal(true);
+    }
+  }, [isLogin]);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -104,7 +109,7 @@ const Navbar = () => {
               <>
                 <Link
                   href="/login"
-                  className="text-primaryText  h-[48px] bg-primaryBackground hover:bg-gray-400 px-4 py-4 md:py-[14px] text-xs md:text-sm font-medium rounded-full "
+                  className="text-primaryText  h-[48px] bg-primaryIcon hover:bg-gray-400 px-4 py-4 md:py-[14px] text-xs md:text-sm font-medium rounded-full "
                 >
                   Masuk
                 </Link>
@@ -120,7 +125,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      <LocationPickerModal
+        open={showLocationModal}
+        onClose={() => {
+          setShowLocationModal(false);
+        }}
+      />
     </div>
   );
 };

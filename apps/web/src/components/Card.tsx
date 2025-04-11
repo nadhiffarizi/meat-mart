@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ICard } from '../interfaces/card.interface';
 
-export function Card() {
+export function Card(props: ICard) {
   return (
     <Link href={'/'}>
       <div className="w-full  max-w-[230px] bg-primaryIcon rounded-lg shadow-xl">
@@ -21,27 +22,28 @@ export function Card() {
                 height={60}
                 alt=""
                 className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
-                //   !(stock == 0) ? 'hidden' : 'block'
-                
-                 `}
+                  ${!(props.stock == 0) ? 'hidden' : 'block'} `}
                 src="/sold-icon.png"
               />
             </div>
           </div>
 
-          <div className="px-2 md:px-5 mt-4 flex flex-col text-sm md:text-xl">
-            <b className="h-6 md:h-8 w-full overflow-hidden ">Ayam Kampung</b>
-            <p className="h-6 md:h-8 mb-2 w-full overflow-hidden text-xs md:text-sm text-gray-500">
+          <div className="px-2 md:px-5 mt-4 flex flex-col text-sm md:text-[16px]">
+            <b className="h-4 md:h-6 w-full ">{props.name}</b>
+            <p className="mt-1 md:mt-0 h-4 md:h-6 mb-2 w-full overflow-hidden text-xs md:text-sm text-gray-500">
               /pack
             </p>
             <div className="flex justify-between items-center mb-4 md:mb-4">
               <b className="text-[#159953] overflow-hidden">
-                {/* {props.price == 0
-                ? 'Free'
-                : `IDR ${Number(props.price).toLocaleString('id-ID')}`} */}
-                Rp {Number(70000.0).toLocaleString('id-ID')}
+                {props.price == 0
+                  ? 'Free'
+                  : `IDR ${Number(props.price).toLocaleString('id-ID')}`}
               </b>{' '}
-              <button className="h-6 w-6 md:h-8 md:w-8 font-semibold bg-orangeAccent rounded-full mr-2">
+              <button
+                className={
+                  'h-8 w-8 md:h-8 md:w-8 font-semibold bg-orangeAccent rounded-full text-xl md:text-2xl hover:text-white '
+                }
+              >
                 +
               </button>
             </div>

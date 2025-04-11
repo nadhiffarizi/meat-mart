@@ -54,8 +54,7 @@ export default function Categories() {
               <SwiperSlide key={category.id} className="!w-auto">
                 <button
                   className={`flex gap-2 items-center justify-center pr-6 pl-1  py-1 rounded-full transition-all duration-200 bg-white
-                    hover:bg-primaryGreen hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50
-                    min-w-[120px]`}
+                    hover:bg-primaryGreen hover:text-white min-w-[100px]`}
                 >
                   <span className="text-2xl md:text-4xl pt-2 rounded-full w-12 h-12 md:w-16 md:h-16 bg-primaryBackground">
                     <Image

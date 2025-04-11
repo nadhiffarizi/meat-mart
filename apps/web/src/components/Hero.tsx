@@ -32,7 +32,7 @@ const Carousel = () => {
             <Image
               src={image}
               alt={`Slide ${index + 1}`}
-              className="w-full h-40 rounded-lg md:h-52 lg:h-80 object-cover"
+              className="w-full h-44 rounded-lg md:h-52 lg:h-80 object-cover"
               width={1200}
               height={300}
             />
