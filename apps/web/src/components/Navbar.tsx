@@ -84,7 +84,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Cari produk daging, kategori..."
-                className="w-full text-sm rounded-full h-[48px] border border-gray-300 py-2 px-4 pl-10 focus:outline-none "
+                className="w-full text-sm rounded-full h-[48px] text-primaryText bg-primaryBackground border border-gray-300 py-2 px-4 pl-10 focus:outline-none "
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <SearchIcon />
@@ -105,7 +105,7 @@ const Navbar = () => {
                     height={8}
                     className=" text-orangeAccent cursor-pointer "
                   ></ShoppingCartIcon>
-                  <div className="text-sm">0</div>
+                  <div className="text-sm text-primaryText">0</div>
                 </Link>
                 <AccountMenu />
               </>
