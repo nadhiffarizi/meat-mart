@@ -1,4 +1,5 @@
 import authController, { AuthController } from '@/controllers/auth.controller';
+import { verifyRefreshToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class AuthRouter {
@@ -12,6 +13,8 @@ export class AuthRouter {
   private initializeRoutes(): void {
     this.router.post('/register', authController.register);
     this.router.post('/login', authController.login);
+    // this.router.post('/token', verifyRefreshToken, authController.refreshToken);
+    this.router.get('/users', authController.getUsers);
   }
 
   getRouter(): Router {
