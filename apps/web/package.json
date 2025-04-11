@@ -17,6 +17,8 @@
     "@mui/styled-engine-sc": "^6.3.1",
     "@types/swiper": "^6.0.0",
     "cross-env": "^7.0.3",
+    "formik": "^2.4.6",
+    "jwt-decode": "^4.0.0",
     "next": "^14.2.25",
     "next-auth": "^5.0.0-beta.25",
     "react": "^18",

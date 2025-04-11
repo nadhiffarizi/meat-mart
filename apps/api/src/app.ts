@@ -54,6 +54,7 @@ export default class App {
   private routes(): void {
     this.app.use('/api/auth', authRouter.getRouter());
     this.app.use('/api/admin', adminRouter.getRouter());
+    this.app.use('/api/product', adminRouter.getRouter());
   }
 
   public start(): void {

@@ -8,11 +8,15 @@ import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
 import LocationPickerModal from './LocationModal';
+import { useRouter } from 'next/router';
 
 const Navbar = () => {
+  // const router = useRouter();
+  const { data: session } = useSession();
+
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isLogin) {
@@ -89,7 +93,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center justify-end ml-4">
-            {isLogin ? (
+            {session?.user?.id ? (
               <>
                 {' '}
                 <Link

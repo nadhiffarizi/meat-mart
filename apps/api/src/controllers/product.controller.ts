@@ -1,32 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { responseHandler } from '@/helper/responseHandler.helper';
-import authService from '@/services/auth.service';
+import productService from '@/services/product.service';
 
-export class AuthController {
-  public async register(req: Request, res: Response, next: NextFunction) {
+export class ProductController {
+  public async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
-      // try registering
-      const data: serviceFeedback = await authService.register(req);
+      const data: serviceFeedback = await productService.create(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);
     }
   }
-
-  public async login(req: Request, res: Response, next: NextFunction) {
+  public async getProducts(req: Request, res: Response, next: NextFunction) {
     try {
-      // try logging in
-      const data: serviceFeedback = await authService.login(req);
-      responseHandler(res, data.message, data.status, data.data, data.code);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  public async getUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data: serviceFeedback = await authService.getList(req);
+      const data: serviceFeedback = await productService.getAllProducts(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);
@@ -43,4 +31,4 @@ export class AuthController {
   // }
 }
 
-export default new AuthController();
+export default new ProductController();
