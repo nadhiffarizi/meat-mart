@@ -1,10 +1,16 @@
 import { getAvailableDiscountsAPI } from '@/helper/discount.helper';
-import { Discount, LocalActivity } from '@mui/icons-material';
+import { Cancel, Discount, LocalActivity } from '@mui/icons-material';
 import { Button, IconButton, Modal } from '@mui/material';
 import * as React from 'react';
+import { Dialog, DialogTrigger } from '../ui/dialog';
+import { DiscountDialogInCart } from './DiscountModalInCart.component';
+import { useAppSelector } from '@/redux/store';
+import { indexCartById } from '@/helper/cart.helper';
 
 export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
+  const cartState = useAppSelector((state) => state.cartState);
   const [isDiscountFound, setDiscountFound] = React.useState<boolean>(false);
+
   React.useEffect(() => {
     const resGetDiscount = getAvailableDiscountsAPI(
       `/api/discount/get/${cartId}`,
@@ -20,36 +26,25 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
   }, []);
 
   // handle modal open
-  const handleOpen = () => {
-    setDiscountFound(true);
-  };
+
   return (
-    <div className="w-full h-full">
+    <div className=" h-full">
       {isDiscountFound && (
         <React.Fragment>
-          <Button
-            style={{ textTransform: 'none' }}
-            className="!text-xs
-         !text-red-400 "
-            startIcon={<Discount />}
-          >
-            Check Available Discounts
-          </Button>
-          {/* <Modal
-            open={open}
-            onClose={handleOpen}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Text in a modal
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
-            </Box>
-          </Modal> */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                style={{ textTransform: 'none' }}
+                className="!text-xs !text-red-400 "
+                startIcon={<Discount />}
+              >
+                {cartState[indexCartById(cartState, cartId)].discount
+                  ? `${cartState[indexCartById(cartState, cartId)].discount?.discount_code} applied`
+                  : 'Check Available Discounts'}
+              </Button>
+            </DialogTrigger>
+            <DiscountDialogInCart cartId={cartId} />
+          </Dialog>
         </React.Fragment>
       )}
     </div>

@@ -6,7 +6,7 @@ export const getAvailableDiscountsAPI = async (apiRouter: string) => {
     return response
 }
 
-export const redeemDiscountAPI = async (apiRouter: string, payload: { cartId: string, discountCode: string }) => {
+export const redeemDiscountAPI = async (apiRouter: string, payload: { cartId: string, discountId: string }) => {
     const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
     return response
 }
@@ -24,7 +24,7 @@ export const syncDiscountDataFromAPI = (data: any) => {
             end_date: item['end_date'],
             discount_code: item['discount_code'],
             promotion_type: item['promotion_type'],
-            discount_amount: item['discount_item'],
+            discount_amount: item['discount_amount'],
             discount_percentage: item['discount_percentage'],
             maximum_discount_amount: item['maximum_discount_amount'],
             minimum_purchase: item['minimum_purchase'],
@@ -34,4 +34,13 @@ export const syncDiscountDataFromAPI = (data: any) => {
     });
     console.log(myDiscountOptions);
     return myDiscountOptions
+}
+
+export const syncRedeemedDiscountFromAPI = (data: any) => {
+    const discount: IDiscount = { ...data['discount'] }
+    const quantityAfterDisc = Number(data['cart']['quantity'])
+    const subtotalPrice = Number(data['subtotalPrice'])
+    const pricePerProduct = Number(data['pricePerProduct'])
+
+    return { discount, quantityAfterDisc, subtotalPrice, pricePerProduct }
 }

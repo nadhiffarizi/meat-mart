@@ -1,5 +1,7 @@
-import { createNewCartItem, indexProductInCart, maxStockAvailable } from "@/helper/cart.helper";
+import { createNewCartItem, indexCartById, indexProductInCart, maxStockAvailable } from "@/helper/cart.helper";
+import { syncRedeemedDiscountFromAPI } from "@/helper/discount.helper";
 import { ICart } from "@/interface/cart.interface";
+import { IDiscount } from "@/interface/discount.interface";
 import IProduct from "@/interface/product.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -93,10 +95,34 @@ const cartSlice = createSlice({
             state = [...tempState]
 
             return state
+        },
+
+        addDiscountToCartItem: (state: ICart[], action: PayloadAction<{ data: any, cartId: string }>) => {
+            // temp state
+            const tempState = [...state]
+
+            // find where is the product in the cart
+            const indexCart = indexCartById(tempState, action.payload.cartId) // strictly available
+            const tempCartItem = { ...tempState[indexCart] }
+
+            const redeemDiscount = syncRedeemedDiscountFromAPI(action.payload.data)
+            // console.log("here", redeemDiscount);
+
+
+            tempCartItem.discount = { ...redeemDiscount.discount }
+            tempCartItem.quantityAfterDisc = redeemDiscount.quantityAfterDisc
+            tempCartItem.subtotalPrice = redeemDiscount.subtotalPrice
+            tempCartItem.pricePerProduct = redeemDiscount.pricePerProduct
+
+            tempState[indexCart] = { ...tempCartItem }
+
+            state = [...tempState]
+
+            return state
         }
 
     }
 })
 
-export const { updateCartState, addToCartState, subtractCartState } = cartSlice.actions;
+export const { updateCartState, addToCartState, subtractCartState, addDiscountToCartItem } = cartSlice.actions;
 export default cartSlice.reducer

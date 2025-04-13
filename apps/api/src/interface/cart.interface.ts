@@ -1,3 +1,5 @@
+import { IDiscount } from "./discount.interface";
+
 export interface ICart {
 
     id: string;
@@ -12,5 +14,6 @@ export interface ICart {
 export interface ICartAfterDIsc {
     cart: ICart,
     subtotalPrice: number,
-    pricePerProduct?: number
+    pricePerProduct?: number,
+    discount?: IDiscount
 }

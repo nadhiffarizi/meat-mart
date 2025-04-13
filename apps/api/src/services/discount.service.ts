@@ -65,7 +65,7 @@ class DiscountService {
             const discountedCartItem = calculateAfterDisc(product.products?.price!, discount?.promotion_type!, discount!, cartData as ICart) as ICartAfterDIsc
 
             // feedback from service
-            return returnServiceFeedback(200, discountedCartItem, statusEnum.SUCCESS, "redeem discount success")
+            return returnServiceFeedback(200, { discount, ...discountedCartItem }, statusEnum.SUCCESS, "redeem discount success")
 
         } catch (error) {
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "redeem discounted failed")

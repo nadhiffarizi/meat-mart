@@ -6,11 +6,12 @@ import * as React from 'react';
 import NumberFieldComponent from '../ui/numberfield';
 import {
   getCartDataAPI,
+  indexCartById,
   subtractCartAPI,
   syncCartDataFromAPI,
 } from '@/helper/cart.helper';
 import { callToast } from '@/helper/notify.helper';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import DiscountInCartNotif from './DiscountInCartNotif.component';
 
@@ -43,6 +44,8 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
     const updatedCart = syncCartDataFromAPI((await resGetCart.json())['data']);
     dispatch(updateCartState(updatedCart));
   };
+
+  const cancelDiscount = () => {};
 
   return (
     <div
@@ -78,8 +81,15 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             <div className="w-full h-2/3 flex items-center py-1 ">
               <p>{cartItem.product.name}</p>
             </div>
-            <div className="w-full h-1/3 flex items-end ">
+            <div className="w-full h-1/3 flex items-center justify-start gap-3">
               <DiscountInCartNotif cartId={cartItem.id!} />
+              {cartItem.discount ? (
+                <IconButton onClick={() => cancelDiscount()}>
+                  <Cancel />
+                </IconButton>
+              ) : (
+                <></>
+              )}
             </div>
           </Box>
         </div>

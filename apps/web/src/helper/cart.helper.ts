@@ -43,6 +43,7 @@ export const syncCartDataFromAPI = (data: any) => {
                 },
             },
             product: { ...item['stocks']['products'] },
+            discount: undefined
         };
         myCartItems.push({ ...cartData });
     });
@@ -58,6 +59,11 @@ export const indexProductInCart = (cartState: ICart[], product: IProduct) => {
     if (indexProductInCart === -1) return -1
 
     return indexProductInCart
+}
+
+export const indexCartById = (cartState: ICart[], cartId: string) => {
+    const index = cartState.findIndex((cartItem) => cartItem.id === cartId)
+    return index
 }
 
 export const createNewCartItem = (product: IProduct, quantity: number, stock?: IStock) => {
@@ -130,4 +136,7 @@ export const countCartTotalPrice = (cartState: ICart[]): number => {
     cartState.map((cartItem) => tempTotal += (cartItem.product.price * cartItem.quantity))
     return tempTotal
 }
+
+
+
 
