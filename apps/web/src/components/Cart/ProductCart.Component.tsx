@@ -12,6 +12,7 @@ import {
 import { callToast } from '@/helper/notify.helper';
 import { useAppDispatch } from '@/redux/store';
 import { updateCartState } from '@/redux/slice/cart.slice';
+import DiscountInCartNotif from './DiscountInCartNotif.component';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state
@@ -45,11 +46,11 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
 
   return (
     <div
-      className="w-full h-[150px] grid grid-cols-2 shadow-sm rounded-md
+      className="w-full h-[130px] px-5 py-4 flex shadow-sm rounded-md
      bg-white"
     >
-      <Box sx={{ width: '100%' }}>
-        <div className="w-full h-full py-5 flex">
+      <Box sx={{ width: '50%' }}>
+        <div className="w-full h-full  flex">
           <Box
             sx={{
               width: '30%',
@@ -58,10 +59,10 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
               paddingLeft: '.7rem',
               paddingRight: '.7rem',
               gap: '10px',
+              border: 'solid 1px',
             }}
           >
             {/**image placeholder */}
-            <Checkbox color="success" />
             Image placeholder
           </Box>
           <Box
@@ -74,28 +75,20 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
               flexDirection: 'column',
             }}
           >
-            <p>{cartItem.product.name}</p>
-            <p>Availabe Discount</p>
+            <div className="w-full h-2/3 flex items-center py-1 ">
+              <p>{cartItem.product.name}</p>
+            </div>
+            <div className="w-full h-1/3 flex items-end ">
+              <DiscountInCartNotif cartId={cartItem.id!} />
+            </div>
           </Box>
         </div>
       </Box>
-      <Box sx={{ width: '100%' }}>
-        <div className="w-full h-full grid grid-cols-4 ">
+      <Box sx={{ width: '50%' }}>
+        <div className="w-full h-full flex ">
           <Box
             sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              fontWeight: '400',
-            }}
-          >
-            <p>{currencyFormatter(cartItem.product.price)}</p>
-          </Box>
-          <Box
-            sx={{
-              width: '100%',
+              width: '40%',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -106,7 +99,7 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
           </Box>
           <Box
             sx={{
-              width: '100%',
+              width: '40%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -116,8 +109,9 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
           </Box>
           <Box
             sx={{
-              width: '100%',
+              width: '20%',
               display: 'flex',
+              // backgroundColor: 'blue',
               alignItems: 'center',
               justifyContent: 'center',
             }}

@@ -15,7 +15,7 @@ export class DiscountRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT
 
-    this.router.get('/get', discountController.getDiscounts);
+    this.router.get('/get/:cartId', discountController.getDiscounts);
     this.router.post('/redeem', discountController.redeemDiscount);
     // .... continue api
   }

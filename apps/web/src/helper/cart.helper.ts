@@ -125,3 +125,9 @@ export const countTotalInCart = (cartState: ICart[]): number => {
     return totalCountInCart
 }
 
+export const countCartTotalPrice = (cartState: ICart[]): number => {
+    let tempTotal = 0
+    cartState.map((cartItem) => tempTotal += (cartItem.product.price * cartItem.quantity))
+    return tempTotal
+}
+
