@@ -3,6 +3,7 @@ import MyCartList from '@/components/Cart/MyCartList.component';
 import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
 import ChooseAddressCheckout from '@/components/Checkout/ChooseAddressCheckout.component';
 import PaymentSummaryCart from '@/components/Checkout/PaymentSummaryCart.component';
+import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { Cancel, Delete } from '@mui/icons-material';
 import { Box, Button, Checkbox, IconButton, TextField } from '@mui/material';
@@ -17,9 +18,9 @@ export default function CartPage() {
   // handle delete all
   const handleDeleteAllCart = async () => {};
 
-  // React.useEffect(() => {
-  //   dispatch(updateCheckoutProgress('CART'));
-  // }, []);
+  React.useEffect(() => {
+    dispatch(updateCheckoutProgress('CART'));
+  }, []);
 
   if (cartState.length === 0) {
     return (

@@ -9,7 +9,7 @@ import { Box, Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-export default function PaymentSummaryCart() {
+export default function PaymentSummaryCheckout() {
   const cartState = useAppSelector((state) => state.cartState);
   const router = useRouter();
   return (
@@ -18,7 +18,7 @@ export default function PaymentSummaryCart() {
         <h1 className="text-xl text-black font-semibold">Payment Summary</h1>
       </div>
       <div className="relative h-4/5 max-h-[280px] w-full flex flex-col gap-2 rounded-sm  py-2 ">
-        <div className="w-full h-3/4 flex flex-col gap-1 justify-evenly  ">
+        <div className="w-full h-full flex flex-col gap-1 justify-evenly  ">
           <Box
             sx={{
               width: '100%',
@@ -95,7 +95,7 @@ export default function PaymentSummaryCart() {
           >
             <div className="w-full h-full grid grid-cols-2">
               <div className="col-span-1 ">
-                <p>Total</p>{' '}
+                <p className="font-semibold">Total</p>{' '}
               </div>
               <div className="col-span-1 flex justify-end">
                 <p className=" font-semibold">
@@ -105,23 +105,6 @@ export default function PaymentSummaryCart() {
                 </p>{' '}
               </div>
             </div>
-          </Box>
-        </div>
-        <div className="w-full h-1/4 flex flex-col  justify-end ">
-          <Box
-            sx={{
-              height: '50px',
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <Button
-              style={{ textTransform: 'none' }}
-              onClick={() => router.push('./payment')}
-              className="!rounded-[50px] !bg-secondaryGreen !w-full !h-full !text-white !text-lg"
-            >
-              Checkout
-            </Button>
           </Box>
         </div>
       </div>

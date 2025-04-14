@@ -12,8 +12,12 @@ import {
 } from '@/helper/cart.helper';
 import { callToast } from '@/helper/notify.helper';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { updateCartState } from '@/redux/slice/cart.slice';
+import {
+  removeDiscountFromCart,
+  updateCartState,
+} from '@/redux/slice/cart.slice';
 import DiscountInCartNotif from './DiscountInCartNotif.component';
+import { IDiscount } from '@/interface/discount.interface';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state
@@ -45,7 +49,9 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
     dispatch(updateCartState(updatedCart));
   };
 
-  const cancelDiscount = () => {};
+  const cancelDiscount = (cartId: string) => {
+    dispatch(removeDiscountFromCart({ cartId: cartId }));
+  };
 
   return (
     <div
@@ -84,7 +90,7 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             <div className="w-full h-1/3 flex items-center justify-start gap-3">
               <DiscountInCartNotif cartId={cartItem.id!} />
               {cartItem.discount ? (
-                <IconButton onClick={() => cancelDiscount()}>
+                <IconButton onClick={() => cancelDiscount(cartItem.id!)}>
                   <Cancel />
                 </IconButton>
               ) : (
@@ -102,10 +108,17 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'space-around',
             }}
           >
             <NumberFieldComponent cartItem={cartItem} />
+            {cartItem.discount?.promotion_type === 'BOGO' ? (
+              <p className="text-sm text-secondaryGreen">
+                You get extra ${cartItem.quantity} pcs!
+              </p>
+            ) : (
+              <></>
+            )}
           </Box>
           <Box
             sx={{

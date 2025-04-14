@@ -30,22 +30,20 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
   return (
     <div className=" h-full">
       {isDiscountFound && (
-        <React.Fragment>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                style={{ textTransform: 'none' }}
-                className="!text-xs !text-red-400 "
-                startIcon={<Discount />}
-              >
-                {cartState[indexCartById(cartState, cartId)].discount
-                  ? `${cartState[indexCartById(cartState, cartId)].discount?.discount_code} applied`
-                  : 'Check Available Discounts'}
-              </Button>
-            </DialogTrigger>
-            <DiscountDialogInCart cartId={cartId} />
-          </Dialog>
-        </React.Fragment>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              style={{ textTransform: 'none' }}
+              className="!text-xs !text-red-400 "
+              startIcon={<Discount />}
+            >
+              {cartState[indexCartById(cartState, cartId)].discount
+                ? `${cartState[indexCartById(cartState, cartId)].discount?.discount_code} applied`
+                : 'Check Available Discounts'}
+            </Button>
+          </DialogTrigger>
+          <DiscountDialogInCart cartId={cartId} />
+        </Dialog>
       )}
     </div>
   );

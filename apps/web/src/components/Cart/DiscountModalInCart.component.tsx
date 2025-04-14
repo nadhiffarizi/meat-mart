@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -44,6 +45,7 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
   const handleSubmit = async (cartId: string, discount?: IDiscount) => {
     if (!discount) {
       callToast('Please select your voucher', 'INFO', 1000);
+      return;
     }
 
     const resRedeemDisc = await redeemDiscountAPI('/api/discount/redeem', {
@@ -53,6 +55,7 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
 
     if (resRedeemDisc.status !== 200) {
       callToast('Failed to redeem discount', 'ERROR', 2000);
+      return;
     }
 
     // console.log((await resRedeemDisc.json())['data']);
@@ -97,14 +100,16 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
         </discountContext.Provider>
       </div>
       <DialogFooter className="h-[40px] px-5">
-        <Button
-          style={{ textTransform: 'none' }}
-          onClick={async () => handleSubmit(cartId, selectedDiscount)}
-          className="!bg-secondaryGreen !text-white !rounded-full !px-7 py-3"
-          type="submit"
-        >
-          Redeem Voucher
-        </Button>
+        <DialogClose asChild>
+          <Button
+            style={{ textTransform: 'none' }}
+            onClick={async () => handleSubmit(cartId, selectedDiscount)}
+            className="!bg-secondaryGreen !text-white !rounded-full !px-7 py-3"
+            type="submit"
+          >
+            Redeem Voucher
+          </Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   );

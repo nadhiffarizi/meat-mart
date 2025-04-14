@@ -119,10 +119,28 @@ const cartSlice = createSlice({
             state = [...tempState]
 
             return state
+        },
+
+        removeDiscountFromCart: (state: ICart[], action: PayloadAction<{ cartId: string }>) => {
+            // find cart Id 
+            const tempState = [...state]
+            const indexCart = indexCartById(tempState, action.payload.cartId)
+
+            const tempItem = { ...tempState[indexCart] }
+
+            tempItem.discount = undefined
+            tempItem.pricePerProduct = undefined
+            tempItem.pricePerProduct = undefined
+            tempItem.quantityAfterDisc = undefined
+
+            tempState[indexCart] = { ...tempItem }
+
+            state = [...tempState]
+            return state
         }
 
     }
 })
 
-export const { updateCartState, addToCartState, subtractCartState, addDiscountToCartItem } = cartSlice.actions;
+export const { updateCartState, addToCartState, subtractCartState, addDiscountToCartItem, removeDiscountFromCart } = cartSlice.actions;
 export default cartSlice.reducer

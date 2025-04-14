@@ -3,7 +3,10 @@ import { currencyFormatter } from '@/helper/product.helper';
 import { ICart } from '@/interface/cart.interface';
 import { IDiscount } from '@/interface/discount.interface';
 import IProduct from '@/interface/product.interface';
-import { addDiscountToCartItem } from '@/redux/slice/cart.slice';
+import {
+  addDiscountToCartItem,
+  removeDiscountFromCart,
+} from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { Box, Button, Radio } from '@mui/material';
 import * as React from 'react';
@@ -30,7 +33,6 @@ export default function DiscountCard({
     selectDiscount(discount);
   };
   const handleUnselect = () => {
-    // dispatch(addDiscountToCartItem({ product: product, discount: discount }));
     selectDiscount(undefined);
   };
 
@@ -95,7 +97,7 @@ export default function DiscountCard({
       selectDiscount(discount);
     } else {
       console.log('enter');
-
+      selectDiscount(undefined);
       setSelected(false);
     }
   }, []);
