@@ -50,9 +50,7 @@ export default function PaymentSummaryCheckout() {
           >
             <div className="w-full h-full grid grid-cols-2">
               <div className="col-span-1 ">
-                <p>
-                  <p>Total Discount</p>{' '}
-                </p>{' '}
+                <p>Total Discount</p>{' '}
               </div>
               <div className="col-span-1 flex justify-end">
                 <p className="text-secondaryGreen">

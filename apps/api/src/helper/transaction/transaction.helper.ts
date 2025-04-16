@@ -5,8 +5,9 @@ import prisma from "@/prisma"
 import { E_OrderStatus, E_PromotionType, E_TransactionStatus } from "@prisma/client"
 import { getShippingCost } from "../order/order.helper"
 import { findStoreByStockId } from "../store/store.helper"
-import { calculateAfterDisc, findDiscountByCode } from "../discount/discount.helper"
+import { calculateAfterDisc, findDiscountByCode, findDiscountById } from "../discount/discount.helper"
 import { findProductByStockId } from "../product/product.helper"
+import { updateStockQuantity } from "../stock/stock.helper"
 
 export const createDefaultTrxId = async (userId: string) => {
     const trxDefault = await prisma.transactions.create({
@@ -19,7 +20,7 @@ export const createDefaultTrxId = async (userId: string) => {
     return trxDefault.id
 }
 
-export const createTrxDetails = async (trxId: string, cartItem: ICart, orderInput: IOrderInput, loc1: ILocation) => {
+export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILocation, orderInput?: IOrderInput) => {
 
     // get store location 
     const store = await findStoreByStockId(cartItem.stock_id)!
@@ -34,7 +35,7 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, orderInpu
     // get product
     const product = await findProductByStockId(cartItem.stock_id)
     // check if discount applied
-    if (!orderInput.discountCode) {
+    if (!orderInput?.discountId) {
         // add to transaction detail, cartItem which do not have discount
 
         const newTrxDetail = await prisma.transactionDetails.create({
@@ -55,11 +56,15 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, orderInpu
             }
         })
 
+        // update stock
+        const updatedStock = await updateStockQuantity(cartItem.stock_id, cartItem.quantity)
+        console.log(`updated stock from transaction: ${newTrxDetail.id}, resulting updatedStock: ${updatedStock}`);
+
         return newTrxDetail
     }
     else {
         // get price after discount
-        const discount = (await findDiscountByCode(orderInput.discountCode!))!
+        const discount = (await findDiscountById(orderInput.discountId!))!
 
         const defaultPrice = product?.products?.price!
 

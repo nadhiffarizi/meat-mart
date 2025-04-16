@@ -7,5 +7,5 @@ export interface IEligibleToOrder {
 
 export interface IOrderInput {
     cartId: string
-    discountCode?: string
+    discountId?: string
 }

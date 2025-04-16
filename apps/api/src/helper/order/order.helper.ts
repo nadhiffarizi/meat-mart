@@ -18,6 +18,7 @@ export const updateCartToOrder = async (carts: ICart[], userId: string, loc1: IL
 
         let currentStock = await findStockById(cartItem.stock_id)
 
+        // last check if qttty in cart item more than  current stock
         if (cartItem.quantity > currentStock?.quantity!) {
             const availableStocks = await findStocksByProduct(currentStock?.product_id!, loc1)
             const chosenStockId = chooseStock(availableStocks, cartItem.quantity, cartItem, 'UPDATE')

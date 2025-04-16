@@ -8,16 +8,18 @@ export const addToCart = async (stocks: IStock[], qtty: number, userId: string, 
 
     // get which stock
     const chosenStockId = chooseStock(stocks, qtty, existingCart, 'ADD')
-    // console.log(stocks);
+    if (!chosenStockId) throw new Error("Cannot find stock, try again later")
 
+    // add if chosenStock found
+    const stock = await findStockById(chosenStockId)
+    //check available quantity in stock
 
-    if (!existingCart && chosenStockId) {
-        // check if stock is not 0
-        if (await isMaxAdded(chosenStockId, qtty, existingCart)) throw new Error("Cannot add to cart, stock is empty.")
+    if (!existingCart) {
+        const exceedMaximum: boolean = qtty >= stock?.quantity! ? true : false
         // add new cart item
         const data = await prisma.carts.create({
             data: {
-                quantity: qtty,
+                quantity: exceedMaximum ? stock?.quantity! : qtty,
                 user_id: userId,
                 stock_id: chosenStockId!,
                 created_at: (new Date()),
@@ -25,19 +27,23 @@ export const addToCart = async (stocks: IStock[], qtty: number, userId: string, 
             }
         })
         return data
-    } else if (existingCart && chosenStockId) {
-        if (await isMaxAdded(chosenStockId, qtty, existingCart)) throw new Error("Cannot add to cart, maximum stock is added.")
+    } else if (existingCart) {
+        //check available quantity in stock
+        const resultQtty = existingCart.quantity + qtty
+
+        const exceedMaximum: boolean = resultQtty >= stock?.quantity! ? true : false
+
         // add to exisitng cart
         const data = await prisma.carts.update({
             where: {
                 id: existingCart.id
             }, data: {
-                quantity: existingCart?.quantity + qtty,
+                quantity: exceedMaximum ? stock?.quantity : resultQtty,
                 stock_id: chosenStockId
             }
         })
-
         return data
+
     } else {
         throw new Error("Cannot add to cart, stock insufficient.")
     }
@@ -49,8 +55,10 @@ export const subtractCart = async (stocks: IStock[], qtty: number, userId: strin
 
     // get which stock 
     const chosenStockId = chooseStock(stocks, qtty, existingCart, 'SUBTRACT')
+    if (!chosenStockId) throw new Error("Cannot find stock, try again later")
 
     // subtract if chosenStock found
+    const stock = await findStockById(chosenStockId)
     // check if the subtraction will result 0 in qtty
     const resultQtty = existingCart.quantity - qtty
     if (resultQtty === 0) {
@@ -67,7 +75,25 @@ export const subtractCart = async (stocks: IStock[], qtty: number, userId: strin
         })
 
         return updatedCart
-    } else if (resultQtty > 0) {
+    } else if (resultQtty > stock?.quantity!) {
+        // update cart with maximum quantity available
+        await prisma.carts.update({
+            where: {
+                id: existingCart.id
+            }, data: {
+                quantity: stock?.quantity!,
+                stock_id: chosenStockId!
+            }
+        })
+
+        const updatedCart = await prisma.carts.findMany({
+            where: {
+                user_id: userId
+            }
+        })
+
+        return updatedCart
+    } else if (resultQtty <= stock?.quantity!) {
         // update cart minus the qtty
         await prisma.carts.update({
             where: {
@@ -166,4 +192,15 @@ export const findCartById = async (cartId: string) => {
     })
 
     return cartData
+}
+
+export const disableCart = async (cartId: string) => {
+    // disable cart, add new Date() to deleted_at columns
+    const updatedCart = await prisma.carts.update({
+        where: {
+            id: cartId
+        }, data: {
+            deleted_at: new Date()
+        }
+    })
 }

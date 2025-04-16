@@ -96,6 +96,33 @@ class CartService {
     }
 
     async subtract(req: Request) {
+        // placeholder for location
+        const loc1: ILocation = {
+            lat: "-6.2263977",
+            lon: "106.8584389"
+        }
+
+        // need info: user, address(location), productId
+        const { quantity, productId, userId } = req.body
+
+        // check where is the cart data
+        const findItem = await prisma.carts.findFirst({
+            where: {
+                user_id: userId,
+                AND: {
+                    stocks: {
+                        product_id: productId
+                    }
+                }
+            }
+        })
+
+        const availableStocks = await findStocksByProduct(productId, loc1)
+        const data = await subtractCart(availableStocks, quantity, userId, findItem!)
+
+        // feedback from service
+        return returnServiceFeedback(200, data, statusEnum.SUCCESS, "subtract cart success")
+
         try {
             // placeholder for location
             const loc1: ILocation = {
@@ -126,7 +153,7 @@ class CartService {
 
         } catch (error) {
             // feedback from service
-            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "subtract cart success")
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "subtract cart failed")
         }
     }
 

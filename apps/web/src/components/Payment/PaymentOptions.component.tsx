@@ -1,7 +1,13 @@
+import {
+  createTransactionAPI,
+  createTransactionPayload,
+} from '@/helper/checkout.helper';
+import { callToast } from '@/helper/notify.helper';
 import { useAppSelector } from '@/redux/store';
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -12,6 +18,12 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 export default function PaymentOptions() {
+  // global state
+  const cartState = useAppSelector((state) => state.cartState);
+  const userId = useAppSelector((state) => state.userState);
+
+  //local state
+  const [isLoading, setLoading] = React.useState<Boolean>(false);
   const [selectedValue, setSelectedValue] = React.useState('manual');
   const router = useRouter();
 
@@ -19,14 +31,33 @@ export default function PaymentOptions() {
     setSelectedValue(event.target.value);
   };
 
-  const handleSubmit = () => {
-    // Do something with selectedValue
-    console.log('Chosen option:', selectedValue);
-    // maybe send to API or perform logic
-    if (selectedValue === 'manual') {
-      router.push('./');
-    } else {
-      router.push('./');
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      // await new Promise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     console.log('test');
+      //     resolve('');
+      //   }, 2000);
+      // });
+
+      // Do something with selectedValue
+      if (selectedValue === 'manual') {
+        const resPostTrx = await createTransactionAPI(
+          '/api/transaction/create',
+          createTransactionPayload(cartState, userId.id),
+        );
+        if (resPostTrx.status !== 200) {
+          callToast('Error creating transaction, try again', 'ERROR', 2000);
+          setLoading(false);
+          return;
+        }
+      }
+
+      setLoading(false);
+      router.push(`/payment/confirm/${'InvoiceNumber'}`);
+    } catch (error) {
+      console.log((error as Error).message);
     }
   };
 
@@ -65,13 +96,23 @@ export default function PaymentOptions() {
               alignItems: 'end',
             }}
           >
-            <Button
-              onClick={handleSubmit}
-              style={{ textTransform: 'none' }}
-              className="!bg-secondaryGreen !rounded-full !w-full !h-[40px] !text-base !text-white"
-            >
-              Proceed to Payment
-            </Button>
+            {!isLoading ? (
+              <Button
+                onClick={async () => await handleSubmit()}
+                style={{ textTransform: 'none' }}
+                className="!bg-secondaryGreen !rounded-full !w-full !h-[40px] !text-base !text-white"
+              >
+                Proceed to Payment
+              </Button>
+            ) : (
+              <Button
+                style={{ textTransform: 'none', display: 'flex' }}
+                startIcon={<CircularProgress size={20} color="inherit" />}
+                className="!bg-slate-400 !rounded-full !w-full !h-[40px] !text-base !text-white"
+              >
+                Processing..
+              </Button>
+            )}
           </Box>
         </FormControl>
       </div>

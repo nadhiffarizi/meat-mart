@@ -77,13 +77,13 @@ export default function CartPage() {
                 <h1 className=" text-start text-3xl font-semibold text-secondaryGreen">
                   My Cart ({cartState.length})
                 </h1>
-                <IconButton
+                {/* <IconButton
                   onClick={() => handleDeleteAllCart()}
                   id="delete-all-items"
                   className="!h-[40px]"
                 >
                   <Cancel />
-                </IconButton>
+                </IconButton> */}
               </Box>
               <div className="h-[650px] ">
                 <MyCartList />

@@ -4,3 +4,8 @@ export interface ICheckout {
     payment: boolean,
     success: boolean,
 }
+
+export interface IOrderInput {
+    cartId: string,
+    discountId?: string
+}

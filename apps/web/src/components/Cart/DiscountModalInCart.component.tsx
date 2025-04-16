@@ -19,7 +19,7 @@ import {
 } from '@/helper/discount.helper';
 import { IDiscount } from '@/interface/discount.interface';
 import { callToast } from '@/helper/notify.helper';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { addDiscountToCartItem } from '@/redux/slice/cart.slice';
 
 interface DiscountContextType {
@@ -32,6 +32,7 @@ export const discountContext = React.createContext<
 >(undefined);
 
 export function DiscountDialogInCart({ cartId }: { cartId: string }) {
+  const cartState = useAppSelector((state) => state.cartState);
   const dispatch = useAppDispatch();
 
   //local state
@@ -77,6 +78,20 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
         }
       });
   }, []);
+
+  React.useEffect(() => {
+    const resGetDiscount = getAvailableDiscountsAPI(
+      `/api/discount/get/${cartId}`,
+    );
+
+    resGetDiscount
+      .then((v) => v.json())
+      .then((value) => {
+        if (value['data'].length) {
+          setAvailableDiscounts(syncDiscountDataFromAPI(value['data']));
+        }
+      });
+  }, [cartState]);
 
   return (
     <DialogContent className="sm:max-w-[550px]">

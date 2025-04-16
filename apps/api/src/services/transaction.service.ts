@@ -1,6 +1,7 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
-import { findCartByOrderInput } from "@/helper/cart/cart.helper";
+import { disableCart, findCartByOrderInput } from "@/helper/cart/cart.helper";
 import { updateCartToOrder, updateOrderDetails } from "@/helper/order/order.helper";
+import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { cancelTransaction, createDefaultTrxId, createTransaction, createTrxDetails, getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper";
 import { ICart } from "@/interface/cart.interface";
 import ILocation from "@/interface/location.interface";
@@ -12,61 +13,62 @@ import { Request } from "express";
 class TransactionService {
     async create(req: Request) {
 
-        const { userId, orderInput } = req.body
+        try {
+            const { userId, orderInputs } = req.body
 
-        // placeholder for location 
-        const loc1: ILocation = {
-            lat: "-6.2263977",
-            lon: "106.8584389"
-        }
+            // placeholder for location 
+            const loc1: ILocation = {
+                lat: "-6.2263977",
+                lon: "106.8584389"
+            }
 
-        // find carts data
-        const carts = await findCartByOrderInput(orderInput as IOrderInput[], userId)
+            // find carts data
+            const carts = await findCartByOrderInput(orderInputs as IOrderInput[], userId)
 
-        // update cart to order
-        const filteredCarts = await updateCartToOrder(carts as ICart[], userId, loc1)
+            // update cart to order
+            const filteredCarts = await updateCartToOrder(carts as ICart[], userId, loc1)
 
-        // recap trxdetails & trx
-        const trxDetails = []
-        let trx = {}
+            // recap trxdetails & trx
+            const trxDetails = []
+            let trx = {}
 
-        if (filteredCarts.notEligibleCart.length !== 0) {
+            if (filteredCarts.notEligibleCart.length !== 0) {
+                // feedback from service
+                return returnServiceFeedback(406, filteredCarts.notEligibleCart, statusEnum.FAILED, "Transaction failed to create, there are insufficient stock in some of your carts")
+
+            } else {
+                // create default transaction record 
+                const trxId = await createDefaultTrxId(userId)
+
+                // set total price 
+                let totalPrice = 0
+
+                // create order details
+                for (let i = 0; i < filteredCarts.eligibleCart.length; i++) {
+                    let cartItem = filteredCarts.eligibleCart[i]
+                    const trxDetail = await createTrxDetails(trxId, cartItem, loc1, (orderInputs as IOrderInput[])[i])
+                    trxDetails.push(trxDetail)
+                    totalPrice += (trxDetail.sub_total + trxDetail.shipping_cost) // total price for one cart item
+
+                    // disable cart
+                    await disableCart(cartItem.id)
+                }
+
+                // update transaction table
+                const newTrx = await createTransaction(trxId, totalPrice, userId)
+                trx = { ...newTrx }
+
+            }
+
             // feedback from service
-            const feedback: serviceFeedback = {
-                code: 200,
-                data: filteredCarts,
-                status: statusEnum.SUCCESS,
-                message: "order created success"
-            }
-            return feedback
-        } else {
-            // create default transaction record 
-            const trxId = await createDefaultTrxId(userId)
+            return returnServiceFeedback(200, { filteredCarts, trxDetails }, statusEnum.SUCCESS, "transaction created successfully")
 
-            // set total price 
-            let totalPrice = 0
-
-            // create order details
-            for (let cart of filteredCarts.eligibleCart) {
-                const trxDetail = await createTrxDetails(trxId, cart, orderInput, loc1)
-                trxDetails.push(trxDetail)
-                totalPrice += (trxDetail.sub_total + trxDetail.shipping_cost) // total price for one cart item
-            }
-
-            // update transaction table
-            const newTrx = await createTransaction(trxId, totalPrice, userId)
-            trx = { ...newTrx }
-
+        } catch (error) {
+            // feedback from service
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "create transaction failed")
         }
 
-        // feedback from service
-        const feedback: serviceFeedback = {
-            code: 200,
-            data: { trxDetails, trx },
-            status: statusEnum.SUCCESS,
-            message: "order created success"
-        }
-        return feedback
+
     }
 
     async cancel(req: Request) {

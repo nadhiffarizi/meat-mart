@@ -28,43 +28,51 @@ export const chooseStock = (stocks: IStock[], qtty: number, existingCart?: ICart
         //get current stockId
         const indexStock = stocks.findIndex((stock) => stock.id === existingCart.stock_id)
 
-        // get central index
+        // get central index and branch index
         const indexCentral = stocks.findIndex((stock) => stock.stores.status === 'CENTRAL')
 
-        switch (method) {
-            case 'ADD':
-                if ((qttyInCart + qtty) <= stocks[indexStock].quantity) {
-                    stockId = existingCart.stock_id
-                    return stockId
-                } else if ((qttyInCart + qtty) < stocks[indexCentral].quantity) {
-                    stockId = stocks[indexCentral].id
-                    return stockId
+        const indexBranch = stocks.findIndex((stock) => stock.stores.status === 'BRANCH')
 
-                } else {
-                    stockId = null
+        let quantities = []
+        let sortedQuantities = []
+        let indexQtty = 0
+
+
+        switch (method) {
+
+            case 'ADD':
+                quantities = [{ "index": -1, "qtty": (qttyInCart - qtty) }, { "index": indexBranch, "qtty": stocks[indexBranch].quantity }, { "index": indexCentral, "qtty": stocks[indexCentral].quantity }]
+                sortedQuantities = quantities.sort((a, b) => a.qtty - b.qtty)
+                indexQtty = sortedQuantities.findIndex((a) => a.index === -1)
+                if (indexQtty == 2) {
+                    stockId = stocks[sortedQuantities[1].index].id
                     return stockId
+                } else if (indexQtty == 1) {
+                    stockId = stocks[sortedQuantities[2].index].id
+                    return stockId
+                } else {
+                    stockId = stocks[indexBranch]
+                    return stockId.id
                 }
             case 'SUBTRACT':
-                if (qttyInCart !== 0 && (qttyInCart - qtty) <= stocks[indexStock].quantity && stocks[indexStock].stores.status === 'BRANCH') {
-                    stockId = existingCart.stock_id
+                quantities = [{ "index": -1, "qtty": (qttyInCart - qtty) }, { "index": indexBranch, "qtty": stocks[indexBranch].quantity }, { "index": indexCentral, "qtty": stocks[indexCentral].quantity }]
+                sortedQuantities = quantities.sort((a, b) => a.qtty - b.qtty)
+                indexQtty = sortedQuantities.findIndex((a) => a.index === -1)
+                if (indexQtty == 2) {
+                    stockId = stocks[sortedQuantities[1].index].id
                     return stockId
-                } else if (qttyInCart !== 0 && (qttyInCart - qtty) > stocks[stocks.findIndex((stock) => stock.stores.status === 'BRANCH')].quantity) {
-                    stockId = stocks[indexCentral].id
-                    return stockId
-
-                } else if (qttyInCart !== 0 && (qttyInCart - qtty) <= stocks[stocks.findIndex((stock) => stock.stores.status === 'BRANCH')].quantity) {
-                    stockId = stocks[stocks.findIndex((stock) => stock.stores.status === 'BRANCH')].id
+                } else if (indexQtty == 1) {
+                    stockId = stocks[sortedQuantities[2].index].id
                     return stockId
                 } else {
-                    stockId = null
-                    return stockId
+                    stockId = stocks[indexBranch]
+                    return stockId.id
                 }
             case 'UPDATE':
-                const indexBranch = stocks.findIndex((stock) => stock.stores.status === 'BRANCH')
-                // sort from smalles qtty to largest qtty
-                const quantities = [{ "index": -1, "qtty": qtty }, { "index": indexBranch, "qtty": stocks[indexBranch].quantity }, { "index": indexCentral, "qtty": stocks[indexCentral].quantity }]
-                const sortedQuantities = quantities.sort((a, b) => a.qtty - b.qtty)
-                const indexQtty = sortedQuantities.findIndex((a) => a.index === -1)
+                quantities = [{ "index": -1, "qtty": qtty }, { "index": indexBranch, "qtty": stocks[indexBranch].quantity }, { "index": indexCentral, "qtty": stocks[indexCentral].quantity }]
+
+                sortedQuantities = quantities.sort((a, b) => a.qtty - b.qtty)
+                indexQtty = sortedQuantities.findIndex((a) => a.index === -1)
                 if (indexQtty === 2) {
                     stockId = stocks[sortedQuantities[1].index].id
                     return stockId
@@ -157,4 +165,29 @@ export const findStockByCartId = async (cartId: string) => {
     if (!stockId) throw new Error("stockId by cartId not found")
 
     return stockId
+}
+
+export const updateStockQuantity = async (stockId: string, cartQuantity: number) => {
+
+    // update stock
+    const stockQuantity = await prisma.stocks.findUnique({
+        select: {
+            quantity: true
+        },
+        where: {
+            id: stockId
+        }
+    })
+    const updatedStock = await prisma.stocks.update({
+        where: {
+            id: stockId
+        }, data: {
+            quantity: stockQuantity?.quantity! - cartQuantity
+        }
+    })
+
+    // update stock histoty
+    // your code here
+
+    return updatedStock
 }
