@@ -7,9 +7,9 @@ function page() {
   return (
     <div className="flex flex-col gap-8">
       <div className="text-primaryText text-3xl font-semibold">
-        Manage Employees
+        Add Employees
       </div>
-      <ViewUsers />
+      <CreateAdmin />
     </div>
   );
 }

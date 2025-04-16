@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Toaster, toast } from 'sonner';
 import { useFormik } from 'formik';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),
@@ -15,6 +17,7 @@ const validationSchema = Yup.object({
 });
 
 function CreateAdminForm() {
+  const router = useRouter();
   const [disabled, setDisabled] = useState(false);
 
   const formik = useFormik({
@@ -122,16 +125,43 @@ function CreateAdminForm() {
         )}
       </div>
 
-      <button
+      {/* <button
         className={
           disabled
-            ? 'text-white bg-secondaryOrange p-4 rounded-[12px]'
-            : 'text-white bg-primaryOrange hover:bg-secondaryOrange p-4 rounded-[12px]'
+            ? 'text-white bg-secondaryText px-4 py-2 rounded-[12px]'
+            : 'text-white bg-orangeAccent hover:bg-secondaryText px-4 py-2 rounded-[12px]'
         }
         disabled={disabled}
       >
         {disabled ? 'Adding Employee' : 'Add Employee'}
-      </button>
+      </button> */}
+      <Button
+        variant="default"
+        size={'lg'}
+        className={
+          disabled
+            ? ' bg-secondaryText px-4 py-2  text-base'
+            : ' bg-orangeAccent  px-4 py-2  text-base'
+        }
+        disabled={disabled}
+        onClick={() => {}}
+      >
+        {disabled ? 'Adding Employee' : 'Add Employee'}
+      </Button>
+      <Button
+        variant="link"
+        className={
+          disabled
+            ? ' text-secondaryText px-4 py-2 text-base'
+            : ' text-primaryText px-4 py-2 text-base'
+        }
+        disabled={disabled}
+        onClick={() => {
+          router.push('/dashboard/users');
+        }}
+      >
+        Cancel
+      </Button>
     </form>
   );
 }

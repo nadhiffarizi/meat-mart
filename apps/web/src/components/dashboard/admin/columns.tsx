@@ -17,16 +17,11 @@ import Link from 'next/link';
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type User = {
-  id: string;
   role: 'SUPER_ADMIN' | 'ADMIN' | 'CUSTOMER';
   email: string;
 };
 
 export const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-  },
   {
     accessorKey: 'email',
     header: ({ column }) => {
@@ -40,10 +35,24 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const email = row.getValue('email') as string;
+      return (
+        <div
+          className="truncate max-w-[200px] whitespace-nowrap overflow-hidden sm:whitespace-normal sm:overflow-visible sm:max-w-none"
+          title={email}
+        >
+          {email}
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'role',
-    header: 'Role',
+    header: ({ column }) => <div className="hidden sm:table-cell">Role</div>,
+    cell: ({ row }) => (
+      <div className="hidden sm:table-cell">{row.getValue('role')}</div>
+    ),
   },
   {
     id: 'actions',
@@ -61,9 +70,9 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(payment.email)}
             >
-              Copy user ID
+              Copy user Email
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
