@@ -23,6 +23,7 @@ export default function Page() {
     },
     onSubmit: async (values) => {
       setErrMessage('');
+      console.log('ini value ku, kalau kamu?', values);
       await login(values).then((res) => {
         if (res?.error) {
           setErrMessage(res.error);
@@ -65,12 +66,12 @@ export default function Page() {
           value={formik.values.password}
           onChange={formik.handleChange}
         />
-        <p className="text-sm capitalize text-red-600 mb-4 ">{errMessage}</p>
+        <p className="text-red-600 mb-4 text-xs">{errMessage}</p>
         <button
           className={`${
             formik.isSubmitting
               ? 'bg-gray-300 text-gray-400'
-              : 'bg-[#159953] text-white'
+              : 'bg-primaryGreen text-white'
           }  font-semibold p-4 w-full rounded-[50px] mb-6`}
           disabled={formik.isSubmitting}
         >

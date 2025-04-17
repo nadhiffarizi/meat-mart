@@ -32,6 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
+        console.log('Apakah aku di src/auth.ts', credentials);
         try {
           return await login(credentials);
         } catch (error: unknown) {

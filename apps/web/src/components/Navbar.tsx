@@ -7,8 +7,9 @@ import SearchIcon from './svg/SearchIcon';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
-import LocationPickerModal from './LocationModal';
+
 import { useRouter } from 'next/router';
+import { LocationModal } from './LocationModal';
 
 const Navbar = () => {
   // const router = useRouter();
@@ -16,16 +17,20 @@ const Navbar = () => {
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [isLogin, setIsLogin] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!isLogin) {
-      setShowLocationModal(true);
-    }
-  }, [isLogin]);
+  const [userLocation, setUserLocation] = useState('');
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('userLocation');
+    if (!savedLocation) {
+      setShowLocationModal(true);
+    } else {
+      setUserLocation(savedLocation);
+    }
+  }, []);
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -41,6 +46,10 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLocationSelect = (location: string) => {
+    setUserLocation(location);
+  };
 
   return (
     <div
@@ -65,7 +74,10 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
 
-            <button className="hidden md:flex items-center justify-end md:gap-0 max-w-[200px]">
+            <button
+              onClick={() => setShowLocationModal(true)}
+              className="hidden md:flex items-center justify-end md:gap-0 max-w-[200px] hover:bg-gray-100 px-2 py-1 rounded-md transition-colors"
+            >
               <Image
                 src="/location-icon.png"
                 alt="Location Icon"
@@ -73,8 +85,8 @@ const Navbar = () => {
                 height={8}
                 className="h-4 w-auto flex-shrink-0"
               />
-              <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1 mr-6">
-                Masjid Agung Sunda Kelapa kelurahannnsdj jkijwjqlkwjekqlwjekwjek
+              <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1 mr-2">
+                {userLocation || 'Select your location'}
               </span>
             </button>
           </div>
@@ -84,7 +96,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Cari produk daging, kategori..."
-                className="w-full text-sm rounded-full h-[48px] text-primaryText bg-primaryBackground border border-gray-300 py-2 px-4 pl-10 focus:outline-none "
+                className="w-full text-sm rounded-full h-[48px] text-primaryText bg-white border border-gray-200 py-2 px-4 pl-10 focus:outline-none "
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <SearchIcon />
@@ -129,11 +141,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      <LocationPickerModal
+      <LocationModal
         open={showLocationModal}
-        onClose={() => {
-          setShowLocationModal(false);
-        }}
+        onClose={() => setShowLocationModal(false)}
+        onLocationSelect={handleLocationSelect}
       />
     </div>
   );
