@@ -12,6 +12,15 @@ export const registerValidator = Yup.object({
   //     .required('Password is required'),
 });
 
+export const PasswordSchema = Yup.object().shape({
+  password: Yup.string()
+    .min(8, 'Password must be at least 8 characters')
+    .required('Password is required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords must match')
+    .required('Please confirm your password'),
+});
+
 export const updateProfileValidator = Yup.object({
   first_name: Yup.string().min(4).required('Name is required'),
   last_name: Yup.string().min(4).required('Name is required'),

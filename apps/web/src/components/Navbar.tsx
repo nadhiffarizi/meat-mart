@@ -7,12 +7,9 @@ import SearchIcon from './svg/SearchIcon';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
-
-import { useRouter } from 'next/router';
 import { LocationModal } from './LocationModal';
 
 const Navbar = () => {
-  // const router = useRouter();
   const { data: session } = useSession();
 
   const [showLocationModal, setShowLocationModal] = useState(false);

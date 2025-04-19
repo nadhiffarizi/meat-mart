@@ -10,6 +10,7 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
+import { googleLogin } from '@/app/action/auth';
 
 export default function Page() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function Page() {
 
       const result = await signIn(provider, {
         redirect: false,
-        callbackUrl: '/dashboard', // Change to your desired redirect
+        callbackUrl: '/dashboard',
       });
 
       if (result?.error) {
@@ -82,7 +83,7 @@ export default function Page() {
         <Button
           variant="outlined"
           fullWidth
-          onClick={() => handleSocialLogin('google')}
+          onClick={googleLogin}
           disabled={isSocialLoading.google}
           startIcon={
             <Image src="/google.png" alt="Google" width={20} height={20} />
@@ -135,7 +136,7 @@ export default function Page() {
           } font-semibold p-4 w-full rounded-[50px] mb-6`}
           disabled={!formik.isValid || formik.isSubmitting}
         >
-          {formik.isSubmitting ? 'Processing...' : 'Register with Email'}
+          {formik.isSubmitting ? 'Processing...' : 'Register with email'}
         </button>
         <center>{'Your data will be protected and will not be shared'}</center>
       </form>

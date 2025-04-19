@@ -46,19 +46,7 @@ export class AuthController {
 
   public async verify(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token } = req.body;
-
-      if (!token) {
-        return responseHandler(
-          res,
-          'Verification token is required',
-          statusEnum.FAILED,
-          null,
-          400,
-        );
-      }
-
-      const data = await authService.verifyEmailToken(token);
+      const data = await authService.verifyEmailToken(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);
@@ -71,19 +59,7 @@ export class AuthController {
     next: NextFunction,
   ) {
     try {
-      const { email } = req.body;
-
-      if (!email) {
-        return responseHandler(
-          res,
-          'Email is required',
-          statusEnum.FAILED,
-          null,
-          400,
-        );
-      }
-
-      const data = await authService.resendVerificationEmail(email);
+      const data = await authService.resendVerificationEmail(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);

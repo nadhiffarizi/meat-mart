@@ -9,12 +9,16 @@ import Google from '@/../public/google.png';
 import { googleLogin, login } from '@/app/action/auth';
 import { useRouter } from 'next/navigation';
 import Snackbar from '@mui/material/Snackbar';
-import { Alert } from '@mui/material';
+import { Alert, Button } from '@mui/material';
 
 export default function Page() {
   const { push } = useRouter();
   const open = useRef(false);
   const [errMessage, setErrMessage] = React.useState('');
+  const [isSocialLoading, setIsSocialLoading] = React.useState({
+    google: false,
+    facebook: false,
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -97,29 +101,29 @@ export default function Page() {
         </Link>
         <h5 className="mt-6 mb-2">Login instantly using your social media</h5>
 
-        <div className="flex justify-between">
-          <div className="border p-6 w-full mx-[5] my-[10] rounded-md cursor-pointer">
-            <Image
-              alt=""
-              src={Facebook}
-              width={16}
-              height={8}
-              className="h-4 w-2"
-            />
-          </div>
-
-          <div
-            className="border p-6 w-full mx-[5] my-[10] rounded-md cursor-pointer"
+        <div className="mb-6 space-y-3">
+          <Button
+            variant="outlined"
+            fullWidth
             onClick={googleLogin}
+            disabled={isSocialLoading.google}
+            startIcon={
+              <Image src="/google.png" alt="Google" width={20} height={20} />
+            }
+            sx={{
+              py: 1.5,
+              textTransform: 'none',
+              fontSize: '0.875rem',
+              borderColor: '#ddd',
+              color: '#444',
+              '&:hover': {
+                borderColor: '#ccc',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+              },
+            }}
           >
-            <Image
-              alt=""
-              src={Google}
-              width={15}
-              height={15}
-              className="h-[15] w-[15]"
-            />
-          </div>
+            {isSocialLoading.google ? 'Processing...' : 'Continue with Google'}
+          </Button>
         </div>
       </center>
     </div>

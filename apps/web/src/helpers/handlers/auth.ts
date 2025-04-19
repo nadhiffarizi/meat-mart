@@ -40,15 +40,12 @@ export const register = async (newUser: { email: string }) => {
   } catch (error) {
     console.error('Registration error:', error);
 
-    // Handle different error cases
     let errorMessage = 'Registration failed';
     if (error instanceof Error) {
       try {
-        // Try to parse error message as JSON
         const errorData = JSON.parse(error.message);
         errorMessage = errorData.message || error.message;
       } catch {
-        // Not JSON, use raw message
         errorMessage = error.message;
       }
     }
@@ -57,46 +54,37 @@ export const register = async (newUser: { email: string }) => {
   }
 };
 
-// export const register = async (newUser: {
-//   email: string;
-//   //  password: string
-// }) =>
-//   //   {
-//   //   try {
-//   //     const res = await api('auth/register', 'POST', {
-//   //       body: newUser,
-//   //       contentType: 'application/json',
-//   //     });
-//   //     console.log('INI RESnya', res);
-//   //   } catch (error) {
-//   //     console.log('register error', error);
-//   //   }
-//   // };
-//   {
-//     try {
-//       const response = await api('auth/register', 'POST', {
-//         body: newUser,
-//         contentType: 'application/json',
-//       });
+export const verifyEmail = async (token: string, password: string) => {
+  try {
+    const data = await api('auth/verify', 'POST', {
+      body: { token, password },
+      contentType: 'application/json',
+    });
+    console.log('Registration success:', data);
+    return data;
+  } catch (error) {
+    console.error('Verification error:', error);
+  }
+};
 
-//       console.log('Raw response:', response);
+export const resendVerificationEmail = async (email: string) => {
+  try {
+    console.log('MASUK HANDLERS RESEND VERIFICATION');
+    const data = await api('auth/resend-verification', 'PATCH', {
+      body: { email },
+      contentType: 'application/json',
+    });
 
-//       try {
-//         //const res= response.data;
-//         const data = await response.json();
-//         console.log('INIDATA', data);
-//         return data;
-//       } catch (jsonError) {
-//         console.error('JSON parse error:', jsonError);
-//         return { error: 'Invalid server response' };
-//       }
-//     } catch (error) {
-//       console.error('Network error:', error);
-//       return {
-//         error: error instanceof Error ? error.message : 'Network error',
-//       };
-//     }
-//   };
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to resend verification email');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Resend verification error', error);
+    throw error;
+  }
+};
 
 export const refreshToken = async () => {
   const cookie = cookies();
@@ -141,3 +129,21 @@ export const updateUser = async (
     token,
   );
 };
+
+export async function registerSocialUser(data: {
+  email: string;
+  name: string;
+  image?: string;
+  provider: string;
+}) {
+  // 1. Check if user exists in your database
+  // 2. If not, create new user with social data
+  // 3. Generate your JWT tokens (access_token and refresh_token)
+  // 4. Return the user with tokens
+
+  return {
+    id: 'user-id-from-db',
+    access_token: 'generated-jwt-token',
+    refresh_token: 'generated-refresh-token',
+  };
+}

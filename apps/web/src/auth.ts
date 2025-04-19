@@ -2,7 +2,11 @@
 
 import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { login, refreshToken } from './helpers/handlers/auth';
+import {
+  login,
+  refreshToken,
+  registerSocialUser,
+} from './helpers/handlers/auth';
 import Google from 'next-auth/providers/google';
 import { jwtDecode } from 'jwt-decode';
 import { InvalidAuthError } from './interfaces/auth.error';
@@ -41,19 +45,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
     Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
-        prompt: 'consent',
-        access_type: 'offline',
-        response_type: 'code',
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+          scope: 'openid email profile',
+        },
       },
     }),
   ],
   callbacks: {
-    signIn({ account, profile }) {
+    async signIn({ account, profile }) {
       if (account?.provider == 'google') {
         return profile?.email_verified || false;
       }
-      return true; // Do different verification for other providers that don't have `email_verified`
+      try {
+        // Register or get existing user from your database
+        const socialUser = await registerSocialUser({
+          email: profile?.email!,
+          name: profile?.name!,
+          image: profile?.picture,
+          provider: 'google',
+        });
+
+        // Merge social user data with the user object
+        // user.id = socialUser.id;
+        // user.access_token = socialUser.access_token;
+        // user.refresh_token = socialUser.refresh_token;
+
+        // return true;
+      } catch (error) {
+        console.error('Google registration error:', error);
+        return false;
+      }
+      return true;
     },
     async jwt({ token, user, trigger }) {
       if (user) {
