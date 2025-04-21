@@ -6,10 +6,10 @@ import authService from '@/services/auth.service';
 export class AuthController {
   public async register(req: Request, res: Response, next: NextFunction) {
     try {
-      // try registering
       const data: serviceFeedback = await authService.register(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -33,14 +33,54 @@ export class AuthController {
     }
   }
 
-  // public async refreshToken(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const data = await authService.refreshToken(req);
-  //     responseHandler(res, 'refresh token success', data.);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+  public async refreshToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data: serviceFeedback = await authService.refreshToken(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async verify(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await authService.verifyEmailToken(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async resendVerification(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const data = await authService.resendVerificationEmail(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async resetEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await authService.resetPasswordEmail(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await authService.resetPassword(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AuthController();

@@ -6,40 +6,136 @@ import { decode } from 'next-auth/jwt';
 import { auth_secret } from '../config';
 
 export const login = async (credentials: Partial<Record<string, unknown>>) => {
-  const res = await api('/auth', 'POST', {
-    body: credentials,
-    contentType: 'application/json',
-  });
-
-  return {
-    access_token: res.data.access_token,
-    refresh_token: res.data.refresh_token,
-  };
+  console.log('Aku mencoba masuk ya gaess FRONT END nich');
+  try {
+    const res = await api('auth/login', 'POST', {
+      body: credentials,
+      contentType: 'application/json',
+    });
+    if (!res.data?.access_token || !res.data?.refresh_token) {
+      throw new Error('Invalid login response');
+    }
+    console.log('INI RESnya', res);
+    return {
+      access_token: res.data.access_token,
+      refresh_token: res.data.refresh_token,
+    };
+  } catch (error) {
+    console.error('Login error:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Authentication failed',
+    );
+  }
 };
 
-export const register = async (newUser: {
-  email: string;
-  first_name: string;
-  last_name: string;
-  password: string;
-}) =>
-  await api('/auth/new', 'POST', {
-    body: newUser,
-    contentType: 'application/json',
-  })
-    .then(() => 'New user has been registered')
-    .catch((err) => (err instanceof Error ? { error: err.message } : err));
+export const register = async (newUser: { email: string }) => {
+  try {
+    const data = await api('auth/register', 'POST', {
+      body: newUser,
+      contentType: 'application/json',
+    });
+
+    console.log('Registration success:', data);
+    return data;
+  } catch (error) {
+    console.error('Registration error:', error);
+
+    let errorMessage = 'Registration failed';
+    if (error instanceof Error) {
+      try {
+        const errorData = JSON.parse(error.message);
+        errorMessage = errorData.message || error.message;
+      } catch {
+        errorMessage = error.message;
+      }
+    }
+
+    return { error: errorMessage };
+  }
+};
+
+export const verifyEmail = async (token: string, password: string) => {
+  try {
+    const data = await api('auth/verify', 'POST', {
+      body: { token, password },
+      contentType: 'application/json',
+    });
+    console.log('Registration success:', data);
+    return data;
+  } catch (error) {
+    console.error('Verification error:', error);
+  }
+};
+
+export const resendVerificationEmail = async (email: string) => {
+  try {
+    console.log('MASUK HANDLERS RESEND VERIFICATION');
+    const data = await api('auth/resend-verification', 'POST', {
+      body: { email },
+      contentType: 'application/json',
+    });
+
+    // if (!data.success) {
+    //   throw new Error(data.message || 'Failed to resend verification email');
+    // }
+
+    return data;
+  } catch (error) {
+    console.error('Resend verification error', error);
+    throw error;
+  }
+};
+
+export const resetEmail = async (email: string) => {
+  try {
+    const data = await api('auth/reset-email', 'POST', {
+      body: { email },
+      contentType: 'application/json',
+    });
+
+    // if (!data.success) {
+    //   throw new Error(data.message || 'Failed to send reset email');
+    // }
+
+    return data;
+  } catch (error) {
+    console.error('Reset email error', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (token: string, password: string) => {
+  try {
+    const data = await api('auth/reset-password', 'POST', {
+      body: { token, password },
+      contentType: 'application/json',
+    });
+    console.log('Registration success:', data);
+    return data;
+  } catch (error) {
+    console.log('Reset password error', error);
+  }
+};
 
 export const refreshToken = async () => {
   const cookie = cookies();
-  const ftoken = (await cookie).get('next-auth.session-token')?.value;
-  const { refresh_token } = (await decode({
-    token: String(ftoken),
+  const ftoken = cookie.get('next-auth.session-token')?.value;
+  if (!ftoken) throw new Error('No session token found');
+  const decoded = (await decode({
+    token: ftoken,
     secret: auth_secret,
     salt: 'next-auth.session-token',
-  })) as { refresh_token: string };
+  })) as { refresh_token?: string };
 
-  const res = await api('/auth/token', 'POST', {}, refresh_token);
+  if (!decoded?.refresh_token) {
+    throw new Error('No refresh token in session');
+  }
+
+  const res = await api('auth/token', 'POST', {}, decoded.refresh_token);
+
+  if (!res.data?.access_token || !res.data?.refresh_token) {
+    throw new Error('Invalid token response');
+  }
 
   return {
     access_token: res.data.access_token,
@@ -64,3 +160,16 @@ export const updateUser = async (
     token,
   );
 };
+
+export async function registerSocialUser(data: {
+  email: string;
+  name: string;
+  image?: string;
+  provider: string;
+}) {
+  return {
+    id: 'user-id-from-db',
+    access_token: 'generated-jwt-token',
+    refresh_token: 'generated-refresh-token',
+  };
+}

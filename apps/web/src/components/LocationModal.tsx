@@ -1,194 +1,139 @@
+// components/LocationModal.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
-//import { getProvinces, getCities, getDistricts } from "@/lib/rajaongkir";
-
-export default function LocationPickerModal({
-  open,
-  onClose,
-  userId,
-}: {
+interface LocationModalProps {
   open: boolean;
   onClose: () => void;
-  userId?: string;
-}) {
-  const [provinces, setProvinces] = useState<{ id: string; name: string }[]>([
-    { id: '1', name: 'Jawa Barat' },
-  ]);
-  const [cities, setCities] = useState<{ id: string; name: string }[]>([
-    { id: '1', name: 'Kota Bandung' },
-  ]);
-  const [districts, setDistricts] = useState<{ id: string; name: string }[]>([
-    { id: '1', name: 'Rancasari' },
-  ]);
-  const [selectedProvince, setSelectedProvince] = useState<string>('');
-  const [selectedCity, setSelectedCity] = useState<string>('');
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-  const [address, setAddress] = useState('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  onLocationSelect: (location: string) => void;
+}
 
-  useEffect(() => {
-    const loadProvinces = async () => {
-      // const data = await getProvinces();
-      // setProvinces(data);
-    };
-    loadProvinces();
-  }, []);
+export const LocationModal = ({
+  open,
+  onClose,
+  onLocationSelect,
+}: LocationModalProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [manualLocation, setManualLocation] = useState('');
 
-  useEffect(() => {
-    if (selectedProvince) {
-      const loadCities = async () => {
-        // const data = await getCities(selectedProvince);
-        // setCities(data);
-      };
-      loadCities();
+  const detectLocation = () => {
+    setIsLoading(true);
+    setError(null);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            // Reverse geocoding to get address
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`,
+            );
+            const data = await response.json();
+            const address = data.display_name || 'Your current location';
+            localStorage.setItem('userLocation', address);
+            onLocationSelect(address);
+            onClose();
+          } catch (err) {
+            setError('Failed to get address information');
+          } finally {
+            setIsLoading(false);
+          }
+        },
+        (err) => {
+          setError('Location access denied');
+          setIsLoading(false);
+        },
+      );
+    } else {
+      setError('Geolocation is not supported by your browser');
+      setIsLoading(false);
     }
-  }, [selectedProvince]);
+  };
 
-  useEffect(() => {
-    if (selectedCity) {
-      const loadDistricts = async () => {
-        // const data = await getDistricts(selectedCity);
-        // setDistricts(data);
-      };
-      loadDistricts();
+  const handleManualSubmit = () => {
+    if (manualLocation.trim()) {
+      localStorage.setItem('userLocation', manualLocation);
+      onLocationSelect(manualLocation);
+      onClose();
     }
-  }, [selectedCity]);
+  };
 
-  //   const handleSubmit = async () => {
-  //     // Get coordinates using Geocoding API
-  //     // const coords = await fetchCoordinates(`${address}, ${selectedDistrict}, ${selectedCity}, ${selectedProvince}`);
-  //     // Save to backend
-  //     //     const res = await fetch("/api/user/address", {
-  //     //       method: "POST",
-  //     //       body: JSON.stringify({
-  //     //         userId,
-  //     //         recipient_name: "User", // Customize as needed
-  //     //         recipient_phone_number: "", // Add input field for this
-  //     //         address,
-  //     //         province: selectedProvince,
-  //     //         city: selectedCity,
-  //     //         district: selectedDistrict,
-  //     //         latitude: coords.lat,
-  //     //         longitude: coords.lng,
-  //     //       }),
-  //     //     });
-  //     //    if (res.ok)
-  //     onClose();
-  //   };
+  if (!open) return null;
 
   return (
-    open && (
-      <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+        <h2 className="text-xl font-bold mb-4">Welcome to MeatMart!</h2>
+        <p className="mb-4">Pilih lokasimu ya</p>
 
-        <div
-          className="flex min-h-full items-center justify-center p-4"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
-            <div className="bg-primaryGreen px-6 py-4">
-              <h3 className="text-lg font-bold text-white">
-                Pilih Lokasi Anda
-              </h3>
-            </div>
-
-            <div className="space-y-4 p-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Provinsi
-                </label>
-                <select
-                  value={selectedProvince}
-                  onChange={(e) => setSelectedProvince(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                  disabled={isLoading}
-                >
-                  <option value="">Pilih Provinsi</option>
-                  {provinces.map((province) => (
-                    <option key={province.id} value={province.id}>
-                      {province.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kota/Kabupaten
-                </label>
-                <select
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 "
-                  disabled={!selectedProvince || isLoading}
-                >
-                  <option value="">Pilih Kota</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kecamatan
-                </label>
-                <select
-                  value={selectedDistrict}
-                  onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                  disabled={!selectedCity || isLoading}
-                >
-                  <option value="">Pilih Kecamatan</option>
-                  {districts.map((district) => (
-                    <option key={district.id} value={district.id}>
-                      {district.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Alamat Lengkap
-                </label>
-                <textarea
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="Contoh: Jl. Sudirman No. 123, Gedung ABC"
-                  disabled={isLoading}
+        <div className="space-y-4">
+          <button
+            onClick={detectLocation}
+            disabled={isLoading}
+            className="w-full bg-orangeAccent text-white py-2 rounded-md flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                Detecting...
+              </>
+            ) : (
+              <>
+                <Image
+                  src="/location-icon.png"
+                  alt="Location icon"
+                  width={16}
+                  height={16}
+                  className="h-4 w-4"
                 />
-              </div>
-            </div>
+                Gunakan Lokasi terkini
+              </>
+            )}
+          </button>
 
-            <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-              <button
-                onClick={onClose}
-                //disabled={isLoading}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
-              >
-                Batal
-              </button>
-              <button
-                onClick={onClose}
-                // disabled={!selectedDistrict || !address || isLoading}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-lg ${
-                  !selectedDistrict || !address
-                    ? 'bg-orange-300 cursor-not-allowed'
-                    : 'bg-orangeAccent hover:bg-orange-600'
-                }`}
-              >
-                {isLoading ? 'Menyimpan...' : 'Simpan Lokasi'}
-              </button>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Image
+                src="/search-icon.png"
+                alt="Search icon"
+                width={16}
+                height={16}
+                className="h-4 w-4 text-gray-400"
+              />
             </div>
+            <input
+              type="text"
+              value={manualLocation}
+              onChange={(e) => setManualLocation(e.target.value)}
+              placeholder="Enter your location manually"
+              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
+
+          <button
+            onClick={handleManualSubmit}
+            disabled={!manualLocation.trim()}
+            className={`w-full py-2 rounded-md ${
+              !manualLocation.trim()
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-primaryGreen text-white'
+            }`}
+          >
+            Confirm Location
+          </button>
         </div>
+
+        {error && <p className="mt-3 text-red-500 text-sm">{error}</p>}
+
+        <button
+          onClick={onClose}
+          className="mt-4 text-sm text-gray-500 hover:text-gray-700"
+        >
+          Skip for now
+        </button>
       </div>
-    )
+    </div>
   );
-}
+};

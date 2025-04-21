@@ -1,3 +1,4 @@
+import { signOut, useSession } from 'next-auth/react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -5,15 +6,18 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { Button } from '@mui/material';
+import Link from 'next/link';
+
+// interface AccountMenuProps {
+//   session: any;
+// }
 
 export default function AccountMenu() {
+  const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,7 +45,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            {'Username'}
+            {session?.user?.first_name || 'Username'}
           </Button>
         </Tooltip>
       </Box>
@@ -84,6 +88,8 @@ export default function AccountMenu() {
       >
         <MenuItem
           onClick={handleClose}
+          component={Link}
+          href="/profile"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
@@ -120,7 +126,7 @@ export default function AccountMenu() {
           Settings
         </MenuItem>
         <MenuItem
-          onClick={handleClose}
+          onClick={() => signOut()}
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',

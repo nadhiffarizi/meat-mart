@@ -108,15 +108,15 @@ class AdminService {
     if (req.body.email) {
       const otherExistingUser = await getUserByEmail(String(req.body.email));
 
-      if (otherExistingUser && otherExistingUser.email !== req.params.email) {
-        const feedback: serviceFeedback = {
-          code: 400,
-          data: null,
-          status: statusEnum.FAILED,
-          message: `Another user with email ${req.body.email} already exists.`,
-        };
-        return feedback;
-      }
+      // if (otherExistingUser && otherExistingUser.email !== req.params.email) {
+      //   const feedback: serviceFeedback = {
+      //     code: 400,
+      //     data: null,
+      //     status: statusEnum.FAILED,
+      //     message: `Another user with email ${req.body.email} already exists.`,
+      //   };
+      //   return feedback;
+      // }
     }
 
     const updatedAdmin = await prisma.users.update({
