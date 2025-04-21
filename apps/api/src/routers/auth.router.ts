@@ -14,6 +14,8 @@ export class AuthRouter {
     this.router.post('/register', authController.register);
     this.router.post('/verify', authController.verify);
     this.router.post('/resend-verification', authController.resendVerification);
+    this.router.post('/reset-email', authController.resetEmail);
+    this.router.post('/reset-password', authController.resetPassword);
     this.router.post('/login', authController.login);
     this.router.post('/token', verifyRefreshToken, authController.refreshToken);
     this.router.get('/users', authController.getUsers);

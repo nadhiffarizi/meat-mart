@@ -4,8 +4,6 @@ import { useFormik } from 'formik';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useRef } from 'react';
-import Facebook from '@/../public/facebook.png';
-import Google from '@/../public/google.png';
 import { googleLogin, login } from '@/app/action/auth';
 import { useRouter } from 'next/navigation';
 import Snackbar from '@mui/material/Snackbar';
@@ -96,7 +94,7 @@ export default function Page() {
         </Alert>
       </Snackbar>
       <center>
-        <Link href={'#'} className="green font-bold ">
+        <Link href={'/forgot'} className="green font-bold ">
           Forgot password?
         </Link>
         <h5 className="mt-6 mb-2">Login instantly using your social media</h5>

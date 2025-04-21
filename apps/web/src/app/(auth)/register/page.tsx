@@ -138,7 +138,9 @@ export default function Page() {
         >
           {formik.isSubmitting ? 'Processing...' : 'Register with email'}
         </button>
-        <center>{'Your data will be protected and will not be shared'}</center>
+        <center className="text-sm">
+          {'Your data will be protected and will not be shared'}
+        </center>
       </form>
       <Snackbar
         open={open.current}

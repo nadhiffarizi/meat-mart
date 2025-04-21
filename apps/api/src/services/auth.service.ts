@@ -4,7 +4,11 @@ import prisma from '@/prisma';
 import { Request } from 'express';
 import { hashedPassword } from '../helper/bcrypt';
 import { compare } from 'bcrypt';
-import { getUserByEmail, sendVerificationEmail } from '@/helpers/user.prisma';
+import {
+  getUserByEmail,
+  sendResetEmail,
+  sendVerificationEmail,
+} from '@/helpers/user.prisma';
 import { IUser } from '@/interface/User.interface';
 import { generateAuthToken } from '@/helper/token';
 import { v4 as uuidv4 } from 'uuid';
@@ -163,6 +167,15 @@ class AuthService {
 
   async verifyEmailToken(req: Request) {
     const { token, password } = req.body;
+    if (!token) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Invalid verification token',
+      };
+    }
+    console.log('TOKENN', token);
     const user = await prisma.users.findUnique({
       where: { verification_link: token },
     });
@@ -217,33 +230,14 @@ class AuthService {
 
   async resendVerificationEmail(req: Request) {
     const { email } = req.body;
-    const user = await prisma.users.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return {
-        code: 404,
-        data: null,
-        status: statusEnum.FAILED,
-        message: 'User not found',
-      };
-    }
-
-    if (user.is_verified) {
-      return {
-        code: 400,
-        data: null,
-        status: statusEnum.FAILED,
-        message: 'Email is already verified',
-      };
-    }
 
     const verificationToken = uuidv4();
     const tokenExpiry = new Date(Date.now() + 3600000);
+    console.log('Tanggal sekarang', Date.now());
+    console.log('1 jam kemudian', tokenExpiry);
 
     await prisma.users.update({
-      where: { email },
+      where: { email, is_verified: false },
       data: {
         verification_link: verificationToken,
         verification_expiry: tokenExpiry,
@@ -257,6 +251,90 @@ class AuthService {
       data: null,
       status: statusEnum.SUCCESS,
       message: 'Verification email resent successfully',
+    };
+  }
+
+  async resetPasswordEmail(req: Request) {
+    const { email } = req.body;
+    const resetToken = uuidv4();
+    const tokenResetExpiry = new Date(Date.now() + 3600000);
+    await prisma.users.update({
+      where: { email },
+      data: {
+        verification_link: resetToken,
+        verification_expiry: tokenResetExpiry,
+      },
+    });
+
+    await sendResetEmail(email, resetToken);
+    return {
+      code: 200,
+      data: null,
+      status: statusEnum.SUCCESS,
+      message: 'Reset password email sent successfully',
+    };
+  }
+
+  async resetPassword(req: Request) {
+    const { token, password } = req.body;
+    if (!token) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Invalid reset token',
+      };
+    }
+
+    const user = await prisma.users.findUnique({
+      where: { verification_link: token },
+    });
+
+    if (!user) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Invalid reset token',
+      };
+    }
+
+    if (!user.is_verified) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Email is not verified yet',
+      };
+    }
+
+    if (
+      user.verification_expiry &&
+      isAfter(new Date(), user.verification_expiry)
+    ) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Reset link has expired',
+      };
+    }
+
+    const updatedUser = await prisma.users.update({
+      where: { id: user.id },
+      data: {
+        password: await hashedPassword(password),
+        // is_verified: true,
+        verification_link: null,
+        verification_expiry: null,
+      },
+    });
+
+    return {
+      code: 200,
+      data: { email: updatedUser.email },
+      status: statusEnum.SUCCESS,
+      message: 'Password successfully reseted',
     };
   }
 }

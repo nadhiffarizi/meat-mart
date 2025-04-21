@@ -70,19 +70,50 @@ export const verifyEmail = async (token: string, password: string) => {
 export const resendVerificationEmail = async (email: string) => {
   try {
     console.log('MASUK HANDLERS RESEND VERIFICATION');
-    const data = await api('auth/resend-verification', 'PATCH', {
+    const data = await api('auth/resend-verification', 'POST', {
       body: { email },
       contentType: 'application/json',
     });
 
-    if (!data.success) {
-      throw new Error(data.message || 'Failed to resend verification email');
-    }
+    // if (!data.success) {
+    //   throw new Error(data.message || 'Failed to resend verification email');
+    // }
 
     return data;
   } catch (error) {
     console.error('Resend verification error', error);
     throw error;
+  }
+};
+
+export const resetEmail = async (email: string) => {
+  try {
+    const data = await api('auth/reset-email', 'POST', {
+      body: { email },
+      contentType: 'application/json',
+    });
+
+    // if (!data.success) {
+    //   throw new Error(data.message || 'Failed to send reset email');
+    // }
+
+    return data;
+  } catch (error) {
+    console.error('Reset email error', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (token: string, password: string) => {
+  try {
+    const data = await api('auth/reset-password', 'POST', {
+      body: { token, password },
+      contentType: 'application/json',
+    });
+    console.log('Registration success:', data);
+    return data;
+  } catch (error) {
+    console.log('Reset password error', error);
   }
 };
 
@@ -136,11 +167,6 @@ export async function registerSocialUser(data: {
   image?: string;
   provider: string;
 }) {
-  // 1. Check if user exists in your database
-  // 2. If not, create new user with social data
-  // 3. Generate your JWT tokens (access_token and refresh_token)
-  // 4. Return the user with tokens
-
   return {
     id: 'user-id-from-db',
     access_token: 'generated-jwt-token',
