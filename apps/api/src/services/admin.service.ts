@@ -2,7 +2,7 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
-import { getUserByEmail } from '@/helpers/user.prisma';
+import { getUserByEmail } from '@/helper/user.prisma';
 
 class AdminService {
   async getAllUsers(req: Request) {

@@ -3,7 +3,7 @@
 import { jwtAccessSecret, jwtRefreshSecret } from '../config';
 import { sign } from 'jsonwebtoken';
 import { IUser } from '../interface/User.interface';
-import { getUserByEmail } from '../helpers/user.prisma';
+import { getUserByEmail } from './user.prisma';
 import { ErrorHandler } from './responseHandler.helper';
 
 export const generateAuthToken = async (user?: IUser, email?: string) => {

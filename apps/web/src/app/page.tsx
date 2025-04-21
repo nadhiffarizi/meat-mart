@@ -7,7 +7,7 @@ import { ProductList } from '@/components/ProductList';
 export default function Home() {
   return (
     <div>
-      <div className="mt-2 md:mt-32 mb-6">
+      <div className="mt-0 mb-6">
         <Categories />
         <Carousel />
         <div className="my-5">

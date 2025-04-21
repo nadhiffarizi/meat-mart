@@ -8,7 +8,7 @@ import {
   getUserByEmail,
   sendResetEmail,
   sendVerificationEmail,
-} from '@/helpers/user.prisma';
+} from '@/helper/user.prisma';
 import { IUser } from '@/interface/User.interface';
 import { generateAuthToken } from '@/helper/token';
 import { v4 as uuidv4 } from 'uuid';

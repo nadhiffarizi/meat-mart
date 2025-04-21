@@ -35,6 +35,8 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "axios": "^1.7.2",
+    "finpro-nextjs-express-prisma": "file:",
+    "package.json": "^0.0.0",
     "react-hot-toast": "^2.5.2",
     "react-social-login-buttons": "^4.1.1"
   }
