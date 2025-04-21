@@ -18,119 +18,16 @@ function ViewUsers() {
 
   const dummyUsers: User[] = [
     {
-      id: '1',
       email: 'zlice@email.com',
       role: 'SUPER_ADMIN',
     },
     {
-      id: '2',
       email: 'alice@email.com',
+      role: 'CUSTOMER',
+    },
+    {
+      email: 'storeAdmvhgchgchchgfchfcin@email.com',
       role: 'ADMIN',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      id: '1',
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
     },
   ];
 
@@ -140,7 +37,6 @@ function ViewUsers() {
         const response = await api(`admin/users`, 'GET');
         const simplifiedUsers: User[] = response.data.map(
           (user: IGetUsers) => ({
-            id: user.id,
             email: user.email,
             role: user.role,
           }),
@@ -157,16 +53,18 @@ function ViewUsers() {
     //   <DataTable columns={columns} data={dummyUsers} />
     // </Dropdown>
 
-    <Accordion type="single" collapsible>
-      <AccordionItem value="item-1">
-        <AccordionTrigger className="bg-red-200">
-          View All Users
-        </AccordionTrigger>
-        <AccordionContent>
-          <DataTable columns={columns} data={dummyUsers} />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    // <Accordion type="single" collapsible>
+    //   <AccordionItem value="item-1">
+    //     <AccordionTrigger className="bg-red-200">
+    //       View All Users
+    //     </AccordionTrigger>
+    //     <AccordionContent>
+    //       <DataTable columns={columns} data={dummyUsers} />
+    //     </AccordionContent>
+    //   </AccordionItem>
+    // </Accordion>
+
+    <DataTable columns={columns} data={dummyUsers} />
   );
 }
 

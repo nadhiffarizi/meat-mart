@@ -23,6 +23,7 @@ import {
 import { Button } from '../ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -53,7 +54,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="overflow-x-auto">
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 w-full justify-between gap-2">
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
@@ -62,6 +63,16 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        <Link href={'/dashboard/users/new'}>
+          {' '}
+          <Button
+            variant="default"
+            className={' bg-orangeAccent text-base'}
+            onClick={() => {}}
+          >
+            Add a New Employee
+          </Button>
+        </Link>
       </div>
       <div className="rounded-md border">
         <Table>
