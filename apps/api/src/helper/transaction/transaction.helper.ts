@@ -89,6 +89,9 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILo
                 product_id: (await findProductByStockId(cartItem.stock_id)).products?.id!
             }
         })
+        // update stock
+        const updatedStock = await updateStockQuantity(cartItem.stock_id, cartAfterDisc.cart.quantity)
+        console.log(`updated stock from transaction: ${newTrxDetail.id}, resulting updatedStock: ${updatedStock}`);
 
         return newTrxDetail
     }
@@ -112,8 +115,8 @@ export const createTransaction = async (trxId: string, totalPrice: number, userI
 const generateInvoiceNumber = (trxId: string, userId: string) => {
     const strTrxId = trxId.split("-")[0]
     const userIdStr = userId.split("-")[0] || userId
-    const dateStr = `${(new Date()).getDate}-${(new Date()).getMonth()}-${(new Date()).getFullYear()}`
-    const invoiceStr = `INV-${userIdStr}-${strTrxId}-${dateStr}`
+    const dateStr = `${(new Date()).getFullYear()}${(new Date()).getMonth()}${(new Date()).getDate()}`
+    const invoiceStr = `INV-${userIdStr}-${dateStr}-${strTrxId.toUpperCase()}`
 
     return invoiceStr
 }

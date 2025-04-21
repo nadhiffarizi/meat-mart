@@ -1,9 +1,11 @@
+import { syncCartDataFromAPI } from '@/helper/cart.helper';
 import {
   createTransactionAPI,
   createTransactionPayload,
 } from '@/helper/checkout.helper';
 import { callToast } from '@/helper/notify.helper';
-import { useAppSelector } from '@/redux/store';
+import { updateCartState } from '@/redux/slice/cart.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import {
   Box,
   Button,
@@ -21,6 +23,7 @@ export default function PaymentOptions() {
   // global state
   const cartState = useAppSelector((state) => state.cartState);
   const userId = useAppSelector((state) => state.userState);
+  const dispatch = useAppDispatch();
 
   //local state
   const [isLoading, setLoading] = React.useState<Boolean>(false);
@@ -47,15 +50,31 @@ export default function PaymentOptions() {
           '/api/transaction/create',
           createTransactionPayload(cartState, userId.id),
         );
+        console.log(resPostTrx);
+
         if (resPostTrx.status !== 200) {
           callToast('Error creating transaction, try again', 'ERROR', 2000);
           setLoading(false);
           return;
         }
-      }
 
-      setLoading(false);
-      router.push(`/payment/confirm/${'InvoiceNumber'}`);
+        // sync to local cart
+        const resTrx = await resPostTrx.json();
+        // console.log(resTrx);
+
+        dispatch(
+          updateCartState(
+            syncCartDataFromAPI(resTrx['data']['cartAfterCheckout']),
+          ),
+        );
+
+        setLoading(false);
+        router.push(
+          `/payment/confirm/${resTrx['data']['trx']['invoice_number']}`,
+        );
+      } else {
+        // selectedValue === 'automatic'
+      }
     } catch (error) {
       console.log((error as Error).message);
     }

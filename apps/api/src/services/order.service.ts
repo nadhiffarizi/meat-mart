@@ -1,5 +1,6 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
 import { cancelOrderById, confirmOrderById, getOrderByInvoice, getOrderByParams, getOrderbyStoresId, updateOrderDetails } from "@/helper/order/order.helper";
+import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { convertRoleToEnum } from "@/helper/role.helper";
 import { findStoreByAdmin, findStoreBySuperAdmin } from "@/helper/store/store.helper";
 import { trxUpdateByOrderConfirm } from "@/helper/transaction/transaction.helper";
@@ -16,7 +17,7 @@ class OrderService {
         // check role
         const role_ = convertRoleToEnum(role)
 
-        if (role_ === E_Role.CUSTOMER) throw new Error("role is customer, cannot access this service")
+        if (role_ !== E_Role.CUSTOMER) throw new Error("role is customer, cannot access this service")
 
         let orderList: any = []
 
@@ -29,13 +30,7 @@ class OrderService {
         }
 
         // feedback from service
-        const feedback: serviceFeedback = {
-            code: 200,
-            data: orderList,
-            status: statusEnum.SUCCESS,
-            message: "get order list success"
-        }
-        return feedback
+        return returnServiceFeedback(200, orderList, statusEnum.SUCCESS, "get order list success")
     }
 
     async getOrderListAdmin(req: Request) {

@@ -194,6 +194,19 @@ export const findCartById = async (cartId: string) => {
     return cartData
 }
 
+export const findCartByIds = async (cartIds: string[]) => {
+    /**returns cart data by string of cart Ids */
+    const cartData = await prisma.carts.findMany({
+        where: {
+            id: {
+                in: cartIds.map((id) => id)
+            }
+        }
+    })
+
+    return cartData
+}
+
 export const disableCart = async (cartId: string) => {
     // disable cart, add new Date() to deleted_at columns
     const updatedCart = await prisma.carts.update({
@@ -203,4 +216,15 @@ export const disableCart = async (cartId: string) => {
             deleted_at: new Date()
         }
     })
+}
+
+export const deleteCart = async (cartId: string) => {
+    // delete cart from userId 
+    const deletedCart = await prisma.carts.delete({
+        where: {
+            id: cartId
+        }
+    })
+
+    return deletedCart
 }

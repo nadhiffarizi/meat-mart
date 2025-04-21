@@ -12,9 +12,6 @@ export const totalDiscountApplied = (cartState: ICart[]) => {
       totalDiscountAmount +=
         cartItem.quantity * cartItem.product.price - cartItem.subtotalPrice!;
     }
-    if (cartItem.discount?.promotion_type === 'BOGO') {
-      totalDiscountAmount += cartItem.pricePerProduct!;
-    }
   }
 
   console.log(totalDefaultPrice);
@@ -68,9 +65,14 @@ export const createTransactionPayload = (
   }
 
   const payload = { orderInputs, userId: userId };
+  // console.log(payload);
+  return payload
+
 };
 
 export const createTransactionAPI = async (apiRoute: string, payload: any) => {
+  console.log(payload);
+
   const response = await apiRequest(
     apiRoute,
     'POST',

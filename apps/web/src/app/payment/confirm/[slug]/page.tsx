@@ -7,10 +7,6 @@ import * as React from 'react';
 export default function ThankYouPage() {
   const params = useParams<{ slug: string }>();
 
-  React.useEffect(() => {
-    // get transaction by invoice number
-  }, []);
-
   // format typography
   const getTypography = (input: string) => {
     return (
@@ -51,7 +47,14 @@ export default function ThankYouPage() {
             </Typography>
             <h3 className="!whitespace-pre">
               Complete payment before{' '}
-              <span className="text-red-400"> wedbwe</span>
+              <span className="text-red-400">
+                {' '}
+                {
+                  new Date(new Date().getTime() + 1 * 60 * 60 * 1000)
+                    .toString()
+                    .split('GMT')[0]
+                }
+              </span>
             </h3>
           </div>
 

@@ -1,5 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
-import { disableCart, findCartByOrderInput } from "@/helper/cart/cart.helper";
+import { deleteCart, disableCart, findCartById, findCartByIds, findCartByOrderInput } from "@/helper/cart/cart.helper";
 import { updateCartToOrder, updateOrderDetails } from "@/helper/order/order.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { cancelTransaction, createDefaultTrxId, createTransaction, createTrxDetails, getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper";
@@ -50,18 +50,20 @@ class TransactionService {
                     trxDetails.push(trxDetail)
                     totalPrice += (trxDetail.sub_total + trxDetail.shipping_cost) // total price for one cart item
 
-                    // disable cart
-                    await disableCart(cartItem.id)
+                    // delete cart
+                    await deleteCart(cartItem.id)
                 }
 
                 // update transaction table
                 const newTrx = await createTransaction(trxId, totalPrice, userId)
                 trx = { ...newTrx }
-
             }
 
+            // get cart
+            const cartAfterCheckout = await findCartByIds(carts?.map((cart) => cart.id)!)
+
             // feedback from service
-            return returnServiceFeedback(200, { filteredCarts, trxDetails }, statusEnum.SUCCESS, "transaction created successfully")
+            return returnServiceFeedback(200, { cartAfterCheckout, trx }, statusEnum.SUCCESS, "transaction created successfully")
 
         } catch (error) {
             // feedback from service
@@ -138,7 +140,6 @@ class TransactionService {
 
         return feedback
     }
-
 }
 
 export default new TransactionService()

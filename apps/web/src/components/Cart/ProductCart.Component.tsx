@@ -17,7 +17,6 @@ import {
   updateCartState,
 } from '@/redux/slice/cart.slice';
 import DiscountInCartNotif from './DiscountInCartNotif.component';
-import { IDiscount } from '@/interface/discount.interface';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state
@@ -114,7 +113,7 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             <NumberFieldComponent cartItem={cartItem} />
             {cartItem.discount?.promotion_type === 'BOGO' ? (
               <p className="text-sm text-secondaryGreen">
-                You get extra ${cartItem.quantity} pcs!
+                You get extra {cartItem.quantity} pcs!
               </p>
             ) : (
               <></>

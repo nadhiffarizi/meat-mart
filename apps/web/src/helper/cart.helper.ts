@@ -28,6 +28,10 @@ export const getCartDataAPI = async (apiRoute: string, userId: string) => {
 export const syncCartDataFromAPI = (data: any) => {
 
     const cartItems: ICart[] = data;
+    if (cartItems.length === 0) {
+        return []
+    }
+
     const myCartItems: ICart[] = [];
     cartItems.map((item: any) => {
         const cartData: ICart = {
