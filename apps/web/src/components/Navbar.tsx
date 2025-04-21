@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import SearchIcon from './svg/SearchIcon';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
 import { LocationModal } from './LocationModal';
+import { Search } from '@mui/icons-material';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -96,7 +96,7 @@ const Navbar = () => {
                 className="w-full text-sm rounded-full h-[48px] text-primaryText bg-white border border-gray-200 py-2 px-4 pl-10 focus:outline-none "
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon />
+                <Search />
               </div>
             </div>
           </div>

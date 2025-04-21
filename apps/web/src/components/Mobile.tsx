@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import React from 'react';
-import SearchIcon from './svg/SearchIcon';
 import Link from 'next/link';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Search } from '@mui/icons-material';
 
 interface MobileProps {
   isSticky: boolean;
@@ -39,7 +39,7 @@ const Mobile = ({ isSticky }: MobileProps) => {
             className="w-full rounded-full border border-gray-300 py-2 px-4 pl-10 focus:outline-none "
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <SearchIcon />
+            <Search />
           </div>
         </div>
         {isSticky ? (
