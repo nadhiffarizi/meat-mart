@@ -5,8 +5,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import * as React from 'react';
 
 export default function OrderListPage() {
-  const dispatch = useAppDispatch();
-  const cartState = useAppSelector((state) => state.cartState);
   React.useEffect(() => {}, []);
   return (
     <React.Fragment>

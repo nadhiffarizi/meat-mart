@@ -1,14 +1,14 @@
 import { currencyFormatter } from '@/helper/product.helper';
-import { ICart } from '@/interface/cart.interface';
+import { ITransaction } from '@/interface/transaction.interface';
 import { ShoppingBag } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
 import * as React from 'react';
 
-export default function TransactionListCard() {
+export default function TransactionListCard({ trx }: { trx: ITransaction }) {
   const statusFormatter = (status: string) => {
     return (
       <Typography variant="overline">
-        <span className="bg-slate-100 py-2 px-2 rounded-md text-xs font-semibold text-secondaryGreen">
+        <span className="text-xs bg-slate-100 py-1 px-2 rounded-md font-semibold text-secondaryGreen">
           {' '}
           {status}
         </span>
@@ -31,13 +31,17 @@ export default function TransactionListCard() {
       >
         <div className="w-full h-full flex items-center gap-5 ">
           <ShoppingBag className="!fill-transparent !stroke-black !h-full" />
-          <p className="font-semibold">InvoiceNumber</p>
-          <p className="">Mon, 9 April 2025</p>
-          <>{statusFormatter('Status Transaction')}</>
+          <p className="font-semibold text-xs">{trx.invoice_number}</p>
+          <p className="text-xs">Created: {trx.created_at.split('T')[0]}</p>
+          <>{statusFormatter(trx.transaction_status)}</>
         </div>
         <div className="w-2/5 h-full flex items-center justify-end gap-5">
-          <p>
-            Bayar sebelum <span className="text-yellow-500"> 22:22:22</span>
+          <p className="text-xs">
+            Pay before:{' '}
+            <span className="text-yellow-500 text-xs">
+              {' '}
+              {trx.deadline_payment.split('T')[0]}
+            </span>
           </p>
         </div>
       </Box>
@@ -50,7 +54,7 @@ export default function TransactionListCard() {
           <div className="w-full h-full max-h-[300px] flex gap-2 py-3 px-3 bg-white ">
             <div className=" h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
               <p className="text-slate-600 text-sm">Payment Method</p>
-              <p className="font-semibold">Manual or Virtual Account</p>
+              <p className="font-semibold">{trx.payment_method}</p>
             </div>
             <Divider orientation="vertical" flexItem />
             <div className="h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
@@ -61,7 +65,7 @@ export default function TransactionListCard() {
           <Divider orientation="vertical" sx={{ bgcolor: 'green' }} flexItem />
           <div className="w-1/2 max-w-[200px] h-full max-h-[300px] flex flex-col justify-center py-3 px-3 bg-white ">
             <p className="font-semibold">Total Purchase</p>
-            <p>Rp. 10,000,000</p>
+            <p>{currencyFormatter(trx.total_price)}</p>
           </div>
         </div>
       </Box>

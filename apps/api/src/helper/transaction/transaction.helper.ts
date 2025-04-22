@@ -13,6 +13,7 @@ export const createDefaultTrxId = async (userId: string) => {
     const trxDefault = await prisma.transactions.create({
         data: {
             transaction_status: E_TransactionStatus.AWAITING_PAYMENT,
+            payment_method: 'MANUAL',
             users_id: userId
         }
     })

@@ -6,27 +6,27 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import {
   IFilterStatus,
-  IFilterStatusOrder,
   IFilterTransactions,
 } from '@/interface/filter.interface';
+import {
+  statusFilterToArray,
+  statusFilterUpdate,
+} from '@/helper/filter/transactionFilter.helper';
 import { trxFilterContext } from '@/app/transaction-list/page';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
-import { statusFilterUpdate } from '@/helper/filter/orderFilter.helper';
 
-export default function SearchBarOrderList() {
+export default function SearchBarTransactionList() {
   // consume context
   const filterContext = React.useContext(trxFilterContext);
 
   // localstate
-  const [status, setStatus] = React.useState<IFilterStatusOrder>({
+  const [status, setStatus] = React.useState<IFilterStatus>({
     AWAITING_PAYMENT: false,
     CANCELED: false,
     CONFIRMED_ADMIN: false,
-    CONFIRMED: false,
+    DONE: false,
     PENDING_ADMIN: false,
-    ON_DELIVERY: false,
-    ON_PROCESS: false,
   });
   const [searchInput, setSearchInput] = React.useState('');
   const [invoiceNumber, setInvoiceNumber] = React.useState('');
@@ -43,7 +43,7 @@ export default function SearchBarOrderList() {
     const filters: IFilterTransactions = {
       from: !from ? null : from.toDate().getTime(),
       invoiceNumber: invoiceNumber,
-      statusArray: [],
+      statusArray: statusFilterToArray(status),
       until: !until ? null : until.toDate().getTime(),
     };
 
@@ -93,10 +93,8 @@ export default function SearchBarOrderList() {
       AWAITING_PAYMENT: false,
       CANCELED: false,
       CONFIRMED_ADMIN: false,
-      CONFIRMED: false,
+      DONE: false,
       PENDING_ADMIN: false,
-      ON_DELIVERY: false,
-      ON_PROCESS: false,
     });
 
     setInvoiceNumber('');
@@ -107,7 +105,7 @@ export default function SearchBarOrderList() {
   // generate status filter
   const statusBar = () => {
     return (
-      <div className="w-full  overflow-x-auto lg:h-[70px] flex gap-5 items-center bg-white ">
+      <div className="w-full lg:h-[70px] flex gap-5 items-center bg-white ">
         <p className="font-semibold">Status</p>
         <Button
           id="btn-waiting-payment"
@@ -115,7 +113,7 @@ export default function SearchBarOrderList() {
           onClick={() =>
             setStatus(statusFilterUpdate('AWAITING_PAYMENT', status))
           }
-          className={`relative !rounded-full !w-[200px] !bg-slate-50 ${status.AWAITING_PAYMENT ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          className={`relative !rounded-full !bg-slate-50 ${status.AWAITING_PAYMENT ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
             className={`${status.AWAITING_PAYMENT ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
@@ -127,7 +125,7 @@ export default function SearchBarOrderList() {
           id="btn-canceled"
           style={{ textTransform: 'none' }}
           onClick={() => setStatus(statusFilterUpdate('CANCELED', status))}
-          className={`relative !rounded-full !w-[120px] !bg-slate-50 ${status.CANCELED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          className={`relative !rounded-full !bg-slate-50 ${status.CANCELED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
             className={`${status.CANCELED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
@@ -139,7 +137,7 @@ export default function SearchBarOrderList() {
           id="btn-pending-admin"
           style={{ textTransform: 'none' }}
           onClick={() => setStatus(statusFilterUpdate('PENDING_ADMIN', status))}
-          className={`relative !rounded-full !w-[200px] !bg-slate-50 ${status.PENDING_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          className={`relative !rounded-full !bg-slate-50 ${status.PENDING_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
             className={`${status.PENDING_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
@@ -161,41 +159,16 @@ export default function SearchBarOrderList() {
             Confirmed Admin
           </p>
         </Button>
-
         <Button
-          id="btn-onprocess"
+          id="btn-done"
           style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('ON_PROCESS', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.ON_PROCESS ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          onClick={() => setStatus(statusFilterUpdate('DONE', status))}
+          className={`relative !rounded-full !bg-slate-50 ${status.DONE ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
-            className={`${status.ON_PROCESS ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            className={`${status.DONE ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
           >
-            On Process
-          </p>
-        </Button>
-        <Button
-          id="btn-ondelivery"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('ON_DELIVERY', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.ON_DELIVERY ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.ON_DELIVERY ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
-          >
-            On Delivery
-          </p>
-        </Button>
-        <Button
-          id="btn-confirm"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('CONFIRMED', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.CONFIRMED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.CONFIRMED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
-          >
-            Confirmed
+            Done
           </p>
         </Button>
         <Button

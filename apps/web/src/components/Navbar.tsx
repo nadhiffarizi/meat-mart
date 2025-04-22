@@ -69,9 +69,9 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
 
   return (
     <div
-      className={`fixed w-full z-40 transition-all duration-300 ${
+      className={` w-full z-40 transition-all duration-300 ${
         isScrolled ? 'bg-primaryBackground shadow-md' : 'bg-primaryBackground'
-      }`}
+      } ${isFixed ? `fixed` : `relative`}`}
     >
       <div className="w-7xl px-4 md:px-6 lg:px-8">
         <div className="flex justify-between gap-2 h-20  items-center">

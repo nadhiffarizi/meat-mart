@@ -1,13 +1,61 @@
 'use client';
-import SearchBarOrderList from '@/components/Order/SearchBarOrderList.component';
+import SearchBarTransactionList from '@/components/Transaction/SearchBarTransactionList.component';
 import TransactionListCard from '@/components/Transaction/TransactionListCard.component';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { setQueryParams } from '@/helper/filter/transactionFilter.helper';
+import { IFilterTransactions } from '@/interface/filter.interface';
 import * as React from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { getDataTransactionAPI } from '@/helper/transaction.helper';
+import { callToast } from '@/helper/notify.helper';
+import { ITransaction } from '@/interface/transaction.interface';
+
+export interface TransactionFilterContextType {
+  filterTransactions: IFilterTransactions | undefined;
+  setFilterTransactions: (filter: IFilterTransactions | undefined) => void;
+}
+
+export const trxFilterContext = React.createContext<
+  TransactionFilterContextType | undefined
+>(undefined);
 
 export default function TransactionListPage() {
-  const dispatch = useAppDispatch();
-  const cartState = useAppSelector((state) => state.cartState);
-  React.useEffect(() => {}, []);
+  //global state
+  const [filterTransactions, setFilterTransactions] = React.useState<
+    IFilterTransactions | undefined
+  >(undefined);
+
+  //local state
+  const router = useRouter();
+  const pathName = usePathname();
+  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [trxData, setTrxData] = React.useState<ITransaction[]>();
+
+  // when global filters change
+  React.useEffect(() => {
+    // set query params
+    console.log(filterTransactions);
+    console.log(setQueryParams(filterTransactions));
+    const params = setQueryParams(filterTransactions);
+    router.replace(`${pathName}?${params.toString()}`);
+
+    try {
+      setLoading(true);
+      const getTrxResponse = getDataTransactionAPI(
+        `transaction/list?${params.toString()}`,
+        filterTransactions!,
+      );
+
+      getTrxResponse
+        .then((v) => v.json())
+        .then((value) => setTrxData(value['data']));
+    } catch (error) {
+      callToast((error as Error).message, 'ERROR', 2000);
+    }
+    setLoading(false);
+
+    // call get transaction to get list of transactions
+  }, [filterTransactions]);
+
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
@@ -27,16 +75,22 @@ export default function TransactionListPage() {
               className="flex flex-col gap-4 w-4/5 h-full "
             >
               {/** order item list */}
-              <div className="h-[500px] w-full flex flex-col gap-6 bg-white rounded-md overflow-auto px-5 py-4">
+              <div className=" w-full flex flex-col gap-10 bg-white rounded-md overflow-auto px-5 py-4">
                 <h1 className=" text-start text-3xl font-semibold text-secondaryGreen">
                   Transaction List
                 </h1>
 
-                <SearchBarOrderList />
-                <TransactionListCard />
-                {/* {cartState.map((cartItem, index: number) => {
-                  return <ItemCard cartItem={cartItem} key={index} />;
-                })} */}
+                <div className="w-full">
+                  <trxFilterContext.Provider
+                    value={{ filterTransactions, setFilterTransactions }}
+                  >
+                    <SearchBarTransactionList />
+                  </trxFilterContext.Provider>
+                </div>
+                {trxData &&
+                  trxData.map((trx, index: number) => {
+                    return <TransactionListCard trx={trx} key={index} />;
+                  })}
               </div>
             </div>
           </div>

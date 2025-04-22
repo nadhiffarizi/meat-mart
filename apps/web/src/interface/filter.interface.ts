@@ -1,0 +1,26 @@
+import { PickerValue } from "@mui/x-date-pickers/internals";
+
+export interface IFilterStatus {
+    AWAITING_PAYMENT: boolean;
+    CANCELED: boolean;
+    PENDING_ADMIN: boolean;
+    CONFIRMED_ADMIN: boolean;
+    DONE: boolean;
+}
+
+export interface IFilterStatusOrder {
+    AWAITING_PAYMENT: boolean;
+    CANCELED: boolean;
+    PENDING_ADMIN: boolean;
+    CONFIRMED_ADMIN: boolean;
+    CONFIRMED: boolean;
+    ON_PROCESS: boolean;
+    ON_DELIVERY: boolean
+}
+
+export interface IFilterTransactions {
+    invoiceNumber: string | undefined,
+    from: number | null,
+    until: number | null,
+    statusArray: string[] | undefined
+}

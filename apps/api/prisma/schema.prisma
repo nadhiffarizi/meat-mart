@@ -226,6 +226,7 @@ model Transactions {
   users_id           String
   users              Users                @relation(fields: [users_id], references: [id])
   invoice_number     String?
+  payment_method     String
   created_at         DateTime             @default(now())
   updated_at         DateTime             @updatedAt
   deleted_at         DateTime?

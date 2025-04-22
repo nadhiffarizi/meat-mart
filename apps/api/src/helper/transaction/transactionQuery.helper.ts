@@ -21,15 +21,16 @@ export const getTransactionByInvoice = async (userId: string, invoice: string) =
 
 export const getTransactionsByParams = async (userId: string, status?: string[], from?: string, until?: string) => {
     // access by user facing service
+    // created_at: {
+    //     gte: !from ? new Date() : from,
+    //         lte: !until ? new Date() : until
+    // },
     const transactions = await prisma.transactions.findMany({
         where: {
             AND: {
                 users_id: userId,
                 deleted_at: null,
-                created_at: {
-                    gte: !from ? new Date() : from,
-                    lte: !until ? new Date() : until
-                },
+
                 transaction_status: {
                     in: [...convertTransactionStatusToEnum(status as string[])]
                 }
