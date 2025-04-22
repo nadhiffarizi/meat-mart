@@ -24,7 +24,7 @@ export default function InitialState({
   const [userId, setUserId] = useState<string>();
 
   useEffect(() => {
-    const resUser = getCustomer('/api/user/get/customer');
+    const resUser = getCustomer('user/get/customer');
     resUser
       .then((v) => v.json())
       .then((value) => {
@@ -80,7 +80,7 @@ export default function InitialState({
         }
         setUserId(user.id);
       });
-    const resCart = getCartDataAPI('/api/cart/get', userId!);
+    const resCart = getCartDataAPI('cart/get', userId!);
     resCart
       .then((v) => v.json())
       .then((values) => {

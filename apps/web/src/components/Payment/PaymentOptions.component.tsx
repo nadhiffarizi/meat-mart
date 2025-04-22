@@ -47,7 +47,7 @@ export default function PaymentOptions() {
       // Do something with selectedValue
       if (selectedValue === 'manual') {
         const resPostTrx = await createTransactionAPI(
-          '/api/transaction/create',
+          'transaction/create',
           createTransactionPayload(cartState, userId.id),
         );
         console.log(resPostTrx);

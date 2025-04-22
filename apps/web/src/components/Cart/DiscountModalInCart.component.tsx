@@ -49,7 +49,7 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
       return;
     }
 
-    const resRedeemDisc = await redeemDiscountAPI('/api/discount/redeem', {
+    const resRedeemDisc = await redeemDiscountAPI('discount/redeem', {
       cartId: cartId,
       discountId: discount?.id!,
     });
@@ -80,9 +80,7 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
   }, []);
 
   React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(
-      `/api/discount/get/${cartId}`,
-    );
+    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
 
     resGetDiscount
       .then((v) => v.json())

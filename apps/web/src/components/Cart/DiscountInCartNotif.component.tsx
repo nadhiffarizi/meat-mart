@@ -12,9 +12,7 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
   const [isDiscountFound, setDiscountFound] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(
-      `/api/discount/get/${cartId}`,
-    );
+    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
 
     resGetDiscount
       .then((v) => v.json())
@@ -24,6 +22,18 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
         }
       });
   }, []);
+
+  React.useEffect(() => {
+    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
+
+    resGetDiscount
+      .then((v) => v.json())
+      .then((value) => {
+        if (value['data'].length) {
+          setDiscountFound(true);
+        }
+      });
+  }, [cartState]);
 
   // handle modal open
 

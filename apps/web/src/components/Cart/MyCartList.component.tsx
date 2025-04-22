@@ -14,10 +14,6 @@ export default function MyCartList() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  // React.useEffect(() => {
-  //   console.log(cartState);
-  // });
-
   React.useEffect(() => {
     dispatch(updateCheckoutProgress('CART'));
   }, []);

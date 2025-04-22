@@ -25,7 +25,7 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // delete cart item
   const handleSubstractToCart = async (qtty: number) => {
     // call api first
-    const resSubCart = await subtractCartAPI('/api/cart/subtract', {
+    const resSubCart = await subtractCartAPI('cart/subtract', {
       quantity: qtty,
       productId: cartItem.product.id,
       userId: '1',
@@ -37,7 +37,7 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('/api/cart/get', '1');
+    const resGetCart = await getCartDataAPI('cart/get', '1');
     if (resGetCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
       return;

@@ -24,7 +24,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
 
   const handleAddToCart = async (product: IProduct) => {
     // call api first
-    const resAddCart = await addToCartAPI('/api/cart/add', {
+    const resAddCart = await addToCartAPI('cart/add', {
       quantity: 1,
       productId: product.id,
       userId: '1',
@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('/api/cart/get', '1');
+    const resGetCart = await getCartDataAPI('cart/get', '1');
     if (resGetCart.status !== 200) {
       toast.error('Something went wrong, try again later');
       return;

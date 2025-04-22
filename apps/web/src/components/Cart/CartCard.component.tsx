@@ -28,7 +28,7 @@ export default function CartCard({ cartItem }: { cartItem: ICart }) {
     );
 
     // call cart service to update cart
-    subtractCartAPI('/api/cart/subtract', {
+    subtractCartAPI('cart/subtract', {
       productId: cartItem.product.id,
       quantity: cartItem.quantity,
       userId: userState.id,
@@ -54,7 +54,8 @@ export default function CartCard({ cartItem }: { cartItem: ICart }) {
           </div>
           <div className="w-full h-1/2 ">
             <small>
-              {cartItem.quantity} x {currencyFormatter(cartItem.product.price!)}{' '}
+              {cartItem.quantity} x{' '}
+              {currencyFormatter(cartItem.product.price!)}{' '}
             </small>
           </div>
         </div>

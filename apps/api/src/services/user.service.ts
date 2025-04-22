@@ -1,4 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
+import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { serviceFeedback } from "@/interface/serviceFeedback.interface";
 import prisma from "@/prisma";
 import { E_Role } from "@prisma/client";
@@ -17,7 +18,8 @@ class UserService {
                     role: true,
                     UserAddresses: {
                         where: {
-                            is_selected: true
+                            is_selected: true,
+                            recipient_name: "Nadhif"
                         }
                     }
                 },
@@ -25,27 +27,13 @@ class UserService {
                     role: E_Role.CUSTOMER
                 }
             })
-            // feedback from service
-            const feedback: serviceFeedback = {
-                code: 200,
-                data: user,
-                status: statusEnum.SUCCESS,
-                message: "get customer data success"
-            }
-            return feedback
+
+            return returnServiceFeedback(200, user, statusEnum.SUCCESS, "get customer data success")
 
         } catch (error) {
             // feedback from service
-            const feedback: serviceFeedback = {
-                code: 200,
-                data: null,
-                status: statusEnum.FAILED,
-                message: (error as Error).message
-            }
-            return feedback
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get customer data failed")
         }
-
-
     }
 }
 

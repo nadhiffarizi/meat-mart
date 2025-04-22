@@ -109,10 +109,11 @@ class AuthService {
         message: `The email that you've entered is not verified. Please, check your email`,
       };
     }
+    console.log(await compare(password, existingUser.password!))
 
     if (
       !existingUser.password ||
-      !(await compare(password, existingUser.password))
+      !(await compare(password as string, existingUser.password))
     ) {
       return {
         code: 401,
@@ -202,6 +203,7 @@ class AuthService {
       user.verification_expiry &&
       isAfter(new Date(), user.verification_expiry)
     ) {
+      console.log("into verification link has expired")
       return {
         code: 400,
         data: null,
