@@ -13,7 +13,6 @@ const adminCreateSchema = z.object({
 });
 
 const adminUpdateSchema = z.object({
-  email: z.string().email().optional(),
   password: z.string().optional(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),

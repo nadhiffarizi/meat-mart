@@ -16,6 +16,7 @@ export class AdminRouter {
 
   private initializeRoutes(): void {
     this.router.get('/users', verifyToken, adminController.readUsers);
+    this.router.get('/users/:id', verifyToken, adminController.readUser);
     this.router.post(
       '/users',
       verifyToken,
@@ -23,7 +24,7 @@ export class AdminRouter {
       adminController.createUsers,
     );
     this.router.patch(
-      '/users/:email',
+      '/users/:id',
       verifyToken,
       validateAdminUpdateBody,
       adminController.updateUsers,

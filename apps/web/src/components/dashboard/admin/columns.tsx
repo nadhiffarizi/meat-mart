@@ -17,6 +17,7 @@ import Link from 'next/link';
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type User = {
+  id: string;
   role: 'SUPER_ADMIN' | 'ADMIN' | 'CUSTOMER';
   email: string;
 };
@@ -79,7 +80,11 @@ export const columns: ColumnDef<User>[] = [
               <Link href={'/dashboard'}>View user details</Link>
             </DropdownMenuItem>
             {payment.role === 'ADMIN' && (
-              <DropdownMenuItem>Edit user details</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={`/dashboard/users/${row.original.id}/edit`}>
+                  Edit user details
+                </Link>
+              </DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>

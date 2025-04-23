@@ -17,6 +17,22 @@ export const getUserByEmail = async (email: string) => {
   return user;
 };
 
+export const getUserById = async (id: string) => {
+  const user = await prisma.users.findUnique({
+    where: { id },
+    // select: {
+    //   id: true,
+    //   email: true,
+    //   password: true,
+    //   is_verified: true,
+    //   role: true,
+    //   first_name: true,
+    // },
+  });
+
+  return user;
+};
+
 export const sendVerificationEmail = async (email: string, token: string) => {
   // const verificationUrl = `${process.env.BASE_URL}/verify-email?token=${encodeURIComponent(token)}`;
   const verificationUrl = `${process.env.BASE_URL}/verify-email?token=${encodeURIComponent(token)}`;

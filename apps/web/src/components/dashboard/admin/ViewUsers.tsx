@@ -17,22 +17,6 @@ import { useSession } from 'next-auth/react';
 
 function ViewUsers() {
   const [users, setUsers] = useState<User[]>([]);
-
-  const dummyUsers: User[] = [
-    {
-      email: 'zlice@email.com',
-      role: 'SUPER_ADMIN',
-    },
-    {
-      email: 'alice@email.com',
-      role: 'CUSTOMER',
-    },
-    {
-      email: 'storeAdmvhgchgchchgfchfcin@email.com',
-      role: 'ADMIN',
-    },
-  ];
-
   const { data: session, update, status } = useSession();
 
   useEffect(() => {
@@ -47,6 +31,7 @@ function ViewUsers() {
 
         const simplifiedUsers: User[] = response.data.map(
           (user: IGetUsers) => ({
+            id: user.id,
             email: user.email,
             role: user.role,
           }),

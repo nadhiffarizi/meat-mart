@@ -26,6 +26,26 @@ export class AdminController {
       next(error);
     }
   }
+
+  async readUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (req.user?.role !== 'SUPER_ADMIN') {
+        return responseHandler(
+          res,
+          `You have insufficient permission to access.`,
+          statusEnum.FAILED,
+          null,
+          403,
+        );
+      }
+
+      let data: serviceFeedback = await adminService.getUserById(req);
+
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
   async createUsers(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.user?.role !== 'SUPER_ADMIN') {
