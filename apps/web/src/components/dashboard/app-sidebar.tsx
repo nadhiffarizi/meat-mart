@@ -26,6 +26,7 @@ import Image from 'next/image';
 import meatMart from '@/media/image/meat-mart-large.jpeg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 // Menu items.
 const items = [
@@ -81,7 +82,16 @@ export function AppSidebar() {
             })}
           </nav>
         </div>
-        <button className="bg-slate-500 py-2 px-4 rounded-2xl">Log Out</button>
+        <button
+          className="bg-slate-500 py-2 px-4 rounded-2xl"
+          onClick={() => {
+            signOut({
+              redirectTo: '/',
+            });
+          }}
+        >
+          Log Out
+        </button>
       </SidebarContent>
     </Sidebar>
   );

@@ -61,7 +61,7 @@ class AdminService {
     }
 
     const newAdmin = await prisma.users.create({
-      data: req.body,
+      data: { ...req.body, role: 'ADMIN', is_verified: true },
     });
     const feedback: serviceFeedback = {
       code: 201,

@@ -5,6 +5,7 @@ import { IGetUsers } from '@/app/interfaces/user.interface';
 import { api } from '@/helpers/api';
 import { DataTable } from '../DataTable';
 import { columns, User } from './columns';
+import { Toaster, toast } from 'sonner';
 
 import {
   Accordion,
@@ -12,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { useSession } from 'next-auth/react';
 
 function ViewUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -31,10 +33,18 @@ function ViewUsers() {
     },
   ];
 
+  const { data: session, update, status } = useSession();
+
   useEffect(() => {
     async function getUsers() {
       try {
-        const response = await api(`admin/users`, 'GET');
+        const response = await api(
+          `admin/users`,
+          'GET',
+          {},
+          session?.user.access_token,
+        );
+
         const simplifiedUsers: User[] = response.data.map(
           (user: IGetUsers) => ({
             email: user.email,
@@ -43,10 +53,12 @@ function ViewUsers() {
         );
 
         setUsers(simplifiedUsers);
-      } catch (error) {}
+      } catch (error: any) {
+        console.log(error);
+      }
     }
     getUsers();
-  }, []);
+  }, [session?.user.access_token, session]);
 
   return (
     // <Dropdown buttonLabel="View all Users">
@@ -64,7 +76,9 @@ function ViewUsers() {
     //   </AccordionItem>
     // </Accordion>
 
-    <DataTable columns={columns} data={dummyUsers} />
+    <>
+      <DataTable columns={columns} data={users} />
+    </>
   );
 }
 
