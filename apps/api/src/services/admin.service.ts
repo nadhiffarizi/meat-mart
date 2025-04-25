@@ -3,6 +3,7 @@ import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
 import { getUserByEmail, getUserById } from '@/helpers/user.prisma';
+import { hashedPassword } from '@/helper/bcrypt';
 
 class AdminService {
   async getAllUsers(req: Request) {
@@ -107,7 +108,12 @@ class AdminService {
     }
 
     const newAdmin = await prisma.users.create({
-      data: { ...req.body, role: 'ADMIN', is_verified: true },
+      data: {
+        ...req.body,
+        password: await hashedPassword(req.body.password),
+        role: 'ADMIN',
+        is_verified: true,
+      },
     });
     const feedback: serviceFeedback = {
       code: 201,

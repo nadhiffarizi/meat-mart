@@ -8,20 +8,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
 import { IGetUsers } from '@/app/interfaces/user.interface';
-import { Alert } from '@/components/ui/alert';
-import Link from 'next/link';
-import { CircleCheckBig, Trash } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import FormAlert from './Alerts/FormAlert';
 import EditAdminFormDeleteAlert from './Alerts/EditAdminFormDeleteAlert';
 
