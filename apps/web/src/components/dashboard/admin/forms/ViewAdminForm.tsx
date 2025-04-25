@@ -11,16 +11,6 @@ import { Alert } from '@/components/ui/alert';
 import Link from 'next/link';
 import { PenOff } from 'lucide-react';
 
-const validationSchema = Yup.object({
-  email: Yup.string().required('Please enter a valid email.'),
-  password: Yup.string().required('Please enter a new password for this user.'),
-  first_name: Yup.string().required('Please enter a first name for this user.'),
-  last_name: Yup.string(),
-  phone_number: Yup.string().matches(
-    /^\d+$/,
-    'Please enter a valid phone number for this user.',
-  ),
-});
 function ViewAdminForm({ id }: { id: string }) {
   const router = useRouter();
   const { data: session, update } = useSession();
@@ -52,7 +42,7 @@ function ViewAdminForm({ id }: { id: string }) {
       password: '',
       phone_number: userDetails?.phone_number,
     },
-    validationSchema,
+
     onSubmit: async (values) => {},
   });
   return (

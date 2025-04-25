@@ -22,6 +22,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import FormAlert from './Alerts/FormAlert';
+import EditAdminFormDeleteAlert from './Alerts/EditAdminFormDeleteAlert';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),
@@ -33,29 +35,6 @@ const validationSchema = Yup.object({
     'Please enter a valid phone number for this user.',
   ),
 });
-
-async function deleteAccount(
-  id: string,
-  router: any,
-  token: string | undefined,
-  setDisabled: any,
-) {
-  try {
-    const response = await api(`admin/users/${id}`, 'DELETE', {}, token);
-
-    if (response) {
-      setDisabled(true);
-      toast.success(response.message || 'User successfully deleted!');
-      router.push(`/dashboard/users/${id}/edit?status=deleted`);
-    } else {
-      setDisabled(false);
-      toast.error(response.message || 'Something went wrong!');
-    }
-  } catch (error: any) {
-    setDisabled(false);
-    toast.error(error.message || 'Something went wrong!');
-  }
-}
 
 function EditAdminForm({ id }: { id: string }) {
   const router = useRouter();
@@ -122,38 +101,7 @@ function EditAdminForm({ id }: { id: string }) {
   });
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
-      {status == 'successful' && (
-        <Alert variant={'affirmative'}>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col">
-              <div className="text-lg font-semibold">Changes Saved</div>
-              <div className="text-sm">
-                Click{' '}
-                <Link href={'/dashboard/users'} className="underline">
-                  here to return to dashboard.
-                </Link>{' '}
-              </div>
-            </div>
-            <CircleCheckBig className="w-8 h-8" />
-          </div>
-        </Alert>
-      )}
-      {status == 'deleted' && (
-        <Alert variant={'destructive'}>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col">
-              <div className="text-lg font-semibold">User Deleted</div>
-              <div className="text-sm">
-                Click{' '}
-                <Link href={`/dashboard/users`} className="underline">
-                  here to return to dashboard.
-                </Link>{' '}
-              </div>
-            </div>
-            <CircleCheckBig className="w-8 h-8" />
-          </div>
-        </Alert>
-      )}
+      <FormAlert status={status} />
       <div className="flex flex-col gap-2">
         <label htmlFor="email">
           Email <span className="text-red-500">*</span>
@@ -247,16 +195,6 @@ function EditAdminForm({ id }: { id: string }) {
         )}
       </div>
 
-      {/* <button
-        className={
-          disabled
-            ? 'text-white bg-secondaryText px-4 py-2 rounded-[12px]'
-            : 'text-white bg-orangeAccent hover:bg-secondaryText px-4 py-2 rounded-[12px]'
-        }
-        disabled={disabled}
-      >
-        {disabled ? 'Adding Employee' : 'Add Employee'}
-      </button> */}
       <Button
         variant="default"
         size={'lg'}
@@ -271,50 +209,11 @@ function EditAdminForm({ id }: { id: string }) {
         {disabled ? 'Saving Changes' : 'Save Changes'}
       </Button>
 
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button
-            variant="outline"
-            size={'lg'}
-            className={
-              disabled
-                ? ' bg-secondaryText px-4 py-2  text-base w-full'
-                : 'text-red-500 hover:bg-red-500 hover:text-white  px-4 py-2  text-base w-full'
-            }
-            disabled={disabled}
-            type="button"
-          >
-            Delete User <Trash />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this
-              account and all its data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-            <button
-              onClick={() => {
-                deleteAccount(
-                  id,
-                  router,
-                  session?.user.access_token,
-                  setDisabled,
-                );
-              }}
-            >
-              <AlertDialogAction className="bg-orangeAccent text-white">
-                Continue
-              </AlertDialogAction>
-            </button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <EditAdminFormDeleteAlert
+        id={id}
+        disabled={disabled}
+        setDisabled={setDisabled}
+      />
 
       <Button
         variant="link"
