@@ -24,3 +24,18 @@ export interface IFilterTransactions {
     until: number | null,
     statusArray: string[] | undefined
 }
+
+export interface IFilterStatus {
+    AWAITING_PAYMENT: boolean;
+    CANCELED: boolean;
+    PENDING_ADMIN: boolean;
+    CONFIRMED_ADMIN: boolean;
+    DONE: boolean;
+}
+
+export interface IFilterOrder {
+    invoiceNumber: string | undefined,
+    from: number | null,
+    until: number | null,
+    statusArray: string[] | undefined
+}

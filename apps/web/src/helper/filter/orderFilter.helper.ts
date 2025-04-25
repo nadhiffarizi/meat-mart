@@ -1,4 +1,4 @@
-import { IFilterStatusOrder } from "@/interface/filter.interface";
+import { IFilterOrder, IFilterStatusOrder } from "@/interface/filter.interface";
 
 export const statusFilterUpdate = (statusFilter: string, statusState: IFilterStatusOrder) => {
     let temp = { ...statusState }
@@ -27,4 +27,41 @@ export const statusFilterUpdate = (statusFilter: string, statusState: IFilterSta
 
     }
     return temp
+}
+
+export const statusFilterToArray = (statusState: IFilterStatusOrder) => {
+
+    if (!statusState) return undefined
+
+    const statusArray: string[] = []
+    Object.entries(statusState).map((value) => {
+        if (value[1]) {
+            statusArray.push(value[0])
+        }
+    })
+
+    return statusArray
+}
+
+export const setQueryParams = (filterOrder: IFilterOrder | undefined) => {
+    if (!filterOrder) return ''
+
+    const params = new URLSearchParams()
+    let queryParams: string[] = []
+    if (filterOrder.from) {
+        params.append('from', filterOrder.from.toString())
+    }
+    if (filterOrder.until) {
+        params.append('until', filterOrder.until.toString())
+    }
+    if (filterOrder.invoiceNumber && filterOrder.invoiceNumber?.length > 0) {
+        params.append('invoice', filterOrder.invoiceNumber)
+    }
+
+    if (filterOrder.statusArray && filterOrder.statusArray?.length > 0) {
+        for (let status of filterOrder.statusArray) {
+            params.append('status', status)
+        }
+    }
+    return params
 }

@@ -11,7 +11,7 @@ export const convertOrderStatusToEnum = (status: string[]): E_OrderStatus[] => {
         } else {
             inputStatus = [status]
         }
-        for (let s of status) {
+        for (let s of inputStatus) {
             switch (s) {
                 case 'AWAITING_PAYMENT':
                     statusEnums.push(E_OrderStatus.AWAITING_PAYMENT)

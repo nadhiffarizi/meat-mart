@@ -1,5 +1,4 @@
 import { statusEnum } from "@/enums/statusEnum.enums"
-import { getOrderByInvoice, getOrderByParams } from "@/helper/order/order.helper"
 import { returnServiceFeedback } from "@/helper/responseHandler.helper"
 import { convertRoleToEnum } from "@/helper/role.helper"
 import { getTransactionByInvoice, getTransactionsByParams } from "@/helper/transaction/transactionQuery.helper"
@@ -12,6 +11,7 @@ class TransactionListService {
             const { status, invoice, from, until } = req.query // from and until are start date and end date search range
             const { userId, role } = req.body
 
+
             // check role
             const role_ = convertRoleToEnum(role)
 
@@ -21,7 +21,10 @@ class TransactionListService {
 
             if (invoice) {
                 // get transaction list by invoice number
-                transactionList = [await getTransactionByInvoice(userId, String(invoice))]
+                const result = await getTransactionByInvoice(userId, String(invoice))
+                if (result) {
+                    transactionList = [result]
+                }
             } else {
                 // get order list by status or date 
                 transactionList = [...(await getTransactionsByParams(userId, status as string[], from as string, until as string))]

@@ -12,8 +12,8 @@ export class OrderRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT 
 
-    this.router.get('/get/list', orderController.getOrderListUser);
-    this.router.get('/admin/get/list', orderController.getOrderListAdmin);
+    this.router.get('/list', orderController.getOrderListUser);
+    this.router.get('/admin/list', orderController.getOrderListAdmin);
     this.router.post('/admin/cancel', orderController.cancelOrderByAdmin);
     this.router.post("/admin/sendorder", orderController.sendOrderByAdmin)
     this.router.post('/customer/confirm', orderController.confirmOrderByCust);

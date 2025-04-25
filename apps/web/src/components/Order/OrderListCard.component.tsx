@@ -1,10 +1,11 @@
 import { currencyFormatter } from '@/helper/product.helper';
 import { ICart } from '@/interface/cart.interface';
+import { IOrder } from '@/interface/order.interface';
 import { ShoppingBag } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
 import * as React from 'react';
 
-export default function OrderListCard() {
+export default function OrderListCard({ orderData }: { orderData: IOrder }) {
   const statusFormatter = (status: string) => {
     return (
       <Typography variant="overline">
@@ -23,10 +24,12 @@ export default function OrderListCard() {
       <Box sx={{ width: '100%', height: '20%' }}>
         <div className="w-full h-full flex items-center gap-5 ">
           <ShoppingBag className="!fill-transparent !stroke-black !h-full" />
-          <p>Purchase</p>
-          <p className="text-secondaryGreen">Mon, 9 April 2025</p>
-          <>{statusFormatter('tes')}</>
-          <p>Invoice number</p>
+          <p className="text-xs">Purchase</p>
+          <p className="text-xs text-secondaryGreen">
+            Created at {orderData.created_at.split('T')[0]}
+          </p>
+          <>{statusFormatter(orderData.status)}</>
+          {/* <p>{ orderData.}</p> */}
         </div>
       </Box>
       <Box sx={{ width: '100%', height: '60%' }}>
@@ -36,13 +39,13 @@ export default function OrderListCard() {
             product photo
           </div>
           <div className="w-full h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
-            <p>title</p>
-            <p>Quantity</p>
+            <p className="font-semibold">{orderData.product_name}</p>
+            <p className="text-sm">X {orderData.quantity}</p>
           </div>
           <Divider orientation="vertical" sx={{ bgcolor: 'green' }} flexItem />
           <div className="w-1/2 max-w-[200px] h-full max-h-[300px] flex flex-col justify-center py-3 px-3 bg-white ">
-            <p className="font-semibold">Total Belanja</p>
-            <p>Rp. 10,000,000</p>
+            <p className="font-semibold">Total Purchase</p>
+            <p>{currencyFormatter(orderData.sub_total)}</p>
           </div>
         </div>
       </Box>

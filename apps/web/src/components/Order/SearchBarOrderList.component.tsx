@@ -5,18 +5,22 @@ import { Search } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import {
+  IFilterOrder,
   IFilterStatus,
   IFilterStatusOrder,
   IFilterTransactions,
 } from '@/interface/filter.interface';
-import { trxFilterContext } from '@/app/transaction-list/page';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
-import { statusFilterUpdate } from '@/helper/filter/orderFilter.helper';
+import {
+  statusFilterToArray,
+  statusFilterUpdate,
+} from '@/helper/filter/orderFilter.helper';
+import { orderFilterContext } from '@/app/order-list/page';
 
 export default function SearchBarOrderList() {
   // consume context
-  const filterContext = React.useContext(trxFilterContext);
+  const filterContext = React.useContext(orderFilterContext);
 
   // localstate
   const [status, setStatus] = React.useState<IFilterStatusOrder>({
@@ -40,14 +44,14 @@ export default function SearchBarOrderList() {
       setUntil(null);
       return;
     }
-    const filters: IFilterTransactions = {
+    const filters: IFilterOrder = {
       from: !from ? null : from.toDate().getTime(),
       invoiceNumber: invoiceNumber,
-      statusArray: [],
+      statusArray: statusFilterToArray(status),
       until: !until ? null : until.toDate().getTime(),
     };
 
-    filterContext?.setFilterTransactions({ ...filters });
+    filterContext?.setFilterOrder({ ...filters });
   }, [from, until, status, invoiceNumber]);
 
   // HANDLER
@@ -107,110 +111,116 @@ export default function SearchBarOrderList() {
   // generate status filter
   const statusBar = () => {
     return (
-      <div className="w-full  overflow-x-auto lg:h-[70px] flex gap-5 items-center bg-white ">
-        <p className="font-semibold">Status</p>
-        <Button
-          id="btn-waiting-payment"
-          style={{ textTransform: 'none' }}
-          onClick={() =>
-            setStatus(statusFilterUpdate('AWAITING_PAYMENT', status))
-          }
-          className={`relative !rounded-full !w-[200px] !bg-slate-50 ${status.AWAITING_PAYMENT ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.AWAITING_PAYMENT ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+      <div className=" flex gap-5 w-full overflow-x-auto lg:h-[110px] px-2 py-2 bg-white ">
+        <div className="h-full ">
+          <span className="font-semibold">Status</span>
+        </div>
+        <div className="h-full flex gap-2 flex-wrap ">
+          <Button
+            id="btn-waiting-payment"
+            style={{ textTransform: 'none' }}
+            onClick={() =>
+              setStatus(statusFilterUpdate('AWAITING_PAYMENT', status))
+            }
+            className={`relative !rounded-full !bg-slate-50 ${status.AWAITING_PAYMENT ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            Waiting Payment
-          </p>
-        </Button>
-        <Button
-          id="btn-canceled"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('CANCELED', status))}
-          className={`relative !rounded-full !w-[120px] !bg-slate-50 ${status.CANCELED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.CANCELED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            <p
+              className={`${status.AWAITING_PAYMENT ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              Waiting Payment
+            </p>
+          </Button>
+          <Button
+            id="btn-canceled"
+            style={{ textTransform: 'none' }}
+            onClick={() => setStatus(statusFilterUpdate('CANCELED', status))}
+            className={`relative !rounded-full !bg-slate-50 ${status.CANCELED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            Canceled
-          </p>
-        </Button>
-        <Button
-          id="btn-pending-admin"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('PENDING_ADMIN', status))}
-          className={`relative !rounded-full !w-[200px] !bg-slate-50 ${status.PENDING_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.PENDING_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            <p
+              className={`${status.CANCELED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              Canceled
+            </p>
+          </Button>
+          <Button
+            id="btn-pending-admin"
+            style={{ textTransform: 'none' }}
+            onClick={() =>
+              setStatus(statusFilterUpdate('PENDING_ADMIN', status))
+            }
+            className={`relative !text-nowrap !rounded-full !bg-slate-50 ${status.PENDING_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            Pending Admin
-          </p>
-        </Button>
-        <Button
-          id="btn-confirmed-admin"
-          style={{ textTransform: 'none' }}
-          onClick={() =>
-            setStatus(statusFilterUpdate('CONFIRMED_ADMIN', status))
-          }
-          className={`relative !rounded-full !bg-slate-50 ${status.CONFIRMED_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.CONFIRMED_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            <p
+              className={`${status.PENDING_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              Pending Admin
+            </p>
+          </Button>
+          <Button
+            id="btn-confirmed-admin"
+            style={{ textTransform: 'none' }}
+            onClick={() =>
+              setStatus(statusFilterUpdate('CONFIRMED_ADMIN', status))
+            }
+            className={`relative !text-nowrap !rounded-full !bg-slate-50 ${status.CONFIRMED_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            Confirmed Admin
-          </p>
-        </Button>
+            <p
+              className={`${status.CONFIRMED_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              Confirmed Admin
+            </p>
+          </Button>
 
-        <Button
-          id="btn-onprocess"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('ON_PROCESS', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.ON_PROCESS ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.ON_PROCESS ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+          <Button
+            id="btn-onprocess"
+            style={{ textTransform: 'none' }}
+            onClick={() => setStatus(statusFilterUpdate('ON_PROCESS', status))}
+            className={`relative !text-nowrap !rounded-full !bg-slate-50 ${status.ON_PROCESS ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            On Process
-          </p>
-        </Button>
-        <Button
-          id="btn-ondelivery"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('ON_DELIVERY', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.ON_DELIVERY ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.ON_DELIVERY ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            <p
+              className={`${status.ON_PROCESS ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              On Process
+            </p>
+          </Button>
+          <Button
+            id="btn-ondelivery"
+            style={{ textTransform: 'none' }}
+            onClick={() => setStatus(statusFilterUpdate('ON_DELIVERY', status))}
+            className={`relative !rounded-full !bg-slate-50 ${status.ON_DELIVERY ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            On Delivery
-          </p>
-        </Button>
-        <Button
-          id="btn-confirm"
-          style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('CONFIRMED', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.CONFIRMED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
-        >
-          <p
-            className={`${status.CONFIRMED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            <p
+              className={`${status.ON_DELIVERY ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              On Delivery
+            </p>
+          </Button>
+          <Button
+            id="btn-confirm"
+            style={{ textTransform: 'none' }}
+            onClick={() => setStatus(statusFilterUpdate('CONFIRMED', status))}
+            className={`relative !rounded-full !bg-slate-50 ${status.CONFIRMED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
           >
-            Confirmed
-          </p>
-        </Button>
-        <Button
-          id="btn-reset"
-          style={{ textTransform: 'none' }}
-          onClick={handleResetFilter}
-          className="relative  !h-fit"
-        >
-          <p className=" text-secondaryGreen font-semibold">Reset filter</p>
-        </Button>
+            <p
+              className={`${status.CONFIRMED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            >
+              Confirmed
+            </p>
+          </Button>
+          <Button
+            id="btn-reset"
+            style={{ textTransform: 'none' }}
+            onClick={handleResetFilter}
+            className="relative  !h-fit"
+          >
+            <p className=" text-secondaryGreen font-semibold">Reset filter</p>
+          </Button>
+        </div>
       </div>
     );
   };
   return (
-    <div className="w-full lg:h-[150px] flex flex-col bg-white shadow-md rounded-md py-3 lg:px-5">
+    <div className="w-full lg:h-[200px] flex flex-col bg-white shadow-md rounded-md py-3 lg:px-5">
       <div className="w-full lg:h-[70px] flex gap-5 bg-white ">
         <div className="w-1/2  h-full ">
           {/** for input search bar */}

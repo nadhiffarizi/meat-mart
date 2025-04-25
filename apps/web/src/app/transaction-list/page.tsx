@@ -46,8 +46,14 @@ export default function TransactionListPage() {
       );
 
       getTrxResponse
-        .then((v) => v.json())
-        .then((value) => setTrxData(value['data']));
+        .then((v) => {
+          if (v.status !== 200) throw new Error();
+          return v.json();
+        })
+        .then((value) => setTrxData(value['data']))
+        .catch(() =>
+          callToast('No data satisfy filter criteria', 'INFO', 2000),
+        );
     } catch (error) {
       callToast((error as Error).message, 'ERROR', 2000);
     }

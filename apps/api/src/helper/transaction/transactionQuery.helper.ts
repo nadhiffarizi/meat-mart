@@ -1,5 +1,6 @@
 import prisma from "@/prisma"
 import { convertOrderStatusToEnum, convertTransactionStatusToEnum } from "../convertStatus.helper"
+import { number } from "zod"
 
 export const getTransactionByInvoice = async (userId: string, invoice: string) => {
 
@@ -15,22 +16,20 @@ export const getTransactionByInvoice = async (userId: string, invoice: string) =
         }
     })
 
-    if (!transactions) throw new Error("transaction id not found")
     return transactions
 }
 
 export const getTransactionsByParams = async (userId: string, status?: string[], from?: string, until?: string) => {
-    // access by user facing service
-    // created_at: {
-    //     gte: !from ? new Date() : from,
-    //         lte: !until ? new Date() : until
-    // },
+
     const transactions = await prisma.transactions.findMany({
         where: {
             AND: {
                 users_id: userId,
                 deleted_at: null,
-
+                created_at: {
+                    gte: !from ? new Date("January 01, 1979") : new Date(parseInt(from)),
+                    lte: !until ? new Date() : new Date(parseInt(until) + 1000 * 60 * 60 * 24) //plus 1 day
+                },
                 transaction_status: {
                     in: [...convertTransactionStatusToEnum(status as string[])]
                 }
