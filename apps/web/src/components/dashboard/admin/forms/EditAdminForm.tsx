@@ -4,14 +4,28 @@ import * as Yup from 'yup';
 import { Toaster, toast } from 'sonner';
 import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
 import { IGetUsers } from '@/app/interfaces/user.interface';
+import { Alert } from '@/components/ui/alert';
+import Link from 'next/link';
+import { CircleCheckBig, Trash } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),
-  password: Yup.string().required('Please enter a password for this user.'),
+  password: Yup.string().required('Please enter a new password for this user.'),
   first_name: Yup.string().required('Please enter a first name for this user.'),
   last_name: Yup.string(),
   phone_number: Yup.string().matches(
@@ -20,8 +34,33 @@ const validationSchema = Yup.object({
   ),
 });
 
+async function deleteAccount(
+  id: string,
+  router: any,
+  token: string | undefined,
+  setDisabled: any,
+) {
+  try {
+    const response = await api(`admin/users/${id}`, 'DELETE', {}, token);
+
+    if (response) {
+      setDisabled(true);
+      toast.success(response.message || 'User successfully deleted!');
+      router.push(`/dashboard/users/${id}/edit?status=deleted`);
+    } else {
+      setDisabled(false);
+      toast.error(response.message || 'Something went wrong!');
+    }
+  } catch (error: any) {
+    setDisabled(false);
+    toast.error(error.message || 'Something went wrong!');
+  }
+}
+
 function EditAdminForm({ id }: { id: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const status = searchParams?.get('status');
   const { data: session, update } = useSession();
   const [disabled, setDisabled] = useState(false);
   const [userDetails, setUserDetails] = useState<IGetUsers>();
@@ -70,6 +109,7 @@ function EditAdminForm({ id }: { id: string }) {
 
         if (response) {
           toast.success(response.message || 'Changes successfully saved!');
+          router.push(`/dashboard/users/${id}/edit?status=successful`);
         } else {
           toast.error(response.message || 'Something went wrong!');
           setDisabled(false);
@@ -82,6 +122,38 @@ function EditAdminForm({ id }: { id: string }) {
   });
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
+      {status == 'successful' && (
+        <Alert variant={'affirmative'}>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col">
+              <div className="text-lg font-semibold">Changes Saved</div>
+              <div className="text-sm">
+                Click{' '}
+                <Link href={'/dashboard/users'} className="underline">
+                  here to return to dashboard.
+                </Link>{' '}
+              </div>
+            </div>
+            <CircleCheckBig className="w-8 h-8" />
+          </div>
+        </Alert>
+      )}
+      {status == 'deleted' && (
+        <Alert variant={'destructive'}>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col">
+              <div className="text-lg font-semibold">User Deleted</div>
+              <div className="text-sm">
+                Click{' '}
+                <Link href={`/dashboard/users`} className="underline">
+                  here to return to dashboard.
+                </Link>{' '}
+              </div>
+            </div>
+            <CircleCheckBig className="w-8 h-8" />
+          </div>
+        </Alert>
+      )}
       <div className="flex flex-col gap-2">
         <label htmlFor="email">
           Email <span className="text-red-500">*</span>
@@ -194,18 +266,65 @@ function EditAdminForm({ id }: { id: string }) {
             : ' bg-orangeAccent  px-4 py-2  text-base'
         }
         disabled={disabled}
-        onClick={() => {}}
+        type="submit"
       >
         {disabled ? 'Saving Changes' : 'Save Changes'}
       </Button>
+
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="outline"
+            size={'lg'}
+            className={
+              disabled
+                ? ' bg-secondaryText px-4 py-2  text-base w-full'
+                : 'text-red-500 hover:bg-red-500 hover:text-white  px-4 py-2  text-base w-full'
+            }
+            disabled={disabled}
+            type="button"
+          >
+            Delete User <Trash />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this
+              account and all its data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+            <button
+              onClick={() => {
+                deleteAccount(
+                  id,
+                  router,
+                  session?.user.access_token,
+                  setDisabled,
+                );
+              }}
+            >
+              <AlertDialogAction className="bg-orangeAccent text-white">
+                Continue
+              </AlertDialogAction>
+            </button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Button
         variant="link"
         className=" text-primaryText px-4 py-2 text-base "
         onClick={() => {
           router.push('/dashboard/users');
         }}
+        type="button"
       >
-        {disabled ? 'Back to User Management' : 'Cancel'}
+        Cancel
       </Button>
       <Toaster richColors className=""></Toaster>
     </form>

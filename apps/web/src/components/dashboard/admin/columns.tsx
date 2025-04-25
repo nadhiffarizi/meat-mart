@@ -77,7 +77,9 @@ export const columns: ColumnDef<User>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={'/dashboard'}>View user details</Link>
+              <Link href={`/dashboard/users/${row.original.id}`}>
+                View user details
+              </Link>
             </DropdownMenuItem>
             {payment.role === 'ADMIN' && (
               <DropdownMenuItem>

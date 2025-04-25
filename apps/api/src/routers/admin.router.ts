@@ -29,11 +29,7 @@ export class AdminRouter {
       validateAdminUpdateBody,
       adminController.updateUsers,
     );
-    this.router.delete(
-      '/users/:email',
-      verifyToken,
-      adminController.deleteUsers,
-    );
+    this.router.delete('/users/:id', verifyToken, adminController.deleteUsers);
     // .... continue api
   }
 
