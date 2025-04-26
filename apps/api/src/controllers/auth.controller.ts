@@ -81,6 +81,39 @@ export class AuthController {
       next(error);
     }
   }
+
+  public async updateUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await authService.updateUser(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getUserByEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await authService.getUserByEmail(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  public async updateImageProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const data = await authService.updateImage(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
 
 export default new AuthController();

@@ -5,12 +5,14 @@ declare module 'next-auth' {
     id?: string | undefined;
     first_name?: string | null | undefined;
     last_name?: string | null | undefined;
-    email?: string | null | undefined;
-    img_src?: string | null | undefined;
+    email: string | null | undefined;
+    image_url?: string | null | undefined;
     provider?: string | null | undefined;
     access_token?: string | undefined;
     refresh_token?: string | undefined;
     role?: string | undefined;
+    phone_number?: string | undefined;
+    is_verified?: boolean | undefined;
   }
 
   interface Session {

@@ -13,6 +13,7 @@ import { IUser } from '@/interface/User.interface';
 import { generateAuthToken } from '@/helper/token';
 import { v4 as uuidv4 } from 'uuid';
 import { addHours, isAfter } from 'date-fns';
+import { Prisma } from '@prisma/client';
 
 class AuthService {
   async register(req: Request) {
@@ -38,7 +39,7 @@ class AuthService {
       data: {
         email,
         // password: await hashedPassword(password),
-        password: await hashedPassword('ratihjulistina'),
+        password: await hashedPassword('tes'),
         is_verified: false,
         verification_link: verificationToken,
         verification_expiry: tokenExpiry,
@@ -335,6 +336,179 @@ class AuthService {
       data: { email: updatedUser.email },
       status: statusEnum.SUCCESS,
       message: 'Password successfully reseted',
+    };
+  }
+  async updateUser(req: Request) {
+    const {
+      emailUpdate,
+      email,
+      first_name,
+      last_name,
+      phone_number,
+      password,
+      newPassword,
+    } = req.body;
+
+    console.log('Updating user:', {
+      emailUpdate,
+      email,
+      first_name,
+      last_name,
+      phone_number,
+      password,
+      newPassword,
+    });
+
+    // if (!id) {
+    //   throw new Error('User ID is required');
+    // }
+
+    // const existingEmail = await prisma.users.findUnique({
+    //   where: { email },
+    // });
+    // if (!existingEmail) {
+    //   throw new Error('Email is registered');
+    // }
+    const existingUser = (await getUserByEmail(email)) as IUser;
+
+    // if (
+    //   !existingEmail.password ||
+    //   !(await compare(password, existingEmail.password))
+    // ) {
+    //   throw new Error('Password is incorrect');
+    //   // return {
+    //   //   code: 401,
+    //   //   data: null,
+    //   //   status: statusEnum.FAILED,
+    //   //   message: `The password that you've entered is incorrect.`,
+    //   // };
+    // }
+
+    if (existingUser.email !== emailUpdate) {
+      const verificationToken = uuidv4();
+      const tokenExpiry = new Date(Date.now() + 3600000);
+      console.log('SELISIH WAKTU', Date.now(), tokenExpiry);
+      await sendVerificationEmail(emailUpdate, verificationToken);
+
+      const emailUpdatedUser = await prisma.users.update({
+        where: {
+          email: existingUser.email,
+        },
+        data: {
+          is_verified: false,
+          verification_link: verificationToken,
+          verification_expiry: tokenExpiry,
+          first_name: first_name,
+          last_name: last_name,
+          phone_number: phone_number,
+          email: emailUpdate,
+          // password: await hashedPassword(password),
+        },
+      });
+
+      return {
+        code: 200,
+        data: emailUpdatedUser,
+        status: statusEnum.SUCCESS,
+        message: 'Profile successfully updated',
+      };
+    }
+
+    if (existingUser.email === emailUpdate) {
+      const updatedUser = await prisma.users.update({
+        where: { email },
+        data: {
+          first_name: first_name,
+          last_name: last_name,
+          phone_number: phone_number,
+          //password: await hashedPassword(password),
+        },
+      });
+
+      console.log('UDATEDUSER', updatedUser);
+      return {
+        code: 200,
+        data: updatedUser,
+        status: statusEnum.SUCCESS,
+        message: 'Profile successfully updated',
+      };
+    }
+
+    if (existingUser.password !== (await hashedPassword(password))) {
+      return {
+        code: 401,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `The password that you've entered is incorrect.`,
+      };
+    }
+
+    if (existingUser.password !== (await hashedPassword(newPassword))) {
+      const updatePass = await prisma.users.update({
+        where: { email },
+        data: { password: await hashedPassword(newPassword) },
+      });
+      console.log('EMAIL TERGANTI', updatePass);
+      return {
+        code: 200,
+        data: updatePass,
+        status: statusEnum.SUCCESS,
+        message: 'Password successfully updated',
+      };
+    }
+
+    return {
+      code: 200,
+      data: null,
+      status: statusEnum.SUCCESS,
+      message: 'Profile successfully updated',
+    };
+  }
+
+  async getUserByEmail(req: Request) {
+    const { email } = req.body;
+    const getUser = await prisma.users.findUnique({
+      where: { email, role: 'CUSTOMER' },
+      select: {
+        first_name: true,
+        last_name: true,
+        phone_number: true,
+        email: true,
+        is_verified: true,
+        image_url: true,
+      },
+    });
+    if (!getUser) {
+      throw new Error('User not found');
+    }
+
+    if (!getUser?.is_verified) {
+      throw new Error('The email is not verified');
+    }
+
+    return {
+      code: 200,
+      data: getUser,
+      status: statusEnum.SUCCESS,
+      message: 'Successfully fetch data profile',
+    };
+  }
+
+  async updateImage(req: Request) {
+    const { email, imageUrl } = req.body;
+
+    await prisma.users.update({
+      where: { email },
+      data: {
+        image_url: imageUrl,
+      },
+    });
+
+    return {
+      code: 200,
+      data: null,
+      status: statusEnum.SUCCESS,
+      message: 'Successfully update profile image',
     };
   }
 }

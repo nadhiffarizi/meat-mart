@@ -1,5 +1,8 @@
 import authController, { AuthController } from '@/controllers/auth.controller';
-import { verifyRefreshToken } from '@/middleware/authorize.middleware';
+import {
+  verifyRefreshToken,
+  verifyToken,
+} from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class AuthRouter {
@@ -18,7 +21,10 @@ export class AuthRouter {
     this.router.post('/reset-password', authController.resetPassword);
     this.router.post('/login', authController.login);
     this.router.post('/token', verifyRefreshToken, authController.refreshToken);
+    this.router.post('/profile', authController.getUserByEmail);
+    this.router.post('/profile/image', authController.updateImageProfile);
     this.router.get('/users', authController.getUsers);
+    this.router.patch('/', authController.updateUser);
     // this.router.post("/mail", authController.sendVerificationEmail);
   }
 

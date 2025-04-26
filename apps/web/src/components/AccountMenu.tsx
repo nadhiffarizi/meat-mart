@@ -1,4 +1,5 @@
 import { signOut, useSession } from 'next-auth/react';
+import { useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -11,15 +12,40 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { Button } from '@mui/material';
 import Link from 'next/link';
-
-// interface AccountMenuProps {
-//   session: any;
-// }
+import { getProfile } from '@/helpers/handlers/auth';
+import { IProfile } from '@/interfaces/card.interface';
+import { useRouter } from 'next/navigation';
 
 export default function AccountMenu() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  console.log('Session data:', session);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [profile, setProfile] = useState<IProfile | null>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        if (status === 'authenticated' && session.user?.email) {
+          {
+            const data = await getProfile(session.user.email);
+            // console.log('GET PROFILE', data);
+            setProfile(data);
+            // if (data.image_url) {
+            //   setImagePreview(data.image_url);
+            // }
+          }
+        }
+      } catch (err) {
+        //setError(err instanceof Error ? err.message : 'Failed to load profile');
+        console.error('Profile load error:', err);
+      }
+    }
+
+    loadProfile();
+  }, [status, session]);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -32,7 +58,13 @@ export default function AccountMenu() {
         <Tooltip title="Account settings">
           <Button
             onClick={handleClick}
-            startIcon={<Avatar sx={{ width: 32, height: 32 }} />}
+            startIcon={
+              <Avatar
+                sx={{ width: 32, height: 32 }}
+                src={profile?.image_url || undefined}
+                alt={profile?.first_name || 'User'}
+              />
+            }
             sx={{
               ml: 2,
               textTransform: 'none',
@@ -45,7 +77,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            {session?.user?.first_name || 'Username'}
+            {profile?.first_name || 'username'}
           </Button>
         </Tooltip>
       </Box>
@@ -89,13 +121,13 @@ export default function AccountMenu() {
         <MenuItem
           onClick={handleClose}
           component={Link}
-          href="/profile"
+          href="/profile/profil"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar /> Profile
+          <Avatar src={profile?.image_url || undefined} /> Profile
         </MenuItem>
         <MenuItem
           onClick={handleClose}
@@ -104,7 +136,7 @@ export default function AccountMenu() {
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar /> My account
+          <Avatar src={profile?.image_url || undefined} /> My account
         </MenuItem>
         <Divider />
         {/* <MenuItem onClick={handleClose}>

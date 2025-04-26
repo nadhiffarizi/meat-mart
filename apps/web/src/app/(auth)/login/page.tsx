@@ -25,7 +25,7 @@ export default function Page() {
     },
     onSubmit: async (values) => {
       setErrMessage('');
-      console.log('ini value ku, kalau kamu?', values);
+
       await login(values).then((res) => {
         if (res?.error) {
           setErrMessage(res.error);

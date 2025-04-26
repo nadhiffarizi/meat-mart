@@ -52,7 +52,7 @@ export default function Page() {
 
       const result = await signIn(provider, {
         redirect: false,
-        callbackUrl: '/dashboard',
+        callbackUrl: '/',
       });
 
       if (result?.error) {

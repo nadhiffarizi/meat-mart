@@ -6,11 +6,15 @@ export interface ICard {
 }
 
 export interface IProfile {
-  id: number;
+  id: string;
+  image_url: string;
   first_name: string;
   last_name: string;
-  password: string;
   email: string;
+  emailUpdate: string;
   phone_number: string;
-  is_verified: boolean;
+  is_verified: boolean | undefined;
+  token: string;
+  password: string;
+  newPassword: string;
 }

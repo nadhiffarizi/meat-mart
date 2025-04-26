@@ -12,6 +12,6 @@ export const updateProfileInit = (user: User) => {
     first_name: user.first_name || '',
     last_name: user.last_name || '',
     image: null,
-    img_src: user.img_src || '',
+    img_src: user.image_url || '',
   };
 };

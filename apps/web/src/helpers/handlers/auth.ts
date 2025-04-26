@@ -4,6 +4,7 @@ import { api } from './api';
 import { cookies } from 'next/headers';
 import { decode } from 'next-auth/jwt';
 import { auth_secret } from '../config';
+import { IProfile } from '@/interfaces/card.interface';
 
 export const login = async (credentials: Partial<Record<string, unknown>>) => {
   console.log('Aku mencoba masuk ya gaess FRONT END nich');
@@ -143,22 +144,38 @@ export const refreshToken = async () => {
   };
 };
 
-export const updateUser = async (
-  data: {
-    first_name: string;
-    last_name: string;
-  },
-  token: string,
-) => {
-  await api(
-    '/auth',
-    'PATCH',
-    {
+export const updateUser = async (data: {
+  emailUpdate: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  password: string;
+  newPassword: string;
+}) => {
+  console.log('UPDETEUSER', data);
+  try {
+    await api('auth/', 'PATCH', {
       body: data,
       contentType: 'application/json',
-    },
-    token,
-  );
+    });
+  } catch (error) {
+    console.log('Error UPDATE PROFILE', error);
+  }
+  return data;
+};
+
+export const getProfile = async (email: string) => {
+  try {
+    const res = await api('auth/profile', 'POST', {
+      body: { email },
+      contentType: 'application/json',
+    });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error UPDATE PROFILE', error);
+  }
 };
 
 export async function registerSocialUser(data: {
@@ -173,3 +190,11 @@ export async function registerSocialUser(data: {
     refresh_token: 'generated-refresh-token',
   };
 }
+
+export const updateProfileImage = async (email: string, imageUrl: string) => {
+  const response = await api('auth/profile/image', 'POST', {
+    body: { email, imageUrl },
+    contentType: 'application/json',
+  });
+  return response;
+};

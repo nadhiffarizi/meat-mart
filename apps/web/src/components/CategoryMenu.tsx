@@ -12,13 +12,6 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { meatCategories } from '@/data/categories';
 
-interface Category {
-  id: number;
-  name: string;
-  icon: string;
-  slug: string;
-}
-
 export default function SlidingCategories() {
   const router = useRouter();
   const pathname = usePathname();
@@ -28,7 +21,6 @@ export default function SlidingCategories() {
     router.push(`/categories/${slug}`);
   };
 
-  // Get current category slug from URL
   const currentSlug = pathname.split('/')[2];
 
   return (
