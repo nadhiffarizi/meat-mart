@@ -13,3 +13,8 @@ export interface IGetUsers {
   updated_at: string;
   deleted_at?: string;
 }
+
+export interface IGetCategories {
+  id: string;
+  name: string;
+}

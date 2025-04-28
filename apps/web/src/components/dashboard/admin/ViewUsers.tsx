@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Dropdown from '../DropDown';
 import { IGetUsers } from '@/app/interfaces/user.interface';
 import { api } from '@/helpers/api';
-import { DataTable } from '../DataTable';
+import { DataTable } from './DataTable';
 import { columns, User } from './columns';
 import { Toaster, toast } from 'sonner';
 

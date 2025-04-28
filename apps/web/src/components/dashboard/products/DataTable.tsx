@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -63,14 +63,14 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Link href={'/dashboard/users/new'}>
+        <Link href={'/dashboard/categories/new'}>
           {' '}
           <Button
             variant="default"
             className={' bg-orangeAccent text-base'}
             onClick={() => {}}
           >
-            Add a New Employee
+            Add a New Category
           </Button>
         </Link>
       </div>

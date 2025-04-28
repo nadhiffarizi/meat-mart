@@ -79,7 +79,7 @@ class AdminService {
       code: 200,
       data: user,
       status: statusEnum.SUCCESS,
-      message: `Successfully fetched user with ID ${req.params}.`,
+      message: `Successfully fetched user with ID ${req.params.id}.`,
     };
     return feedback;
   }

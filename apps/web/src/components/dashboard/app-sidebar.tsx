@@ -3,6 +3,7 @@ import {
   Calendar,
   CircleUser,
   FileChartColumn,
+  Forklift,
   Home,
   Inbox,
   PackageSearch,
@@ -35,6 +36,11 @@ const items = [
     title: 'Products',
     url: '/dashboard/products',
     icon: PackageSearch,
+  },
+  {
+    title: 'Inventory',
+    url: '/dashboard/inventories',
+    icon: Forklift,
   },
   {
     title: 'Discounts',
