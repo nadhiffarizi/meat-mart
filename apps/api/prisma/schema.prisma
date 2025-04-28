@@ -112,6 +112,7 @@ model Products {
   Discounts          Discounts[]
   TransactionDetails TransactionDetails[]
   StockHistory       StockHistory[]
+  ProductCategories  ProductCategories[]
 
   @@map("products")
 }
@@ -124,6 +125,8 @@ model Categories {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt()
   deleted_at DateTime?
+
+  ProductCategories ProductCategories[]
 
   @@map("categories")
 }
@@ -286,4 +289,17 @@ model StockHistory {
   deleted_at DateTime?
 
   @@map("stockhistory")
+}
+
+model ProductCategories {
+  id          String     @id @default(uuid())
+  product_id  String
+  product     Products   @relation(fields: [product_id], references: [id])
+  category_id String
+  category    Categories @relation(fields: [category_id], references: [id])
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt()
+  deleted_at  DateTime?
+
+  @@map("product_categories")
 }

@@ -72,7 +72,7 @@ function CreateAdminForm() {
         <Alert variant={'affirmative'}>
           <div className="flex justify-between items-center">
             <div className="flex flex-col">
-              <div className="text-lg font-semibold">Changes Saved</div>
+              <div className="text-lg font-semibold">User Created</div>
               <div className="text-sm">
                 Click{' '}
                 <Link href={'/dashboard/users'} className="underline">
