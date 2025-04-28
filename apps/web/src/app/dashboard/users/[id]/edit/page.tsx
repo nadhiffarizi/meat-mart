@@ -1,17 +1,21 @@
 import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
-import ViewUsers from '@/components/dashboard/admin/ViewUsers';
-import Dropdown from '@/components/dashboard/DropDown';
+import EditAdminForm from '@/components/dashboard/admin/forms/EditAdminForm';
 import React from 'react';
-import { CornerDownLeft } from 'lucide-react';
 
-function page() {
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+function page({ params: { id } }: Props) {
   return (
     <div className="flex flex-col gap-8">
       <div className="text-primaryText text-3xl font-semibold">
-        Add Employees
+        Edit Employees
       </div>
 
-      <CreateAdmin />
+      <EditAdminForm id={id} />
     </div>
   );
 }

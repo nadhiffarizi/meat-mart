@@ -9,13 +9,10 @@ const adminCreateSchema = z.object({
   first_name: z.string(),
   last_name: z.string().optional(),
   image_url: z.string().optional(),
-  role: z.literal('ADMIN'),
   phone_number: z.string().optional(),
-  is_verified: z.literal(true),
 });
 
 const adminUpdateSchema = z.object({
-  email: z.string().email().optional(),
   password: z.string().optional(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),
