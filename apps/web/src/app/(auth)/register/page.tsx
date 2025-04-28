@@ -45,24 +45,26 @@ export default function Page() {
     },
   });
 
-  const handleSocialLogin = async (provider: 'google') => {
+  const handleGoogleLogin = async () => {
     try {
-      setIsSocialLoading((prev) => ({ ...prev, [provider]: true }));
+      setIsSocialLoading((prev) => ({ ...prev, google: true }));
       setErrMessage('');
 
-      const result = await signIn(provider, {
-        redirect: false,
+      const result = await signIn('google', {
+        redirect: true,
         callbackUrl: '/',
       });
 
       if (result?.error) {
         setErrMessage(result.error);
+      } else if (result?.url) {
+        router.push(result.url);
       }
     } catch (error) {
-      console.error('Social login error:', error);
-      setErrMessage(`Failed to login with ${provider}`);
+      console.error('Google login error:', error);
+      setErrMessage('Failed to login with Google');
     } finally {
-      setIsSocialLoading((prev) => ({ ...prev, [provider]: false }));
+      setIsSocialLoading((prev) => ({ ...prev, google: false }));
     }
   };
 
@@ -83,7 +85,7 @@ export default function Page() {
         <Button
           variant="outlined"
           fullWidth
-          onClick={googleLogin}
+          onClick={handleGoogleLogin}
           disabled={isSocialLoading.google}
           startIcon={
             <Image src="/google.png" alt="Google" width={20} height={20} />

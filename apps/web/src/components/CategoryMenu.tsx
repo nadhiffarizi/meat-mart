@@ -17,11 +17,14 @@ export default function SlidingCategories() {
   const pathname = usePathname();
   const swiperRef = useRef<SwiperCore>();
 
-  const handleCategoryClick = (slug: string) => {
-    router.push(`/categories/${slug}`);
-  };
+  const pathParts = pathname.split('/');
+  const currentCategorySlug = pathParts[2] || '';
+  const currentSubcategorySlug = pathParts[3] || 'terpopuler';
 
-  const currentSlug = pathname.split('/')[2];
+  const handleCategoryClick = (slug: string) => {
+    const subSlug = currentSubcategorySlug || 'terpopuler';
+    router.push(`/categories/${slug}/${currentSubcategorySlug}`);
+  };
 
   return (
     <div className="relative px-4 pb-6 bg-primaryBackground">
@@ -53,7 +56,7 @@ export default function SlidingCategories() {
                   onClick={() => handleCategoryClick(category.slug)}
                   className={`flex gap-2 items-center justify-center pr-6 pl-1 py-1 rounded-full transition-all duration-200 min-w-[100px]
                     ${
-                      currentSlug === category.slug
+                      currentCategorySlug === category.slug
                         ? 'bg-primaryGreen text-white'
                         : 'bg-white hover:bg-primaryGreen hover:text-white'
                     }`}

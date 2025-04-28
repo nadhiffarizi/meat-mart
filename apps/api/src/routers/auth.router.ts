@@ -15,6 +15,7 @@ export class AuthRouter {
 
   private initializeRoutes(): void {
     this.router.post('/register', authController.register);
+    this.router.post('/social', authController.socialRegister);
     this.router.post('/verify', authController.verify);
     this.router.post('/resend-verification', authController.resendVerification);
     this.router.post('/reset-email', authController.resetEmail);

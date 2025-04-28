@@ -1,8 +1,12 @@
 export interface ICard {
-  id: number;
+  id: string;
   name: string;
   price: number;
   stock: number;
+  category: string;
+  popularity: number;
+  isNew: boolean;
+  isSpecial: boolean;
 }
 
 export interface IProfile {

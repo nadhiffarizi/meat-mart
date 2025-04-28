@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { jwtAccessSecret, jwtRefreshSecret } from '../config';
-import { ErrorHandler } from '../helper/responseHandler.helper';
+import { ErrorHandler } from '../helpers/responseHandler.helper';
 import { IUser } from '@/interface/User.interface';
 
 export const verifyToken = (

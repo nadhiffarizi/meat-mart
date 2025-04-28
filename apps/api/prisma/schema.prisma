@@ -67,6 +67,8 @@ model Users {
   created_at          DateTime             @default(now())
   updated_at          DateTime             @updatedAt()
   deleted_at          DateTime?
+  provider            String?              @default("credentials")
+  provider_id         String?              @unique
   UserAddresses       UserAddresses[]
   Stores              Stores[]
   Carts               Carts[]

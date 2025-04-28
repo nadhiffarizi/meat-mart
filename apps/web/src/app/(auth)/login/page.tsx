@@ -1,21 +1,20 @@
-/** @format */
 'use client';
 import { useFormik } from 'formik';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { googleLogin, login } from '@/app/action/auth';
 import { useRouter } from 'next/navigation';
-import Snackbar from '@mui/material/Snackbar';
-import { Alert, Button } from '@mui/material';
+import { Alert, Button, CircularProgress, Snackbar } from '@mui/material';
+import { signIn } from 'next-auth/react';
 
 export default function Page() {
-  const { push } = useRouter();
-  const open = useRef(false);
-  const [errMessage, setErrMessage] = React.useState('');
-  const [isSocialLoading, setIsSocialLoading] = React.useState({
+  const router = useRouter();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errMessage, setErrMessage] = useState('');
+  const [isLoading, setIsLoading] = useState({
     google: false,
-    facebook: false,
+    regular: false,
   });
 
   const formik = useFormik({
@@ -24,23 +23,52 @@ export default function Page() {
       password: '',
     },
     onSubmit: async (values) => {
-      setErrMessage('');
+      try {
+        setIsLoading({ ...isLoading, regular: true });
+        setErrMessage('');
 
-      await login(values).then((res) => {
-        if (res?.error) {
-          setErrMessage(res.error);
+        const result = await login(values);
+
+        if (result?.error) {
+          setErrMessage(result.error);
         } else {
-          open.current = true;
-          push('/');
+          setOpenSnackbar(true);
+          router.push('/');
         }
-      });
+      } catch (error) {
+        setErrMessage('An unexpected error occurred');
+      } finally {
+        setIsLoading({ ...isLoading, regular: false });
+      }
     },
   });
 
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading({ ...isLoading, google: true });
+      setErrMessage('');
+
+      const result = await signIn('google', {
+        redirect: true,
+        callbackUrl: '/',
+      });
+
+      if (result?.error) {
+        setErrMessage(result.error);
+      } else if (result?.url) {
+        router.push(result.url);
+      }
+    } catch (error) {
+      setErrMessage('Failed to login with Google');
+    } finally {
+      setIsLoading({ ...isLoading, google: false });
+    }
+  };
+
   return (
-    <div className=" w-full max-w-[450px]">
+    <div className="w-full max-w-[450px]">
       <div className="mb-4">
-        <h4 className=" text-[21px] font-bold mb-1">Login</h4>
+        <h4 className="text-[21px] font-bold mb-1">Login</h4>
         <h5 className="mb-2">
           {"Don't have an account? "}
           <Link href={'/register'} className="green font-semibold">
@@ -48,53 +76,66 @@ export default function Page() {
           </Link>
         </h5>
       </div>
+
       <form className="w-full" onSubmit={formik.handleSubmit}>
         <input
           type="email"
+          autoComplete="username"
           required
           className="w-full p-4 mb-4 border rounded-md"
           placeholder="Email Address"
           name="email"
           value={formik.values.email}
           onChange={formik.handleChange}
+          disabled={isLoading.regular}
         />
 
         <input
           type="password"
+          autoComplete="current-password"
           className="w-full p-4 mb-4 border rounded-md"
           placeholder="Password"
           name="password"
           required
           value={formik.values.password}
           onChange={formik.handleChange}
+          disabled={isLoading.regular}
         />
-        <p className="text-red-600 mb-4 text-xs">{errMessage}</p>
+
+        {errMessage && (
+          <p className="text-red-600 mb-4 text-xs">{errMessage}</p>
+        )}
+
         <button
+          type="submit"
           className={`${
-            formik.isSubmitting
+            isLoading.regular
               ? 'bg-gray-300 text-gray-400'
               : 'bg-primaryGreen text-white'
-          }  font-semibold p-4 w-full rounded-[50px] mb-6`}
-          disabled={formik.isSubmitting}
+          } font-semibold p-4 w-full rounded-[50px] mb-6 flex justify-center items-center`}
+          disabled={isLoading.regular}
         >
-          {formik.isSubmitting ? 'Processing...' : 'Login'}
+          {isLoading.regular ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Login'
+          )}
         </button>
       </form>
+
       <Snackbar
-        open={open.current}
+        open={openSnackbar}
         autoHideDuration={1500}
-        onClose={() => {
-          open.current = false;
-        }}
-        message="Login Success"
+        onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
-          Login Success
+          Login Successful
         </Alert>
       </Snackbar>
+
       <center>
-        <Link href={'/forgot'} className="green font-bold ">
+        <Link href={'/forgot'} className="green font-bold">
           Forgot password?
         </Link>
         <h5 className="mt-6 mb-2">Login instantly using your social media</h5>
@@ -103,10 +144,14 @@ export default function Page() {
           <Button
             variant="outlined"
             fullWidth
-            onClick={googleLogin}
-            disabled={isSocialLoading.google}
+            onClick={handleGoogleLogin}
+            disabled={isLoading.google}
             startIcon={
-              <Image src="/google.png" alt="Google" width={20} height={20} />
+              isLoading.google ? (
+                <CircularProgress size={20} />
+              ) : (
+                <Image src="/google.png" alt="Google" width={20} height={20} />
+              )
             }
             sx={{
               py: 1.5,
@@ -120,7 +165,7 @@ export default function Page() {
               },
             }}
           >
-            {isSocialLoading.google ? 'Processing...' : 'Continue with Google'}
+            {isLoading.google ? 'Processing...' : 'Continue with Google'}
           </Button>
         </div>
       </center>

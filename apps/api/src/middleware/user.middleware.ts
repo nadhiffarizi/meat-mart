@@ -1,5 +1,5 @@
 import { statusEnum } from '@/enums/statusEnum.enums';
-import { responseHandler } from '@/helper/responseHandler.helper';
+import { responseHandler } from '@/helpers/responseHandler.helper';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 

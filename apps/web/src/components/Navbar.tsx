@@ -102,7 +102,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center justify-end ml-4">
-            {session?.user?.id ? (
+            {session ? (
               <>
                 {' '}
                 <Link

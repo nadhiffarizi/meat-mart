@@ -109,12 +109,10 @@ export default function ProfilePage({ params }: profileSlug) {
       console.log('MENCOBA UPLOAD TO CL');
       setUploading(true);
       setError('');
-      const cloudName =
-        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dgpeoeiiz';
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       console.log('cloudName', cloudName);
 
-      const uploadPreset =
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'profile';
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
       console.log('cloudName', uploadPreset);
       if (!cloudName || !uploadPreset) {
         throw new Error('Cloudinary configuration is missing');

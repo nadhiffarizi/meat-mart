@@ -2,7 +2,7 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
 import { Request } from 'express';
-import { hashedPassword } from '../helper/bcrypt';
+import { hashedPassword } from '../helpers/bcrypt';
 import { compare } from 'bcrypt';
 import {
   getUserByEmail,
@@ -10,10 +10,11 @@ import {
   sendVerificationEmail,
 } from '@/helpers/user.prisma';
 import { IUser } from '@/interface/User.interface';
-import { generateAuthToken } from '@/helper/token';
+import { generateAuthToken } from '@/helpers/token';
 import { v4 as uuidv4 } from 'uuid';
 import { addHours, isAfter } from 'date-fns';
 import { Prisma } from '@prisma/client';
+import { registerSocialUser } from '@/helpers/handlers/auth';
 
 class AuthService {
   async register(req: Request) {
@@ -257,6 +258,17 @@ class AuthService {
 
   async resetPasswordEmail(req: Request) {
     const { email } = req.body;
+    const user = await prisma.users.findUnique({
+      where: { email },
+    });
+    if (user?.provider !== 'credentials') {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Social login cannot reset password',
+      };
+    }
     const resetToken = uuidv4();
     const tokenResetExpiry = new Date(Date.now() + 3600000);
     await prisma.users.update({
@@ -299,6 +311,14 @@ class AuthService {
         message: 'Invalid reset token',
       };
     }
+    if (user.provider !== 'credentials') {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Social login cannot reset password',
+      };
+    }
 
     if (!user.is_verified) {
       return {
@@ -338,6 +358,7 @@ class AuthService {
       message: 'Password successfully reseted',
     };
   }
+
   async updateUser(req: Request) {
     const {
       emailUpdate,
@@ -359,30 +380,7 @@ class AuthService {
       newPassword,
     });
 
-    // if (!id) {
-    //   throw new Error('User ID is required');
-    // }
-
-    // const existingEmail = await prisma.users.findUnique({
-    //   where: { email },
-    // });
-    // if (!existingEmail) {
-    //   throw new Error('Email is registered');
-    // }
     const existingUser = (await getUserByEmail(email)) as IUser;
-
-    // if (
-    //   !existingEmail.password ||
-    //   !(await compare(password, existingEmail.password))
-    // ) {
-    //   throw new Error('Password is incorrect');
-    //   // return {
-    //   //   code: 401,
-    //   //   data: null,
-    //   //   status: statusEnum.FAILED,
-    //   //   message: `The password that you've entered is incorrect.`,
-    //   // };
-    // }
 
     if (existingUser.email !== emailUpdate) {
       const verificationToken = uuidv4();
@@ -510,6 +508,34 @@ class AuthService {
       status: statusEnum.SUCCESS,
       message: 'Successfully update profile image',
     };
+  }
+
+  async socialRegister(req: Request) {
+    try {
+      const { email, fullName, image, provider, provider_id } = req.body;
+
+      if (!email || !provider) {
+        throw new Error('Email and provider are required');
+      }
+
+      const user = await registerSocialUser({
+        email,
+        name: fullName,
+        image,
+        provider,
+        provider_id,
+      });
+
+      return {
+        code: 200,
+        data: user,
+        status: statusEnum.SUCCESS,
+        message: 'Successfully social login',
+      };
+    } catch (error: any) {
+      console.error('Social login error:', error);
+      throw new Error('Error during social login');
+    }
   }
 }
 

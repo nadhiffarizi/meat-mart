@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
-import { responseHandler } from '@/helper/responseHandler.helper';
+import { responseHandler } from '@/helpers/responseHandler.helper';
 import authService from '@/services/auth.service';
 
 export class AuthController {
@@ -108,6 +108,16 @@ export class AuthController {
   ) {
     try {
       const data = await authService.updateImage(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  public async socialRegister(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await authService.socialRegister(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       console.log(error);

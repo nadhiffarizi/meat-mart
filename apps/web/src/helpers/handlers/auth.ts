@@ -180,15 +180,22 @@ export const getProfile = async (email: string) => {
 
 export async function registerSocialUser(data: {
   email: string;
-  name: string;
+  fullName: string;
   image?: string;
   provider: string;
+  provider_id: string;
 }) {
-  return {
-    id: 'user-id-from-db',
-    access_token: 'generated-jwt-token',
-    refresh_token: 'generated-refresh-token',
-  };
+  console.log('APAKAH REGISTER SOCIAL terpanggil? di src/helper/handlers/auth');
+  try {
+    const res = await api('auth/social', 'POST', {
+      body: data,
+      contentType: 'application/json',
+    });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error UPDATE PROFILE', error);
+  }
 }
 
 export const updateProfileImage = async (email: string, imageUrl: string) => {

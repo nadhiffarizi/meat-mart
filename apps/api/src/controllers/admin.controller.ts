@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import prisma from '@/prisma';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
-import { responseHandler } from '@/helper/responseHandler.helper';
+import { responseHandler } from '@/helpers/responseHandler.helper';
 import adminService from '@/services/admin.service';
 import { statusEnum } from '@/enums/statusEnum.enums';
 import '@/interface/global.interface';
