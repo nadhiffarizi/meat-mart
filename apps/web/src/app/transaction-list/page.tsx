@@ -9,6 +9,7 @@ import { getDataTransactionAPI } from '@/helper/transaction.helper';
 import { callToast } from '@/helper/notify.helper';
 import { ITransaction } from '@/interface/transaction.interface';
 
+// filter context type
 export interface TransactionFilterContextType {
   filterTransactions: IFilterTransactions | undefined;
   setFilterTransactions: (filter: IFilterTransactions | undefined) => void;
@@ -16,6 +17,16 @@ export interface TransactionFilterContextType {
 
 export const trxFilterContext = React.createContext<
   TransactionFilterContextType | undefined
+>(undefined);
+
+// transaction status change
+export interface ITrxChangeContextType {
+  isChange: boolean | undefined;
+  setChange: (isChange: boolean | undefined) => void;
+}
+
+export const trxChangeContext = React.createContext<
+  ITrxChangeContextType | undefined
 >(undefined);
 
 export default function TransactionListPage() {
@@ -29,6 +40,7 @@ export default function TransactionListPage() {
   const pathName = usePathname();
   const [isLoading, setLoading] = React.useState<Boolean>(false);
   const [trxData, setTrxData] = React.useState<ITransaction[]>();
+  const [isChange, setChange] = React.useState<boolean>();
 
   // when global filters change
   React.useEffect(() => {
@@ -60,7 +72,7 @@ export default function TransactionListPage() {
     setLoading(false);
 
     // call get transaction to get list of transactions
-  }, [filterTransactions]);
+  }, [filterTransactions, isChange]);
 
   return (
     <React.Fragment>
@@ -93,9 +105,16 @@ export default function TransactionListPage() {
                     <SearchBarTransactionList />
                   </trxFilterContext.Provider>
                 </div>
+
                 {trxData &&
                   trxData.map((trx, index: number) => {
-                    return <TransactionListCard trx={trx} key={index} />;
+                    return (
+                      <trxChangeContext.Provider
+                        value={{ isChange, setChange }}
+                      >
+                        <TransactionListCard trx={trx} key={index} />
+                      </trxChangeContext.Provider>
+                    );
                   })}
               </div>
             </div>

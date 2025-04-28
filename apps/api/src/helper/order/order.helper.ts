@@ -3,7 +3,6 @@ import ILocation from "@/interface/location.interface"
 import { chooseStock, findStockById, findStocksByProduct } from "../stock/stock.helper"
 import { IEligibleToOrder } from "@/interface/order.interface"
 import prisma from "@/prisma"
-import { convertOrderStatusToEnum } from "../convertStatus.helper"
 import { E_OrderStatus } from "@prisma/client"
 
 export const updateCartToOrder = async (carts: ICart[], userId: string, loc1: ILocation) => {
@@ -87,10 +86,10 @@ export const cancelOrderById = async (trxDetailid: string) => {
 
 }
 
-export const confirmOrderById = async (trxDetailid: string) => {
+export const confirmOrderById = async (orderId: string) => {
     const order = await prisma.transactionDetails.update({
         where: {
-            id: trxDetailid
+            id: orderId
         }, data: {
             status: E_OrderStatus.CONFIRMED
         }

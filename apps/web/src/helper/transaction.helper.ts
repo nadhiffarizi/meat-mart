@@ -7,6 +7,11 @@ export const getDataTransactionAPI = async (apiRouter: string, payload: IFilterT
     return response
 }
 
+export const cancelTransactionAPI = async (apiRouter: string, payload: { "userId": string, "trxId": string }) => {
+    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+    return response
+}
+
 export const syncTransactionDataFromAPI = (data: any) => {
 
     const transactionResponse: ITransaction[] = data;

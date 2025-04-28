@@ -9,6 +9,7 @@ import { IOrder } from '@/interface/order.interface';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
+// filter context type
 export interface OrderFilterContextType {
   filterOrder: IFilterOrder | undefined;
   setFilterOrder: (filter: IFilterOrder | undefined) => void;
@@ -16,6 +17,15 @@ export interface OrderFilterContextType {
 
 export const orderFilterContext = React.createContext<
   OrderFilterContextType | undefined
+>(undefined);
+
+// order status change context type
+export interface IOrderChangeContextType {
+  isChange: boolean | undefined;
+  setChange: (isChange: boolean | undefined) => void;
+}
+export const orderChangeContext = React.createContext<
+  IOrderChangeContextType | undefined
 >(undefined);
 
 export default function OrderListPage() {
@@ -29,6 +39,7 @@ export default function OrderListPage() {
   const pathName = usePathname();
   const [isLoading, setLoading] = React.useState<Boolean>(false);
   const [orderData, setOrderData] = React.useState<IOrder[]>();
+  const [isChange, setChange] = React.useState<boolean>();
 
   // when global filters change
   React.useEffect(() => {
@@ -60,7 +71,7 @@ export default function OrderListPage() {
     setLoading(false);
 
     // call get transaction to get list of transactions
-  }, [filterOrder]);
+  }, [filterOrder, isChange]);
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
@@ -89,9 +100,16 @@ export default function OrderListPage() {
                 >
                   <SearchBarOrderList />
                 </orderFilterContext.Provider>
+
                 {orderData &&
                   orderData?.map((order, index: number) => {
-                    return <OrderListCard orderData={order} key={index} />;
+                    return (
+                      <orderChangeContext.Provider
+                        value={{ isChange, setChange }}
+                      >
+                        <OrderListCard orderData={order} key={index} />
+                      </orderChangeContext.Provider>
+                    );
                   })}
               </div>
             </div>

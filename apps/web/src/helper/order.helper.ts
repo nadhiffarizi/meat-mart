@@ -8,6 +8,11 @@ export const getDataOrderAPI = async (apiRouter: string, payload: IFilterOrder) 
     return response
 }
 
+export const confirmOrderAPI = async (apiRouter: string, payload: { "orderId": string }) => {
+    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+    return response
+}
+
 export const syncOrderDataFromAPI = (data: any) => {
 
     const orderResponse: IOrder[] = data;

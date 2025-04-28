@@ -1,10 +1,45 @@
+'use client';
+import { trxChangeContext } from '@/app/transaction-list/page';
+import { callToast } from '@/helper/notify.helper';
 import { currencyFormatter } from '@/helper/product.helper';
+import { cancelTransactionAPI } from '@/helper/transaction.helper';
 import { ITransaction } from '@/interface/transaction.interface';
 import { ShoppingBag } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
 import * as React from 'react';
 
 export default function TransactionListCard({ trx }: { trx: ITransaction }) {
+  // global state
+  const changeStatus = React.useContext(trxChangeContext);
+
+  //local state
+  const [isLoading, setLoading] = React.useState<boolean>(false);
+  // handler
+  const handleCancel = async (trxId: string, userId: string) => {
+    try {
+      setLoading(true);
+      const resCancel = await cancelTransactionAPI('transaction/cancel', {
+        trxId: trx.id,
+        userId: '1',
+      });
+
+      if (resCancel.status !== 200)
+        throw new Error('Cancel transaction failed, try again later ');
+
+      const trxCanceled = (await resCancel.json())['data'];
+      console.log(trxCanceled);
+      changeStatus?.setChange(!changeStatus.isChange);
+
+      // set global state
+
+      setLoading(false);
+    } catch (error) {
+      callToast((error as Error).message, 'ERROR', 2000);
+      setLoading(false);
+    }
+  };
+
+  // styling
   const statusFormatter = (status: string) => {
     return (
       <Typography variant="overline">
@@ -15,6 +50,7 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
       </Typography>
     );
   };
+
   return (
     <div
       className="w-full max-w-[2000px] h-[230px] flex flex-col py-3 px-5 gap-2 border-b-2
@@ -77,12 +113,18 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
           >
             Transaction Detail
           </Button>
-          <Button
-            style={{ textTransform: 'none' }}
-            className="!rounded-md !ring-secondaryGreen !w-[200px] !ring-2 !text-secondaryGreen !font-semibold"
-          >
-            Cancel Purchase
-          </Button>
+          {trx.transaction_status === 'AWAITING_PAYMENT' ? (
+            <Button
+              style={{ textTransform: 'none' }}
+              onClick={async () => handleCancel(trx.id, '1')}
+              className="!rounded-md !ring-secondaryGreen !w-[200px] !ring-2 !text-secondaryGreen !font-semibold"
+            >
+              Cancel Purchase
+            </Button>
+          ) : (
+            <></>
+          )}
+
           <Button
             style={{ textTransform: 'none' }}
             className="!rounded-md !bg-secondaryGreen !ring-secondaryGreen !ring-2 !w-[200px] !text-white !font-semibold"

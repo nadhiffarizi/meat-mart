@@ -98,3 +98,13 @@ export const getOrderbyStoresId = async (storesId: string[], status?: string[], 
 
     return orderListByStoreId
 }
+
+export const getOrderByTrxId = async (trxId: string) => {
+    /**returns order records by trxId */
+    const orders = await prisma.transactionDetails.findMany({
+        where: {
+            transaction_id: trxId
+        }
+    })
+    return orders
+}

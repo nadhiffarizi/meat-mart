@@ -16,7 +16,7 @@ export class OrderRouter {
     this.router.get('/admin/list', orderController.getOrderListAdmin);
     this.router.post('/admin/cancel', orderController.cancelOrderByAdmin);
     this.router.post("/admin/sendorder", orderController.sendOrderByAdmin)
-    this.router.post('/customer/confirm', orderController.confirmOrderByCust);
+    this.router.post('/confirm', orderController.confirmOrderByCust);
 
     // .... continue api
   }

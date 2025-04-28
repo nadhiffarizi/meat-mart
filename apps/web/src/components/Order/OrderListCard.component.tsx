@@ -1,11 +1,33 @@
+import { orderChangeContext } from '@/app/order-list/page';
+import { callToast } from '@/helper/notify.helper';
+import { confirmOrderAPI } from '@/helper/order.helper';
 import { currencyFormatter } from '@/helper/product.helper';
-import { ICart } from '@/interface/cart.interface';
 import { IOrder } from '@/interface/order.interface';
 import { ShoppingBag } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
 import * as React from 'react';
 
 export default function OrderListCard({ orderData }: { orderData: IOrder }) {
+  // global state
+  const changeStatus = React.useContext(orderChangeContext);
+
+  // handler
+  const handleConfirm = async (orderId: string) => {
+    try {
+      const resConfirm = await confirmOrderAPI('order/confirm', {
+        orderId: orderId,
+      });
+
+      if (resConfirm.status !== 200)
+        throw new Error('confirm order error, try again later');
+
+      changeStatus?.setChange(!changeStatus.isChange);
+    } catch (error) {
+      callToast((error as Error).message, 'ERROR', 2000);
+    }
+  };
+
+  // formatter component
   const statusFormatter = (status: string) => {
     return (
       <Typography variant="overline">
@@ -57,12 +79,18 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
           >
             Check Order Detail
           </Button>
-          <Button
-            style={{ textTransform: 'none' }}
-            className="!rounded-md !ring-secondaryGreen !w-[200px] !ring-2 !text-secondaryGreen !font-semibold"
-          >
-            Change Status
-          </Button>
+          {orderData.status === 'ON_DELIVERY' ? (
+            <Button
+              style={{ textTransform: 'none' }}
+              onClick={async () => await handleConfirm(orderData.id)}
+              className="!rounded-md !ring-secondaryGreen !w-[200px] !ring-2 !text-secondaryGreen !font-semibold"
+            >
+              Confirm Order
+            </Button>
+          ) : (
+            <></>
+          )}
+
           <Button
             style={{ textTransform: 'none' }}
             className="!rounded-md !bg-secondaryGreen !ring-secondaryGreen !ring-2 !w-[200px] !text-white !font-semibold"

@@ -8,6 +8,7 @@ import { findStoreByStockId } from "../store/store.helper"
 import { calculateAfterDisc, findDiscountByCode, findDiscountById } from "../discount/discount.helper"
 import { findProductByStockId } from "../product/product.helper"
 import { updateStockQuantity } from "../stock/stock.helper"
+import { getOrderByTrxId } from "../order/orderQuery.helper"
 
 export const createDefaultTrxId = async (userId: string) => {
     const trxDefault = await prisma.transactions.create({
@@ -159,32 +160,38 @@ export const cancelTransaction = async (userId: string, trxId: string) => {
     } else {
         return {}
     }
-
-
-
-
 }
 
 export const trxUpdateByOrderConfirm = async (trxId: string) => {
     // change to done if all order detail status set to confirm
 
-    const trx = await prisma.transactions.update({
-        where: {
-            id: trxId,
-            AND: {
+    // find orders data
+    const orders = await getOrderByTrxId(trxId)
+
+    // populate status
+    const orderStatus: E_OrderStatus[] = orders.map((order) => order.status)
+    console.log(orderStatus);
+
+    if (orderStatus.every((status) => status === E_OrderStatus.CONFIRMED)) {
+        const trx = await prisma.transactions.update({
+            where: {
                 id: trxId,
-                TransactionDetails: {
-                    every: {
-                        status: E_OrderStatus.CONFIRMED
+                AND: {
+                    id: trxId,
+                    TransactionDetails: {
+                        every: {
+                            status: E_OrderStatus.CONFIRMED
+                        }
                     }
                 }
+            }, data: {
+                transaction_status: E_TransactionStatus.DONE
             }
-        }, data: {
-            transaction_status: E_TransactionStatus.DONE
-        }
-    })
+        })
+        return trx
+    }
 
-    return trx
+    return null
 }
 
 export const getTrxById = async (trxId: string) => {

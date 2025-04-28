@@ -76,15 +76,13 @@ class TransactionService {
     async cancel(req: Request) {
         const { userId, trxId } = req.body
 
-        const canceledTrx = await cancelTransaction(userId, trxId)
-        // feedback from service
-        const feedback: serviceFeedback = {
-            code: 200,
-            data: canceledTrx,
-            status: statusEnum.SUCCESS,
-            message: "transaction canceled success"
+        try {
+            const canceledTrx = await cancelTransaction(userId, trxId)
+            // feedback from service
+            return returnServiceFeedback(200, canceledTrx, statusEnum.SUCCESS, "cancel transaction success")
+        } catch (error) {
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "cancel transaction failed")
         }
-        return feedback
     }
 
     async confirmTrxByAdmin(req: Request) {
