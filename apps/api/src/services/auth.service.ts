@@ -8,7 +8,7 @@ import {
   getUserByEmail,
   sendResetEmail,
   sendVerificationEmail,
-} from '@/helpers/user.prisma';
+} from '@/helper/user.prisma';
 import { IUser } from '@/interface/User.interface';
 import { generateAuthToken } from '@/helper/token';
 import { v4 as uuidv4 } from 'uuid';
@@ -109,10 +109,11 @@ class AuthService {
         message: `The email that you've entered is not verified. Please, check your email`,
       };
     }
+    console.log(await compare(password, existingUser.password!))
 
     if (
       !existingUser.password ||
-      !(await compare(password, existingUser.password))
+      !(await compare(password as string, existingUser.password))
     ) {
       return {
         code: 401,
@@ -202,6 +203,7 @@ class AuthService {
       user.verification_expiry &&
       isAfter(new Date(), user.verification_expiry)
     ) {
+      console.log("into verification link has expired")
       return {
         code: 400,
         data: null,

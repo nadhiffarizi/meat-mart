@@ -6,17 +6,30 @@ import Image from 'next/image';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
+import { useAppSelector } from '@/redux/store';
+import { countTotalInCart } from '@/helper/cart.helper';
+import { Button, IconButton } from '@mui/material';
+import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
+import { ShoppingBagIcon } from '@heroicons/react/16/solid';
+import NavbarDropDown from './Navbar/NavbarDropdown.component';
 
-const Navbar = () => {
+const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
+  // global state cart
+  const cartState = useAppSelector((state: any) => state.cartState);
+  const adressState = useAppSelector((state: any) => state.addressState);
+
   const { data: session } = useSession();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState('');
+  const [totalCartQtty, setCartQtty] = useState<number>();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [cartDropdownEl, setCartDropdownEl] =
+    React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
   useEffect(() => {
@@ -44,9 +57,15 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const totalQtty = countTotalInCart(cartState);
+    setCartQtty(totalQtty);
+  }, [cartState]);
+
   const handleLocationSelect = (location: string) => {
     setUserLocation(location);
   };
+  // ${isFixed ? 'fixed' : 'relative'}
 
   return (
     <div
@@ -104,18 +123,7 @@ const Navbar = () => {
           <div className="flex items-center justify-end ml-4">
             {session?.user?.id ? (
               <>
-                {' '}
-                <Link
-                  href={'/cart'}
-                  className="flex items-center gap-2 bg-primaryBackground py-3 px-4 rounded-full hover:bg-slate-300"
-                >
-                  <ShoppingCartIcon
-                    width={8}
-                    height={8}
-                    className=" text-orangeAccent cursor-pointer "
-                  ></ShoppingCartIcon>
-                  <div className="text-sm text-primaryText">0</div>
-                </Link>
+                <CartButtonNavbar />
                 <AccountMenu />
               </>
             ) : (
