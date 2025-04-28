@@ -166,13 +166,12 @@ CREATE TABLE "carts" (
 -- CreateTable
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
-    "total_price" DOUBLE PRECISION NOT NULL,
-    "minimum_buy" BOOLEAN,
-    "amount_discount" DOUBLE PRECISION,
-    "deadline_payment" TIMESTAMP(3) NOT NULL,
+    "total_price" DOUBLE PRECISION,
+    "deadline_payment" TIMESTAMP(3),
     "transaction_status" "E_TransactionStatus" NOT NULL,
     "payment_proof" TEXT,
     "users_id" TEXT NOT NULL,
+    "invoice_number" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -194,7 +193,8 @@ CREATE TABLE "transactiondetails" (
     "product_id" TEXT NOT NULL,
     "discounted" BOOLEAN NOT NULL,
     "discount_code" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "E_OrderStatus" NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -225,6 +225,18 @@ CREATE TABLE "stockhistory" (
     "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "stockhistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "product_categories" (
+    "id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
+    "category_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
+
+    CONSTRAINT "product_categories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -295,3 +307,9 @@ ALTER TABLE "stockhistory" ADD CONSTRAINT "stockhistory_product_id_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "stockhistory" ADD CONSTRAINT "stockhistory_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_categories" ADD CONSTRAINT "product_categories_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_categories" ADD CONSTRAINT "product_categories_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

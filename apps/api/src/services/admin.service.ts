@@ -2,7 +2,7 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
-import { getUserByEmail, getUserById } from '@/helpers/user.prisma';
+import { getUserByEmail, getUserById } from '@/helper/user.prisma';
 import { hashedPassword } from '@/helper/bcrypt';
 
 class AdminService {
