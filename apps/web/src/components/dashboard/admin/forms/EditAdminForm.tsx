@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
 import { IGetUsers } from '@/app/interfaces/user.interface';
-import FormAlert from './Alerts/FormAlert';
+import FormAlert from './Alerts/EditAdminFormAlert';
 import EditAdminFormDeleteAlert from './Alerts/EditAdminFormDeleteAlert';
 
 const validationSchema = Yup.object({

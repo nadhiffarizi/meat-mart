@@ -10,6 +10,8 @@ import { api } from '@/helpers/api';
 import Link from 'next/link';
 import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
+import AddAdminFormAlert from './Alerts/AddAdminFormAlert';
+import ReactivateAccountAdminFormAlert from './Alerts/RectivateAccountAdminFormAlert';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),
@@ -28,6 +30,7 @@ function CreateAdminForm() {
   const status = searchParams?.get('status');
   const { data: session, update } = useSession();
   const [disabled, setDisabled] = useState(false);
+  const [openAccountRecovery, setOpenAccountRecovery] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -41,6 +44,22 @@ function CreateAdminForm() {
     onSubmit: async (values) => {
       try {
         setDisabled(true);
+
+        try {
+          const existingAccount = await api(
+            `admin/users/getUserByEmail/${values.email}?softDelete=true&role=admin`,
+            'GET',
+            {},
+            session?.user.access_token,
+          );
+          if (existingAccount.data) {
+            setOpenAccountRecovery(true);
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
         const response = await api(
           `admin/users`,
           'POST',
@@ -68,22 +87,13 @@ function CreateAdminForm() {
   });
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
-      {status == 'successful' && (
-        <Alert variant={'affirmative'}>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col">
-              <div className="text-lg font-semibold">User Created</div>
-              <div className="text-sm">
-                Click{' '}
-                <Link href={'/dashboard/users'} className="underline">
-                  here to return to dashboard.
-                </Link>{' '}
-              </div>
-            </div>
-            <CircleCheckBig className="w-8 h-8" />
-          </div>
-        </Alert>
-      )}
+      <AddAdminFormAlert status={status} />
+      <ReactivateAccountAdminFormAlert
+        email={formik.values.email as string}
+        setDisabled={setDisabled}
+        setOpenAccountRecovery={setOpenAccountRecovery}
+        openAccountRecovery={openAccountRecovery}
+      />
       <div className="flex flex-col gap-2">
         <label htmlFor="email">
           Email <span className="text-red-500">*</span>
@@ -176,17 +186,6 @@ function CreateAdminForm() {
           </div>
         )}
       </div>
-
-      {/* <button
-        className={
-          disabled
-            ? 'text-white bg-secondaryText px-4 py-2 rounded-[12px]'
-            : 'text-white bg-orangeAccent hover:bg-secondaryText px-4 py-2 rounded-[12px]'
-        }
-        disabled={disabled}
-      >
-        {disabled ? 'Adding Employee' : 'Add Employee'}
-      </button> */}
       <Button
         variant="default"
         size={'lg'}

@@ -63,14 +63,14 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Link href={'/dashboard/categories/new'}>
+        <Link href={'/dashboard/users/new'}>
           {' '}
           <Button
             variant="default"
             className={' bg-orangeAccent text-base'}
             onClick={() => {}}
           >
-            Add a New Category
+            Add a New User
           </Button>
         </Link>
       </div>
