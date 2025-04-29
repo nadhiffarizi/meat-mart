@@ -12,6 +12,7 @@ import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
 import AddAdminFormAlert from './Alerts/AddAdminFormAlert';
 import ReactivateAccountAdminFormAlert from './Alerts/RectivateAccountAdminFormAlert';
+import { IGetUsers } from '@/app/interfaces/user.interface';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),
@@ -47,12 +48,12 @@ function CreateAdminForm() {
 
         try {
           const existingAccount = await api(
-            `admin/users/getUserByEmail/${values.email}?softDelete=true&role=admin`,
+            `admin/users/getUserByEmail/${values.email}?includeDeleted=true`,
             'GET',
             {},
             session?.user.access_token,
           );
-          if (existingAccount.data) {
+          if ((existingAccount.data as IGetUsers).deleted_at) {
             setOpenAccountRecovery(true);
             return;
           }

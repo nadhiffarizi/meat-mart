@@ -95,44 +95,18 @@ class AdminService {
       return feedback;
     }
 
-    if (
-      req.query.softDelete &&
-      req.query.softDelete === 'true' &&
-      req.query.role &&
-      req.query.role === 'admin'
-    ) {
-      const user = await prisma.users.findFirst({
-        where: {
-          email: req.params.email,
-          role: 'ADMIN',
-          deleted_at: { not: null },
-        },
-      });
+    const user = await getUserByEmail(req.params.email);
 
-      if (!user) {
-        const feedback: serviceFeedback = {
-          code: 400,
-          data: user,
-          status: statusEnum.SUCCESS,
-          message: `User with role ${req.query.role} and email ${req.params.email} and soft_delete: true does not exist.`,
-        };
-        return feedback;
-      }
-
+    if (user && user.deleted_at && req.query.includeDeleted !== 'true') {
       const feedback: serviceFeedback = {
-        code: 200,
-        data: user,
-        status: statusEnum.SUCCESS,
-        message: `Successfully fetched user with role ${req.query.role} and email ${req.params.email}.`,
+        code: 409,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `User with email ${req.params.email} does not exist.`,
       };
-      return feedback;
     }
 
-    const user = await prisma.users.findUnique({
-      where: { email: req.params.email },
-    });
-
-    if (!user || user.deleted_at) {
+    if (!user) {
       const feedback: serviceFeedback = {
         code: 409,
         data: null,
@@ -154,12 +128,20 @@ class AdminService {
   async createAdmin(req: Request) {
     const existingUser = await getUserByEmail(String(req.body.email));
 
-    if (existingUser && existingUser.deleted_at) {
+    if (
+      req.query.restore === 'true' &&
+      existingUser &&
+      existingUser.deleted_at
+    ) {
+      const restoredCategory = await prisma.users.update({
+        where: { email: req.body.email },
+        data: { deleted_at: null },
+      });
       const feedback: serviceFeedback = {
-        code: 409,
-        data: null,
+        code: 200,
+        data: restoredCategory,
         status: statusEnum.FAILED,
-        message: `User with email ${req.body.email} has been deleted. Please contact our customer service to reactivate this account.`,
+        message: `User with email ${req.body.email} has been restored.`,
       };
       return feedback;
     }
@@ -203,29 +185,6 @@ class AdminService {
     }
 
     const existingUser = await getUserById(String(req.params.id));
-
-    if (req.query.restore && req.query.restore === 'true') {
-      if (existingUser?.deleted_at === null) {
-        const feedback: serviceFeedback = {
-          code: 406,
-          data: null,
-          status: statusEnum.FAILED,
-          message: `User with ID ${req.params.id} has already been restored before.`,
-        };
-        return feedback;
-      }
-      const restoredAccount = await prisma.users.update({
-        where: { id: req.params.id },
-        data: { deleted_at: null },
-      });
-      const feedback: serviceFeedback = {
-        code: 200,
-        data: restoredAccount,
-        status: statusEnum.SUCCESS,
-        message: `User with ID ${req.params.id} has already been restored.`,
-      };
-      return feedback;
-    }
 
     if (!existingUser || existingUser.deleted_at) {
       const feedback: serviceFeedback = {

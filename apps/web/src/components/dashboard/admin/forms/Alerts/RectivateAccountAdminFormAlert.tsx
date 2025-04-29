@@ -26,19 +26,15 @@ async function reactivateAccount(
   setOpenAccountRecovery: any,
 ) {
   try {
-    const user = await api(
-      `admin/users/getUserByEmail/${email}?softDelete=true&role=admin`,
-      'GET',
-      {},
-      token,
-    );
-    console.log('user.id =>', user.data.id);
-    const id = user.data.id;
-
     const response = await api(
-      `admin/users/${id}?restore=true`,
-      'PATCH',
-      {},
+      `admin/users?restore=true`,
+      'POST',
+      {
+        body: {
+          email: email,
+        },
+        contentType: 'application/json',
+      },
       token,
     );
 
@@ -88,7 +84,13 @@ function ReactivateAccountAdminFormAlert({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+              onClick={() => {
+                setDisabled(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
 
             <button
               onClick={() => {
