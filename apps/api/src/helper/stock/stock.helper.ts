@@ -3,6 +3,7 @@ import IStock from "@/interface/stocks.interface"
 import { xDistancePrisma } from "../location/distance.helper"
 import ILocation from "@/interface/location.interface"
 import prisma from "@/prisma"
+import { subBusinessDays } from "date-fns"
 
 export const chooseStock = (stocks: IStock[], qtty: number, existingCart?: ICart, method?: string) => {
     let stockId = null
@@ -167,7 +168,7 @@ export const findStockByCartId = async (cartId: string) => {
     return stockId
 }
 
-export const updateStockQuantity = async (stockId: string, cartQuantity: number) => {
+export const updateStockQuantity = async (stockId: string, cartQuantity: number, MODE: string) => {
 
     // update stock
     const stockQuantity = await prisma.stocks.findUnique({
@@ -178,16 +179,31 @@ export const updateStockQuantity = async (stockId: string, cartQuantity: number)
             id: stockId
         }
     })
-    const updatedStock = await prisma.stocks.update({
-        where: {
-            id: stockId
-        }, data: {
-            quantity: stockQuantity?.quantity! - cartQuantity
-        }
-    })
+    switch (MODE) {
+        case 'SUBTRACT':
+            const addedStock = await prisma.stocks.update({
+                where: {
+                    id: stockId
+                }, data: {
+                    quantity: stockQuantity?.quantity! - cartQuantity
+                }
+            })
+            return addedStock
+            break;
+        case 'ADD':
+            const subtractedStock = await prisma.stocks.update({
+                where: {
+                    id: stockId
+                }, data: {
+                    quantity: stockQuantity?.quantity! + cartQuantity
+                }
+            })
+            return subtractedStock
+        default:
+            return null
+    }
 
     // update stock histoty
     // your code here
 
-    return updatedStock
 }

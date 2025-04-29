@@ -59,7 +59,7 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILo
         })
 
         // update stock
-        const updatedStock = await updateStockQuantity(cartItem.stock_id, cartItem.quantity)
+        const updatedStock = await updateStockQuantity(cartItem.stock_id, cartItem.quantity, 'SUBTRACT')
         console.log(`updated stock from transaction: ${newTrxDetail.id}, resulting updatedStock: ${updatedStock}`);
 
         return newTrxDetail
@@ -92,7 +92,7 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILo
             }
         })
         // update stock
-        const updatedStock = await updateStockQuantity(cartItem.stock_id, cartAfterDisc.cart.quantity)
+        const updatedStock = await updateStockQuantity(cartItem.stock_id, cartAfterDisc.cart.quantity, 'SUBTRACT')
         console.log(`updated stock from transaction: ${newTrxDetail.id}, resulting updatedStock: ${updatedStock}`);
 
         return newTrxDetail
@@ -129,7 +129,6 @@ export const setDeadlinePayment = (now: Date) => {
 
 export const cancelTransaction = async (userId: string, trxId: string) => {
     /** returns trx which canceled */
-
     // update transaction
     const trx = await prisma.transactions.findUnique({
         where: {
@@ -155,6 +154,15 @@ export const cancelTransaction = async (userId: string, trxId: string) => {
                 status: E_OrderStatus.CANCELED
             }
         })
+
+        // search for transaction details/orders
+        const orders = await getOrderByTrxId(trxId)
+        if (orders.length === 0) throw new Error("orders with specified trx Id not found")
+        for (let order of orders) {
+            // return quantity for stock
+            const updatedStock = await updateStockQuantity(order.stock_id, order.quantity, 'ADD')
+        }
+
 
         return { updatedTrx, trxDetails }
     } else {
