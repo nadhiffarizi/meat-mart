@@ -1,5 +1,6 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
 import { deleteCart, disableCart, findCartById, findCartByIds, findCartByOrderInput } from "@/helper/cart/cart.helper";
+import { cloudinaryRemove, cloudinaryUpload } from "@/helper/cloudinary.helper";
 import { updateCartToOrder, updateOrderDetails } from "@/helper/order/order.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { cancelTransaction, createDefaultTrxId, createTransaction, createTrxDetails, getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper";
@@ -7,6 +8,7 @@ import { ICart } from "@/interface/cart.interface";
 import ILocation from "@/interface/location.interface";
 import { IOrderInput } from "@/interface/order.interface";
 import { serviceFeedback } from "@/interface/serviceFeedback.interface";
+import prisma from "@/prisma";
 import { E_OrderStatus, E_TransactionStatus } from "@prisma/client";
 import { Request } from "express";
 
@@ -127,16 +129,43 @@ class TransactionService {
 
     async uploadTrxProof(req: Request) {
 
-        // const { image } = req.file;
+        const image = req.file;
+        const { trxId } = req.body
+        // console.log(image?.originalname, trxId);
 
-        const feedback: serviceFeedback = {
-            code: 200,
-            data: req.file?.mimetype.split("/")[1],
-            status: statusEnum.SUCCESS,
-            message: "upload trx proof success"
+
+        // check if payment proof already available 
+        const existingLink = await prisma.transactions.findUnique({
+            select: {
+                payment_proof: true
+            },
+            where: {
+                id: trxId
+            }
+        })
+        if (existingLink?.payment_proof) {
+            // remove existing link
+            const removeLink = await cloudinaryRemove(existingLink.payment_proof)
+            console.log("here");
         }
 
-        return feedback
+        const { secure_url } = await cloudinaryUpload(image!)
+
+        // update link to include in transaction table
+        const updatedTrx = await prisma.transactions.update({
+            where: {
+                id: trxId
+            }, data: {
+                payment_proof: secure_url,
+                transaction_status: E_TransactionStatus.PENDING_ADMIN
+            }
+        })
+        try {
+            return returnServiceFeedback(200, updatedTrx, statusEnum.SUCCESS, "upload transaction proof success")
+        } catch (error) {
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "upload transaction proof failed")
+        }
+
     }
 }
 

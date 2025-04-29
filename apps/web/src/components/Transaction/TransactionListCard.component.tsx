@@ -2,10 +2,22 @@
 import { trxChangeContext } from '@/app/transaction-list/page';
 import { callToast } from '@/helper/notify.helper';
 import { currencyFormatter } from '@/helper/product.helper';
-import { cancelTransactionAPI } from '@/helper/transaction.helper';
+import {
+  cancelTransactionAPI,
+  uploadPaymentProof,
+} from '@/helper/transaction.helper';
 import { ITransaction } from '@/interface/transaction.interface';
 import { ShoppingBag } from '@mui/icons-material';
-import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import {
+  Backdrop,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Typography,
+} from '@mui/material';
+import { Files } from 'lucide-react';
 import * as React from 'react';
 
 export default function TransactionListCard({ trx }: { trx: ITransaction }) {
@@ -14,6 +26,8 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
 
   //local state
   const [isLoading, setLoading] = React.useState<boolean>(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   // handler
   const handleCancel = async (trxId: string, userId: string) => {
     try {
@@ -38,6 +52,45 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
       setLoading(false);
     }
   };
+  const handleUploadPayment = () => {
+    fileInputRef.current?.click();
+  };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files;
+    if (!file || file.length === 0) {
+      console.log('no file selected');
+      return;
+    }
+    // console.log('selected file', file[0]);
+
+    // call api to upload
+    try {
+      setLoading(true);
+      // create formdata
+      const payload = new FormData();
+      payload.append('image', file[0]);
+      payload.append('trxId', trx.id);
+      const resUpload = await uploadPaymentProof(
+        'transaction/upload/paymentproof',
+        payload,
+      );
+
+      if (resUpload.status !== 200) throw new Error('error uploading file');
+
+      const result = (await resUpload.json())['data'];
+      console.log(result);
+
+      callToast('Upload payment proof success', 'INFO', 3000);
+
+      // set change
+      changeStatus?.setChange(!changeStatus.isChange);
+
+      setLoading(false);
+    } catch (error) {
+      callToast((error as Error).message, 'ERROR', 2000);
+      setLoading(false);
+    }
+  };
 
   // styling
   const statusFormatter = (status: string) => {
@@ -49,6 +102,52 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
         </span>
       </Typography>
     );
+  };
+
+  const buttonTrxStatus = (status: string) => {
+    switch (status) {
+      case 'AWAITING_PAYMENT':
+        if (!trx.payment_proof) {
+          return (
+            <Button
+              style={{ textTransform: 'none' }}
+              onClick={() => handleUploadPayment()}
+              className={`!rounded-md ${isLoading ? '!bg-slate-400  ' : '!bg-secondaryGreen !ring-secondaryGreen !ring-2'} !w-[200px] !text-white !font-semibold`}
+            >
+              Upload Payment Proof
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={(e) => handleFileChange(e)}
+              />
+            </Button>
+          );
+        }
+        break;
+      case 'CANCELED':
+        return (
+          <Button
+            style={{ textTransform: 'none' }}
+            disabled
+            className="!rounded-md !w-[200px] !text-slate-400 !font-semibold"
+          >
+            Canceled
+          </Button>
+        );
+        break;
+      default:
+        return (
+          <Button
+            style={{ textTransform: 'none' }}
+            disabled
+            className="!rounded-md !w-[200px] !text-slate-400 !font-semibold"
+          >
+            Paid
+          </Button>
+        );
+        break;
+    }
   };
 
   return (
@@ -125,14 +224,12 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
             <></>
           )}
 
-          <Button
-            style={{ textTransform: 'none' }}
-            className="!rounded-md !bg-secondaryGreen !ring-secondaryGreen !ring-2 !w-[200px] !text-white !font-semibold"
-          >
-            Upload Payment Proof
-          </Button>
+          {buttonTrxStatus(trx.transaction_status)}
         </div>
       </Box>
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

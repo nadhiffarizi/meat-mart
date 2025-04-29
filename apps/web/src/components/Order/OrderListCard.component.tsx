@@ -4,16 +4,26 @@ import { confirmOrderAPI } from '@/helper/order.helper';
 import { currencyFormatter } from '@/helper/product.helper';
 import { IOrder } from '@/interface/order.interface';
 import { ShoppingBag } from '@mui/icons-material';
-import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import {
+  Backdrop,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import * as React from 'react';
 
 export default function OrderListCard({ orderData }: { orderData: IOrder }) {
   // global state
   const changeStatus = React.useContext(orderChangeContext);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
 
   // handler
   const handleConfirm = async (orderId: string) => {
     try {
+      setLoading(true);
       const resConfirm = await confirmOrderAPI('order/confirm', {
         orderId: orderId,
       });
@@ -22,8 +32,11 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
         throw new Error('confirm order error, try again later');
 
       changeStatus?.setChange(!changeStatus.isChange);
+
+      setLoading(false);
     } catch (error) {
       callToast((error as Error).message, 'ERROR', 2000);
+      setLoading(false);
     }
   };
 
@@ -99,6 +112,9 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
           </Button>
         </div>
       </Box>
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
