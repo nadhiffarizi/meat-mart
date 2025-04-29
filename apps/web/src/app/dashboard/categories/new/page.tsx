@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateCategoryForm from '@/components/dashboard/products/forms/category/CreateCategoryForm';
+import CreateCategoryForm from '@/components/dashboard/categories/forms/CreateCategoryForm';
 
 function page() {
   return (

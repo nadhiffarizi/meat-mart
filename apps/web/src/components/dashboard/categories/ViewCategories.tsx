@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { api } from '@/helpers/api';
-import { DataTable } from '../admin/DataTable';
+import { DataTable } from './DataTable';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';
 import { Category } from './columns';

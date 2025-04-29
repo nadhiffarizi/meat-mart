@@ -1,6 +1,6 @@
 import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
 import EditAdminForm from '@/components/dashboard/admin/forms/EditAdminForm';
-import EditCategoryForm from '@/components/dashboard/products/forms/category/EditCategoryForm';
+import EditCategoryForm from '@/components/dashboard/categories/forms/EditCategoryForm';
 import React from 'react';
 
 type Props = {

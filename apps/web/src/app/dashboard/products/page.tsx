@@ -1,5 +1,4 @@
-import ViewUsers from '@/components/dashboard/admin/ViewUsers';
-import ViewCategories from '@/components/dashboard/products/ViewCategories';
+import ViewCategories from '@/components/dashboard/categories/ViewCategories';
 import React from 'react';
 
 function page() {

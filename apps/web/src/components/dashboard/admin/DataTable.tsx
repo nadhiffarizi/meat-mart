@@ -56,10 +56,10 @@ export function DataTable<TData, TValue>({
     <div className="overflow-x-auto">
       <div className="flex items-center py-4 w-full justify-between gap-2">
         <Input
-          placeholder="Filter categories..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          placeholder="Filter emails..."
+          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn('email')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
