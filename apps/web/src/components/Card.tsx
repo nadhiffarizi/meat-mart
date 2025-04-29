@@ -91,11 +91,11 @@ export function Card({ product }: { product: IProduct }) {
           <div className="w-full">
             <div className="w-full px-2 py-2 rounded-xl">
               <div className="relative">
-                <Image
+                <img
                   width={216}
                   height={100}
                   className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"
-                  src={'/templateproduct.png'}
+                  src={product.image || '/templateproduct.png'}
                   alt="product-image"
                 />
                 <Image
@@ -125,7 +125,9 @@ export function Card({ product }: { product: IProduct }) {
                   // disabled={!session || props.stock === 0}
                   className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
                     ${
-                      !session || product.availableStocks.length === 0
+                      !session ||
+                      product.availableStocks.length === 0 ||
+                      isMaxAdded
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
                     }`}

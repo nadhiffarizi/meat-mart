@@ -1,9 +1,6 @@
-import authController, { AuthController } from '@/controllers/auth.controller';
 import transactionController from '@/controllers/transaction.controller';
-import orderController, { TransactionController } from '@/controllers/transaction.controller';
 import { uploader } from '@/helper/multer.helper';
 import { Router } from 'express';
-import multer from 'multer';
 
 export class TransactionRouter {
   private router: Router;
@@ -18,6 +15,8 @@ export class TransactionRouter {
 
     this.router.post('/create', transactionController.create);
     this.router.post('/cancel', transactionController.cancel);
+    this.router.post('/admin/reject', transactionController.rejectPaymentProof);
+    this.router.post('/admin/cancel', transactionController.adminConfirm);
     this.router.post('/upload/paymentproof', uploader().single("image"), transactionController.uploadTrxProof);
     // .... continue api
   }

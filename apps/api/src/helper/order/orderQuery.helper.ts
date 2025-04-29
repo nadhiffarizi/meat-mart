@@ -2,6 +2,7 @@ import prisma from "@/prisma"
 import { convertOrderStatusToEnum } from "../convertStatus.helper"
 import { getTransactionByInvoice } from "../transaction/transactionQuery.helper"
 import { E_OrderStatus } from "@prisma/client"
+import { findProductById, findThumbnailByProductId } from "../product/product.helper"
 
 
 export const getOrderByInvoice = async (userId: string, invoice: string) => {
@@ -10,6 +11,8 @@ export const getOrderByInvoice = async (userId: string, invoice: string) => {
 
     // get transaction by invoice number
     const trx = await getTransactionByInvoice(userId, invoice)
+    console.log(trx);
+
 
     if (!trx) return []
 
@@ -21,7 +24,19 @@ export const getOrderByInvoice = async (userId: string, invoice: string) => {
         }
     })
 
-    return orderList
+    // for every order get product data
+    const updatedList = []
+    for (let order of orderList) {
+        //get product data
+        const productData = await findProductById(order.product_id)
+        // get product thumbnail
+        const thumbnail = await findThumbnailByProductId(productData?.id!)
+
+        const temp = { ...order, ...{ "product": { "image": thumbnail?.link, ...productData } } }
+        updatedList.push(temp)
+    }
+
+    return updatedList
 }
 
 export const getOrderByParams = async (userId: string, status?: string[], from?: string, until?: string) => {
@@ -47,12 +62,8 @@ export const getOrderByParams = async (userId: string, status?: string[], from?:
             discount_code: true,
             discounted: true,
             price_per_product: true,
+            product_id: true,
             sub_total: true,
-            products: {
-                select: {
-                    name: true
-                }
-            },
             status: true,
             quantity: true,
             shipping_cost: true
@@ -75,7 +86,19 @@ export const getOrderByParams = async (userId: string, status?: string[], from?:
         }
     })
 
-    return orderList
+    // for every order get product data
+    const updatedList = []
+    for (let order of orderList) {
+        //get product data
+        const productData = await findProductById(order.product_id)
+        // get product thumbnail
+        const thumbnail = await findThumbnailByProductId(productData?.id!)
+
+        const temp = { ...order, ...{ "product": { "image": thumbnail?.link, ...productData } } }
+        updatedList.push(temp)
+    }
+
+    return updatedList
 }
 
 export const getOrderbyStoresId = async (storesId: string[], status?: string[], from?: string, until?: string) => {

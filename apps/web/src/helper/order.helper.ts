@@ -20,6 +20,8 @@ export const syncOrderDataFromAPI = (data: any) => {
     const orderData: IOrder[] = []
 
     orderResponse.map((item: any) => {
+        const fetchedProduct = item['product']
+
         const order: IOrder = {
             id: item['id'],
             created_at: item['created_at'],
@@ -27,7 +29,7 @@ export const syncOrderDataFromAPI = (data: any) => {
             discount_code: item['discount_code'],
             discounted: item['discounted'],
             price_per_product: item['price_per_product'],
-            product_name: item['products']['name'],
+            product: { ...item['product'] },
             quantity: item['quantity'],
             shipping_cost: item['shipping_cost'],
             status: item['status'],
@@ -35,7 +37,9 @@ export const syncOrderDataFromAPI = (data: any) => {
 
         };
         orderData.push({ ...order });
+
     });
-    console.log("orderData", orderData);
+    // console.log("orderData", orderData);
+
     return orderData
 }

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { responseHandler } from '@/helper/responseHandler.helper';
-import transactionService from '@/services/transaction.service';
-import transactionQueryService from '@/services/transactionQuery.service';
+import transactionService from '@/services/transaction/transaction.service';
+import transactionQueryService from '@/services/transaction/transactionQuery.service';
 
 
 export class TransactionQueryController {
@@ -10,6 +10,16 @@ export class TransactionQueryController {
         try {
             // try create order
             const data: serviceFeedback = await transactionQueryService.getTransactionListUser(req)
+            responseHandler(res, data.message, data.status, data.data, data.code)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+    public async getTransactionListAdmin(req: Request, res: Response, next: NextFunction) {
+        try {
+            // try create order
+            const data: serviceFeedback = await transactionQueryService.getTransactionListAdmin(req)
             responseHandler(res, data.message, data.status, data.data, data.code)
 
         } catch (error) {

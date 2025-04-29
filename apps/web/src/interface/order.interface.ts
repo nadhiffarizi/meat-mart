@@ -1,3 +1,5 @@
+import IProduct from "./product.interface";
+
 export interface IOrder {
     id: string,
     created_at: string,
@@ -6,7 +8,8 @@ export interface IOrder {
     discounted: boolean,
     price_per_product: number,
     sub_total: number,
-    product_name: string,
+    product_name?: string,
+    product: IProduct
     status: string,
     quantity: number,
     shipping_cost: number,

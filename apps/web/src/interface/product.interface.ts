@@ -6,5 +6,6 @@ export default interface IProduct {
     slug: string
     price: number
     weight: number
+    image?: string
     availableStocks: IStock[]
 }

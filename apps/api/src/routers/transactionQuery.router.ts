@@ -1,4 +1,5 @@
 import transactionQueryController from '@/controllers/transactionQuery.controller';
+import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class TransactionQueryRouter {
@@ -13,6 +14,7 @@ export class TransactionQueryRouter {
     // dont forget to include middleware function before SIT 
 
     this.router.get('/', transactionQueryController.getTransactionListUser);
+    this.router.get('/admin', verifyToken, transactionQueryController.getTransactionListAdmin);
     // .... continue api
   }
 

@@ -6,7 +6,7 @@ import { decode } from 'next-auth/jwt';
 import { auth_secret } from '../config';
 
 export const login = async (credentials: Partial<Record<string, unknown>>) => {
-  console.log('Aku mencoba masuk ya gaess FRONT END nich');
+  // console.log('Aku mencoba masuk ya gaess FRONT END nich');
   try {
     const res = await api('auth/login', 'POST', {
       body: credentials,
@@ -15,7 +15,7 @@ export const login = async (credentials: Partial<Record<string, unknown>>) => {
     if (!res.data?.access_token || !res.data?.refresh_token) {
       throw new Error('Invalid login response');
     }
-    console.log('INI RESnya', res);
+    // console.log('INI RESnya', res);
     return {
       access_token: res.data.access_token,
       refresh_token: res.data.refresh_token,

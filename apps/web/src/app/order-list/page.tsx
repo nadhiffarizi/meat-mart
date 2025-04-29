@@ -61,7 +61,9 @@ export default function OrderListPage() {
           if (v.status !== 200) throw new Error();
           return v.json();
         })
-        .then((value) => setOrderData(syncOrderDataFromAPI(value['data'])))
+        .then((value) => {
+          setOrderData(syncOrderDataFromAPI(value['data']));
+        })
         .catch(() =>
           callToast('No data satisfy filter criteria', 'INFO', 2000),
         );

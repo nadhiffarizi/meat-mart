@@ -64,14 +64,15 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
               width: '30%',
               display: 'flex',
               alignItems: 'center',
-              paddingLeft: '.7rem',
-              paddingRight: '.7rem',
               gap: '10px',
-              border: 'solid 1px',
             }}
           >
             {/**image placeholder */}
-            Image placeholder
+            <img
+              className="w-full rounded-md ring-2 h-full object-cover"
+              src={cartItem.product.image || '/templateproduct.png'}
+              alt="product-image"
+            />
           </Box>
           <Box
             sx={{

@@ -1,7 +1,7 @@
 import { statusEnum } from "@/enums/statusEnum.enums"
 import { returnServiceFeedback } from "@/helper/responseHandler.helper"
 import { convertRoleToEnum } from "@/helper/role.helper"
-import { getTransactionByInvoice, getTransactionsByParams } from "@/helper/transaction/transactionQuery.helper"
+import { getTransactionByAdmin, getTransactionByInvoice, getTransactionsByParams } from "@/helper/transaction/transactionQuery.helper"
 import { E_Role } from "@prisma/client"
 import { Request } from "express"
 
@@ -38,6 +38,21 @@ class TransactionListService {
         }
 
 
+    }
+
+    async getTransactionListAdmin(req: Request) {
+        const user = req.user
+
+        try {
+            if (user?.role === E_Role.CUSTOMER) throw new Error("Unauthorized role")
+            const transactions = await getTransactionByAdmin(user?.id!, user?.role!)
+            return returnServiceFeedback(200, transactions, statusEnum.SUCCESS, "get transaction by admin success")
+
+
+        } catch (error) {
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get transaction by aadmin failed")
+
+        }
     }
 }
 

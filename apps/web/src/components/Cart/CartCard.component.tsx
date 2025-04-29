@@ -46,7 +46,13 @@ export default function CartCard({ cartItem }: { cartItem: ICart }) {
         }}
       >
         <div className="w-1/4 h-full bg-blue-200 flex items-center ring-1 rounded-md ">
-          picture
+          <img
+            width={216}
+            height={100}
+            className="h-full rounded-lg object-cover"
+            src={cartItem.product.image || '/templateproduct.png'}
+            alt="product-image"
+          />
         </div>
         <div className="w-1/2 h-full ">
           <div className="w-full h-1/2 overflow-hidden">

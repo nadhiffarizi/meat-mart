@@ -71,10 +71,16 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
         <div className="w-full h-full  flex justify-between gap-3">
           <div className="w-1/4 max-w-[100px] h-full max-h-[300px] bg-white">
             {/**image div */}
-            product photo
+            <img
+              width={216}
+              height={100}
+              className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"
+              src={orderData.product.image || '/templateproduct.png'}
+              alt="product-image"
+            />
           </div>
           <div className="w-full h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
-            <p className="font-semibold">{orderData.product_name}</p>
+            <p className="font-semibold">{orderData.product.name}</p>
             <p className="text-sm">X {orderData.quantity}</p>
           </div>
           <Divider orientation="vertical" sx={{ bgcolor: 'green' }} flexItem />

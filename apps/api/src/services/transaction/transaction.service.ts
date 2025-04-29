@@ -1,7 +1,7 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
 import { deleteCart, disableCart, findCartById, findCartByIds, findCartByOrderInput } from "@/helper/cart/cart.helper";
 import { cloudinaryRemove, cloudinaryUpload } from "@/helper/cloudinary.helper";
-import { updateCartToOrder, updateOrderDetails } from "@/helper/order/order.helper";
+import { updateCartToOrder } from "@/helper/order/order.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { cancelTransaction, createDefaultTrxId, createTransaction, createTrxDetails, getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper";
 import { ICart } from "@/interface/cart.interface";
@@ -85,46 +85,6 @@ class TransactionService {
         } catch (error) {
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "cancel transaction failed")
         }
-    }
-
-    async confirmTrxByAdmin(req: Request) {
-
-        const { trxId } = req.body
-
-
-        // change status trx
-        const updatedTrx = await updateTrxStatus(trxId!, E_TransactionStatus.CONFIRMED_ADMIN)
-
-        // change status for trxIds
-        const updatedTrxDetails = await updateOrderDetails(updatedTrx.id, E_OrderStatus.ON_PROCESS)
-
-        // feedback from service
-        const feedback: serviceFeedback = {
-            code: 200,
-            data: { updatedTrx, updatedTrxDetails },
-            status: statusEnum.SUCCESS,
-            message: "transaction confirm success"
-        }
-        return feedback
-    }
-
-    async rejectTrxByAdmin(req: Request) {
-        const { trxId } = req.body
-
-        // change status trx
-        const updatedTrx = await updateTrxStatus(trxId!, E_TransactionStatus.AWAITING_PAYMENT)
-
-        // change status for trxIds
-        const updatedTrxDetails = await updateOrderDetails(updatedTrx.id, E_OrderStatus.AWAITING_PAYMENT)
-
-        // feedback from service
-        const feedback: serviceFeedback = {
-            code: 200,
-            data: { updatedTrx, updatedTrxDetails },
-            status: statusEnum.SUCCESS,
-            message: "transaction rejected success"
-        }
-        return feedback
     }
 
     async uploadTrxProof(req: Request) {

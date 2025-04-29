@@ -1,5 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
-import { cancelOrderById, confirmOrderById, updateOrderDetails } from "@/helper/order/order.helper";
+import { cancelOrderById, confirmOrderById, updateOrderStatus } from "@/helper/order/order.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { trxUpdateByOrderConfirm } from "@/helper/transaction/transaction.helper";
 import { E_OrderStatus } from "@prisma/client";
@@ -47,7 +47,7 @@ class OrderService {
         try {
             const updatedOrders: any[] = []
             for (let id of (trxDetailIds as string[])) {
-                let updatedOrder = await updateOrderDetails(id, E_OrderStatus.ON_DELIVERY)
+                let updatedOrder = await updateOrderStatus(id, E_OrderStatus.ON_DELIVERY)
                 updatedOrders.push(updatedOrder)
             }
             // feedback from service

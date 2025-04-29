@@ -29,7 +29,13 @@ export default function Dropdowncard({ cartItem }: { cartItem: ICart }) {
     <div className="w-full h-[70px] bg-white mb-3 rounded-sm">
       <div className="w-full h-full grid grid-cols-4">
         <div className="w-full h-full col-span-1 ">
-          <small>picture</small>
+          <img
+            width={216}
+            height={100}
+            className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"
+            src={cartItem.product.image || '/templateproduct.png'}
+            alt="product-image"
+          />
         </div>
         <div className="flex flex-col w-full h-full col-span-2 ">
           <div className="w-full h-1/2 ">
@@ -37,7 +43,8 @@ export default function Dropdowncard({ cartItem }: { cartItem: ICart }) {
           </div>
           <div className="w-full h-1/2 ">
             <small>
-              {cartItem.quantity} x {currencyFormatter(cartItem.product.price!)}{' '}
+              {cartItem.quantity} x{' '}
+              {currencyFormatter(cartItem.product.price!)}{' '}
             </small>
           </div>
         </div>

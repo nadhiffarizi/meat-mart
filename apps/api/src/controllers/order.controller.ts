@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { responseHandler } from '@/helper/responseHandler.helper';
-import transactionService from '@/services/transaction.service';
-import orderService from '@/services/order.service';
-import orderQueryService from '@/services/orderQuery.service';
+import transactionService from '@/services/transaction/transaction.service';
+import orderService from '@/services/order/order.service';
+import orderQueryService from '@/services/order/orderQuery.service';
 
 
 export class OrderController {

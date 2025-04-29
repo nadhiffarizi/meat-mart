@@ -28,7 +28,7 @@ export const findStoreByStockId = async (stockId: string) => {
 export const findStoreByAdmin = async (adminId: string) => {
     const stores = await prisma.stores.findMany({
         where: {
-            id: adminId
+            storeadmin_id: adminId
         }
     })
 

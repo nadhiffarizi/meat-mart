@@ -7,6 +7,7 @@ import prisma from "@/prisma";
 import { Request } from "express";
 import { findStocksByProduct } from "@/helper/stock/stock.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
+import { findThumbnailByProductId, findThumbnailByStockId } from "@/helper/product/product.helper";
 
 class CartService {
     async add(req: Request) {
@@ -84,7 +85,8 @@ class CartService {
 
             for (let cartItem of cartData) {
                 const availableStocks = await findStocksByProduct(cartItem.stocks.products.id, loc1)
-                cartItem.stocks.products = { ...cartItem.stocks.products, ...{ "availableStocks": availableStocks } }
+                const productThumbnail = await findThumbnailByStockId(cartItem.stocks.id)
+                cartItem.stocks.products = { ...cartItem.stocks.products, ...{ "image": productThumbnail?.link }, ...{ "availableStocks": availableStocks } }
             }
             // feedback from service
             return returnServiceFeedback(200, cartData, statusEnum.SUCCESS, "get cart success")
