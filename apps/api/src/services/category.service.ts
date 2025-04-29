@@ -4,6 +4,7 @@ import { Request } from 'express';
 import prisma from '@/prisma';
 import { getUserByEmail, getUserById } from '@/helper/user.prisma';
 import { hashedPassword } from '@/helper/bcrypt';
+import { getCategoryById, getCategoryByName } from '@/helper/category.prisma';
 
 class CategoryService {
   async getAllCategories(req: Request) {
@@ -32,12 +33,17 @@ class CategoryService {
       return feedback;
     }
 
-    const category = await prisma.categories.findUnique({
-      where: {
-        id: req.params.id,
-        deleted_at: null,
-      },
-    });
+    const category = await getCategoryById(req.params.id);
+
+    if (!category || category.deleted_at) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Category with ID ${req.params.id} does not exist.`,
+      };
+      return feedback;
+    }
 
     const feedback: serviceFeedback = {
       code: 200,
@@ -48,20 +54,78 @@ class CategoryService {
     return feedback;
   }
 
+  async getCategoryByName(req: Request) {
+    if (!req.params.name) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Name is required to fetch category.`,
+      };
+      return feedback;
+    }
+
+    const category = await getCategoryByName(req.params.name);
+
+    if (
+      category &&
+      category.deleted_at &&
+      req.query.includeDeleted !== 'true'
+    ) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Category with name ${req.params.name} does not exist.`,
+      };
+    }
+
+    if (!category) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Category with name ${req.params.name} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: category,
+      status: statusEnum.SUCCESS,
+      message: `Successfully fetched category with name ${req.params.name}.`,
+    };
+    return feedback;
+  }
+
   async createCategory(req: Request) {
-    const existingCategory = await prisma.categories.findUnique({
-      where: {
-        name: req.body.name,
-        deleted_at: null,
-      },
-    });
+    const existingCategory = await getCategoryByName(req.body.name);
+
+    if (
+      req.query.restore === 'true' &&
+      existingCategory &&
+      existingCategory.deleted_at
+    ) {
+      const restoredCategory = await prisma.categories.update({
+        where: { name: req.body.name },
+        data: { deleted_at: null },
+      });
+      const feedback: serviceFeedback = {
+        code: 200,
+        data: restoredCategory,
+        status: statusEnum.SUCCESS,
+        message: `Category with name ${req.body.name} has been restored.`,
+      };
+      return feedback;
+    }
 
     if (existingCategory) {
       const feedback: serviceFeedback = {
         code: 409,
         data: null,
         status: statusEnum.FAILED,
-        message: `Category with label ${req.body.name} already exists.`,
+        message: `Category with name ${req.body.name} already exists.`,
       };
       return feedback;
     }
@@ -75,7 +139,7 @@ class CategoryService {
       code: 201,
       data: newCategory,
       status: statusEnum.SUCCESS,
-      message: `Category with label ${req.body.name} successfully created.`,
+      message: `Category with name ${req.body.name} successfully created.`,
     };
     return feedback;
   }
@@ -91,19 +155,25 @@ class CategoryService {
       return feedback;
     }
 
-    const existingCategory = await prisma.categories.findUnique({
-      where: {
-        id: req.params.id,
-        deleted_at: null,
-      },
-    });
+    const existingCategory = await getCategoryById(req.params.id);
 
-    if (!existingCategory) {
+    if (!existingCategory || existingCategory.deleted_at) {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
         message: `Category with ID ${req.params.id} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const existingCategoryName = await getCategoryByName(req.body.name);
+    if (existingCategoryName) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `${req.body.name} is identical to another category name. Category names must be unique.`,
       };
       return feedback;
     }
@@ -134,14 +204,9 @@ class CategoryService {
       return feedback;
     }
 
-    const existingCategory = await prisma.categories.findUnique({
-      where: {
-        id: req.params.id,
-        deleted_at: null,
-      },
-    });
+    const existingCategory = await getCategoryById(req.params.id);
 
-    if (!existingCategory) {
+    if (!existingCategory || existingCategory.deleted_at) {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,

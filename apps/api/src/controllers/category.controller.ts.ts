@@ -47,6 +47,26 @@ export class CategoryController {
     }
   }
 
+  async getCategoryByName(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (req.user?.role !== 'SUPER_ADMIN') {
+        return responseHandler(
+          res,
+          `You have insufficient permission to access.`,
+          statusEnum.FAILED,
+          null,
+          403,
+        );
+      }
+
+      let data: serviceFeedback = await categoryService.getCategoryByName(req);
+
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createCategory(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.user?.role !== 'SUPER_ADMIN') {

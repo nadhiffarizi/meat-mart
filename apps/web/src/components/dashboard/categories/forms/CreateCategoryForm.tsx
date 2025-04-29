@@ -10,6 +10,10 @@ import { api } from '@/helpers/api';
 import Link from 'next/link';
 import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
+import AddAdminFormAlert from '../../admin/forms/Alerts/AddAdminFormAlert';
+import { IGetCategories } from '@/app/interfaces/user.interface';
+import ReactivateCategoryFormAlert from './alerts/ReactivateCategoryFormAlert';
+import AddCategoryFormAlert from './alerts/AddCategoryFormAlert';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for your category.'),
@@ -21,6 +25,7 @@ function CreateCategoryForm() {
   const status = searchParams?.get('status');
   const { data: session, update } = useSession();
   const [disabled, setDisabled] = useState(false);
+  const [openCategoryRecovery, setOpenCategoryRecovery] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -30,6 +35,21 @@ function CreateCategoryForm() {
     onSubmit: async (values) => {
       try {
         setDisabled(true);
+        try {
+          const existingAccount = await api(
+            `category/getCategoryByName/${values.name}?includeDeleted=true`,
+            'GET',
+            {},
+            session?.user.access_token,
+          );
+          if ((existingAccount.data as IGetCategories).deleted_at) {
+            setOpenCategoryRecovery(true);
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
         const response = await api(
           `category`,
           'POST',
@@ -57,22 +77,13 @@ function CreateCategoryForm() {
   });
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
-      {status == 'successful' && (
-        <Alert variant={'affirmative'}>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col">
-              <div className="text-lg font-semibold">Category Created</div>
-              <div className="text-sm">
-                Click{' '}
-                <Link href={'/dashboard/products'} className="underline">
-                  here to return to dashboard.
-                </Link>{' '}
-              </div>
-            </div>
-            <CircleCheckBig className="w-8 h-8" />
-          </div>
-        </Alert>
-      )}
+      <AddCategoryFormAlert status={status} />
+      <ReactivateCategoryFormAlert
+        name={formik.values.name as string}
+        setDisabled={setDisabled}
+        setOpenCategoryRecovery={setOpenCategoryRecovery}
+        openCategoryRecovery={openCategoryRecovery}
+      />
       <div className="flex flex-col gap-2">
         <label htmlFor="name">
           Name <span className="text-red-500">*</span>

@@ -3,7 +3,7 @@ import { CircleCheckBig } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
-function FormAlert({ status }: { status: string | null }) {
+function EditCategoryFormAlert({ status }: { status: string | null }) {
   return (
     <div>
       {status == 'successful' && (
@@ -42,4 +42,4 @@ function FormAlert({ status }: { status: string | null }) {
   );
 }
 
-export default FormAlert;
+export default EditCategoryFormAlert;

@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
-import { IGetCategories, IGetUsers } from '@/app/interfaces/user.interface';
-import FormAlert from './alerts/FormAlert';
+import { IGetCategories } from '@/app/interfaces/user.interface';
 import EditCategoryFormDeleteAlert from './alerts/EditCategoryFormDeleteAlert';
+import EditCategoryFormAlert from './alerts/EditCategoryFormAlert';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for your category.'),
@@ -76,7 +76,7 @@ function EditCategoryForm({ id }: { id: string }) {
   });
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
-      <FormAlert status={status} />
+      <EditCategoryFormAlert status={status} />
       <div className="flex flex-col gap-2">
         <label htmlFor="email">
           Name <span className="text-red-500">*</span>

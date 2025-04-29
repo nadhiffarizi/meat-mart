@@ -7,37 +7,6 @@ import { hashedPassword } from '@/helper/bcrypt';
 
 class AdminService {
   async getAllUsers(req: Request) {
-    if (
-      req.query.role &&
-      !['SUPER_ADMIN', 'ADMIN', 'CUSTOMER'].includes(
-        String(req.query.role).toUpperCase(),
-      )
-    ) {
-      const feedback: serviceFeedback = {
-        code: 400,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `${req.query.role} is not a valid role.`,
-      };
-      return feedback;
-    }
-
-    if (req.query.role) {
-      const newRole = String(req.query.role).toUpperCase();
-      const allUsers = await prisma.users.findMany({
-        where: {
-          role: newRole as 'SUPER_ADMIN' | 'ADMIN' | 'CUSTOMER',
-        },
-      });
-      const feedback: serviceFeedback = {
-        code: 200,
-        data: allUsers,
-        status: statusEnum.SUCCESS,
-        message: `Successfully fetched all users with role ${req.query.role}.`,
-      };
-      return feedback;
-    }
-
     const allUsers = await prisma.users.findMany({
       where: {
         deleted_at: null,
@@ -67,7 +36,7 @@ class AdminService {
 
     if (!user || user.deleted_at) {
       const feedback: serviceFeedback = {
-        code: 409,
+        code: 404,
         data: null,
         status: statusEnum.FAILED,
         message: `User with ID ${req.params.id} does not exist.`,
@@ -99,7 +68,7 @@ class AdminService {
 
     if (user && user.deleted_at && req.query.includeDeleted !== 'true') {
       const feedback: serviceFeedback = {
-        code: 409,
+        code: 404,
         data: null,
         status: statusEnum.FAILED,
         message: `User with email ${req.params.email} does not exist.`,
@@ -108,7 +77,7 @@ class AdminService {
 
     if (!user) {
       const feedback: serviceFeedback = {
-        code: 409,
+        code: 404,
         data: null,
         status: statusEnum.FAILED,
         message: `User with email ${req.params.email} does not exist.`,
@@ -140,7 +109,7 @@ class AdminService {
       const feedback: serviceFeedback = {
         code: 200,
         data: restoredCategory,
-        status: statusEnum.FAILED,
+        status: statusEnum.SUCCESS,
         message: `User with email ${req.body.email} has been restored.`,
       };
       return feedback;
@@ -234,7 +203,7 @@ class AdminService {
 
     const existingUser = await getUserById(String(req.params.id));
 
-    if (!existingUser) {
+    if (!existingUser || existingUser.deleted_at) {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,
@@ -250,16 +219,6 @@ class AdminService {
         data: null,
         status: statusEnum.FAILED,
         message: `User with ID ${req.params.id} is not a store admin.`,
-      };
-      return feedback;
-    }
-
-    if (existingUser.deleted_at) {
-      const feedback: serviceFeedback = {
-        code: 400,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `User with ID ${req.params.id} has already been deleted before. To reactivate this account, please contact customer service.`,
       };
       return feedback;
     }
