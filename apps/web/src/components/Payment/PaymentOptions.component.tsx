@@ -7,6 +7,7 @@ import { callToast } from '@/helper/notify.helper';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import {
+  Backdrop,
   Box,
   Button,
   CircularProgress,
@@ -26,7 +27,7 @@ export default function PaymentOptions() {
   const dispatch = useAppDispatch();
 
   //local state
-  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [selectedValue, setSelectedValue] = React.useState('manual');
   const router = useRouter();
 
@@ -35,15 +36,8 @@ export default function PaymentOptions() {
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     try {
-      // await new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     console.log('test');
-      //     resolve('');
-      //   }, 2000);
-      // });
-
+      setLoading(true);
       // Do something with selectedValue
       if (selectedValue === 'manual') {
         const resPostTrx = await createTransactionAPI(
@@ -68,15 +62,16 @@ export default function PaymentOptions() {
           ),
         );
 
-        setLoading(false);
         router.push(
           `/payment/confirm/${resTrx['data']['trx']['invoice_number']}`,
         );
+        setLoading(false);
       } else {
         // selectedValue === 'automatic'
       }
     } catch (error) {
-      console.log((error as Error).message);
+      callToast('Error creting transaction, try again later', 'ERROR', 3000);
+      setLoading(false);
     }
   };
 
@@ -135,6 +130,9 @@ export default function PaymentOptions() {
           </Box>
         </FormControl>
       </div>
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
