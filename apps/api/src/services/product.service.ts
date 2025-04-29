@@ -54,18 +54,6 @@ class ProductService {
     }
   }
 
-  async getAllProducts(req: Request) {
-    const getProductList = await prisma.products.findMany({});
-    let feedback: serviceFeedback;
-    feedback = {
-      code: 200,
-      data: getProductList,
-      status: statusEnum.SUCCESS,
-      message: `Fetching all products`,
-    };
-    return feedback;
-  }
-
 
 }
 export default new ProductService()
