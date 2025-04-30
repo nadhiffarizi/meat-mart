@@ -99,7 +99,7 @@ model UserAddresses {
 
 model Products {
   id                 String               @id @default(uuid())
-  name               String
+  name               String               @unique
   slug               String               @unique
   price              Float
   weight             Float

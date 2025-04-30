@@ -13,6 +13,7 @@ import authRouter from './routers/auth.router';
 import adminRouter from './routers/admin.router';
 import cartRouter from './routers/cart.router';
 import productRouter from './routers/product.router';
+import productDashboardRouter from './routers/product.dashboard.router';
 import userRouter from './routers/user.router';
 import discountRouter from './routers/discount.router';
 import transactionRouter from './routers/transaction.router';
@@ -69,8 +70,9 @@ export default class App {
     this.app.use('/api/transaction', transactionRouter.getRouter());
     this.app.use('/api/transaction/list', transactionQueryRouter.getRouter());
     this.app.use('/api/discount', discountRouter.getRouter());
-    this.app.use('/api/product', adminRouter.getRouter());
+    // this.app.use('/api/product', adminRouter.getRouter());
     this.app.use('/api/category', categoryRouter.getRouter());
+    this.app.use('/api/dashboard/product', productDashboardRouter.getRouter());
   }
 
   public start(): void {

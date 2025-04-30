@@ -48,19 +48,10 @@ class AdminService {
       user = await getUserById(req.query.id as string);
     }
 
-    if (user && user.deleted_at && req.query.includeDeleted !== 'true') {
-      const feedback: serviceFeedback = {
-        code: 404,
-        data: null,
-        status: statusEnum.FAILED,
-        message: req.query.email
-          ? `User with email ${req.params.email} does not exist.`
-          : `User with ID ${req.params.id} does not exist.`,
-      };
-      return feedback;
-    }
-
-    if (!user) {
+    if (
+      (user && user.deleted_at && req.query.includeDeleted !== 'true') ||
+      !user
+    ) {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,
@@ -165,7 +156,7 @@ class AdminService {
     }
 
     const updatedAdmin = await prisma.users.update({
-      data: req.body,
+      data: { ...req.body, password: await hashedPassword(req.body.password) },
       where: {
         id: req.params.id,
       },

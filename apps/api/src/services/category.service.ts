@@ -2,8 +2,6 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
-import { getUserByEmail, getUserById } from '@/helper/user.prisma';
-import { hashedPassword } from '@/helper/bcrypt';
 import { getCategoryById, getCategoryByName } from '@/helper/category.prisma';
 
 class CategoryService {
@@ -50,9 +48,10 @@ class CategoryService {
     }
 
     if (
-      category &&
-      category.deleted_at &&
-      req.query.includeDeleted !== 'true'
+      (category &&
+        category.deleted_at &&
+        req.query.includeDeleted !== 'true') ||
+      !category
     ) {
       const feedback: serviceFeedback = {
         code: 404,
@@ -71,7 +70,7 @@ class CategoryService {
       status: statusEnum.SUCCESS,
       message: req.query.name
         ? `Successfully fetched category with name ${req.query.name}.`
-        : `Successfully fetched category with ID ${req.query.ID}.`,
+        : `Successfully fetched category with ID ${req.query.id}.`,
     };
     return feedback;
   }

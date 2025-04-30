@@ -1,0 +1,272 @@
+import { statusEnum } from '@/enums/statusEnum.enums';
+import { serviceFeedback } from '@/interface/serviceFeedback.interface';
+import { Request } from 'express';
+import prisma from '@/prisma';
+import {
+  findProductById,
+  findProductByName,
+} from '@/helper/product/product.helper';
+import { cloudinaryUpload } from '@/helper/cloudinary.helper';
+import { createSlug } from '@/helper/slug.helper';
+
+class ProductService {
+  async getAllProducts(req: Request) {
+    let allProducts;
+    if (req.query.includeDeleted === 'true') {
+      allProducts = await prisma.products.findMany();
+    } else {
+      allProducts = await prisma.products.findMany({
+        where: {
+          deleted_at: null,
+        },
+      });
+    }
+
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: allProducts,
+      status: statusEnum.SUCCESS,
+      message: `Successfully fetched all products.`,
+    };
+    return feedback;
+  }
+
+  async getProduct(req: Request) {
+    if (!req.query.name && !req.query.id) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Name or ID is required to fetch product.`,
+      };
+      return feedback;
+    }
+
+    let product;
+
+    if (req.query.name) {
+      product = await findProductByName(req.query.name as string);
+    }
+
+    if (req.query.id) {
+      product = await findProductById(req.query.id as string);
+    }
+
+    if (
+      (product && product.deleted_at && req.query.includeDeleted !== 'true') ||
+      !product
+    ) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: req.query.name
+          ? `Product with name ${req.query.name} does not exist.`
+          : `Product with ID ${req.query.id} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: product,
+      status: statusEnum.SUCCESS,
+      message: req.query.name
+        ? `Successfully fetched product with name ${req.query.name}.`
+        : `Successfully fetched product with ID ${req.query.id}.`,
+    };
+    return feedback;
+  }
+
+  async uploadProductPicture(req: Request) {
+    const { file } = req;
+    console.log('REQ.FILE =>', req.file);
+
+    if (!req.params.productId) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `ID is required to upload an image to a product.`,
+      };
+      return feedback;
+    }
+
+    if (!file) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `There's no image to upload.`,
+      };
+      return feedback;
+    }
+
+    const product = await findProductById(req.params.productId);
+
+    if (!product || product.deleted_at) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Product with ID ${req.params.productId} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const { secure_url } = await cloudinaryUpload(file);
+
+    const productPicture = await prisma.productPictures.create({
+      data: {
+        product_id: req.params.productId,
+        link: secure_url,
+        thumbnail_status: true,
+      },
+    });
+
+    const feedback: serviceFeedback = {
+      code: 201,
+      data: productPicture,
+      status: statusEnum.SUCCESS,
+      message: `Successfully uploaded picture to product with ID ${req.params.id}.`,
+    };
+    return feedback;
+  }
+
+  async createProduct(req: Request) {
+    const existingProduct = await findProductByName(req.body.name);
+
+    if (
+      req.query.restore === 'true' &&
+      existingProduct &&
+      existingProduct.deleted_at
+    ) {
+      const restoredProduct = await prisma.products.update({
+        where: { name: req.body.name },
+        data: { deleted_at: null },
+      });
+      const feedback: serviceFeedback = {
+        code: 200,
+        data: restoredProduct,
+        status: statusEnum.SUCCESS,
+        message: `Product with name ${req.body.name} has been restored.`,
+      };
+      return feedback;
+    }
+
+    if (existingProduct) {
+      const feedback: serviceFeedback = {
+        code: 409,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Product with name ${req.body.name} already exists.`,
+      };
+      return feedback;
+    }
+
+    const newProduct = await prisma.products.create({
+      data: {
+        ...req.body,
+        slug: createSlug(req.body.name),
+      },
+    });
+    const feedback: serviceFeedback = {
+      code: 201,
+      data: newProduct,
+      status: statusEnum.SUCCESS,
+      message: `Product with name ${req.body.name} successfully created.`,
+    };
+    return feedback;
+  }
+
+  async updateProduct(req: Request) {
+    if (!req.params.id) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `ID is required to update product.`,
+      };
+      return feedback;
+    }
+
+    const existingProduct = await findProductById(req.params.id);
+
+    if (!existingProduct || existingProduct.deleted_at) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Product with ID ${req.params.id} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const existingProductName = await findProductByName(req.body.name);
+    if (existingProductName) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `${req.body.name} is identical to another product name. Product names must be unique.`,
+      };
+      return feedback;
+    }
+
+    const updatedProduct = await prisma.products.update({
+      data: req.body,
+      where: {
+        id: req.params.id,
+      },
+    });
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: updatedProduct,
+      status: statusEnum.SUCCESS,
+      message: `Product with ID ${req.params.id} successfully updated.`,
+    };
+    return feedback;
+  }
+
+  async deleteProduct(req: Request) {
+    if (!req.params.id) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `ID is required to delete product.`,
+      };
+      return feedback;
+    }
+
+    const existingProduct = await findProductById(req.params.id);
+
+    if (!existingProduct || existingProduct.deleted_at) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Product with ID ${req.params.id} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const deletedProduct = await prisma.products.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        deleted_at: new Date(),
+      },
+    });
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: deletedProduct,
+      status: statusEnum.SUCCESS,
+      message: `Product with ID ${req.params.id} successfully deleted.`,
+    };
+    return feedback;
+  }
+}
+
+export default new ProductService();
