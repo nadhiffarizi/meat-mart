@@ -27,7 +27,7 @@ function EditCategoryForm({ id }: { id: string }) {
     async function getCategoryData() {
       try {
         const response = await api(
-          `category/${id}`,
+          `category?id=${id}`,
           'GET',
           {},
           session?.user.access_token,

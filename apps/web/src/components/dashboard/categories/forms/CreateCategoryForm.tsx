@@ -37,7 +37,7 @@ function CreateCategoryForm() {
         setDisabled(true);
         try {
           const existingAccount = await api(
-            `category/getCategoryByName/${values.name}?includeDeleted=true`,
+            `category?name=${values.name}&includeDeleted=true`,
             'GET',
             {},
             session?.user.access_token,

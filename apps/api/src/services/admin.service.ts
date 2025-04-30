@@ -7,11 +7,17 @@ import { hashedPassword } from '@/helper/bcrypt';
 
 class AdminService {
   async getAllUsers(req: Request) {
-    const allUsers = await prisma.users.findMany({
-      where: {
-        deleted_at: null,
-      },
-    });
+    let allUsers;
+    if (req.query.includeDeleted === 'true') {
+      allUsers = await prisma.users.findMany();
+    } else {
+      allUsers = await prisma.users.findMany({
+        where: {
+          deleted_at: null,
+        },
+      });
+    }
+
     const feedback: serviceFeedback = {
       code: 200,
       data: allUsers,
@@ -21,58 +27,37 @@ class AdminService {
     return feedback;
   }
 
-  async getUserById(req: Request) {
-    if (!req.params.id) {
+  async getUser(req: Request) {
+    if (!req.query.email && !req.query.id) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `ID is required to fetch admin.`,
+        message: `Email or ID is required to fetch a user.`,
       };
       return feedback;
     }
 
-    const user = await getUserById(req.params.id);
+    let user;
 
-    if (!user || user.deleted_at) {
-      const feedback: serviceFeedback = {
-        code: 404,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `User with ID ${req.params.id} does not exist.`,
-      };
-      return feedback;
+    if (req.query.email) {
+      user = await getUserByEmail(req.query.email as string);
     }
 
-    const feedback: serviceFeedback = {
-      code: 200,
-      data: user,
-      status: statusEnum.SUCCESS,
-      message: `Successfully fetched user with ID ${req.params.id}.`,
-    };
-    return feedback;
-  }
-
-  async getUserByEmail(req: Request) {
-    if (!req.params.email) {
-      const feedback: serviceFeedback = {
-        code: 400,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `Email is required to fetch admin.`,
-      };
-      return feedback;
+    if (req.query.id) {
+      user = await getUserById(req.query.id as string);
     }
-
-    const user = await getUserByEmail(req.params.email);
 
     if (user && user.deleted_at && req.query.includeDeleted !== 'true') {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
-        message: `User with email ${req.params.email} does not exist.`,
+        message: req.query.email
+          ? `User with email ${req.params.email} does not exist.`
+          : `User with ID ${req.params.id} does not exist.`,
       };
+      return feedback;
     }
 
     if (!user) {
@@ -80,7 +65,9 @@ class AdminService {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
-        message: `User with email ${req.params.email} does not exist.`,
+        message: req.query.email
+          ? `User with email ${req.params.email} does not exist.`
+          : `User with ID ${req.params.id} does not exist.`,
       };
       return feedback;
     }
@@ -89,7 +76,9 @@ class AdminService {
       code: 200,
       data: user,
       status: statusEnum.SUCCESS,
-      message: `Successfully fetched user with email ${req.params.email}.`,
+      message: req.query.email
+        ? `Successfully fetched user with email ${req.params.email}.`
+        : `Successfully fetched user with ID ${req.params.id}.`,
     };
     return feedback;
   }

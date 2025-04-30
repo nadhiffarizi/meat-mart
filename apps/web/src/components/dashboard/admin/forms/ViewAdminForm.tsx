@@ -20,7 +20,7 @@ function ViewAdminForm({ id }: { id: string }) {
     async function getUserData() {
       try {
         const response = await api(
-          `admin/users/${id}`,
+          `admin/users?id=${id}`,
           'GET',
           {},
           session?.user.access_token,

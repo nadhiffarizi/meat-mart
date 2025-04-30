@@ -14,7 +14,7 @@ function ViewCategories() {
     async function getCategories() {
       try {
         const response = await api(
-          `category`,
+          `category/all`,
           'GET',
           {},
           session?.user.access_token,

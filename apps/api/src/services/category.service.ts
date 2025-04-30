@@ -8,11 +8,17 @@ import { getCategoryById, getCategoryByName } from '@/helper/category.prisma';
 
 class CategoryService {
   async getAllCategories(req: Request) {
-    const allCategories = await prisma.categories.findMany({
-      where: {
-        deleted_at: null,
-      },
-    });
+    let allCategories;
+    if (req.query.includeDeleted === 'true') {
+      allCategories = await prisma.categories.findMany();
+    } else {
+      allCategories = await prisma.categories.findMany({
+        where: {
+          deleted_at: null,
+        },
+      });
+    }
+
     const feedback: serviceFeedback = {
       code: 200,
       data: allCategories,
@@ -22,50 +28,26 @@ class CategoryService {
     return feedback;
   }
 
-  async getCategoryById(req: Request) {
-    if (!req.params.id) {
+  async getCategory(req: Request) {
+    if (!req.query.name && !req.query.id) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `ID is required to fetch category.`,
+        message: `Name or ID is required to fetch category.`,
       };
       return feedback;
     }
 
-    const category = await getCategoryById(req.params.id);
+    let category;
 
-    if (!category || category.deleted_at) {
-      const feedback: serviceFeedback = {
-        code: 404,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `Category with ID ${req.params.id} does not exist.`,
-      };
-      return feedback;
+    if (req.query.name) {
+      category = await getCategoryByName(req.query.name as string);
     }
 
-    const feedback: serviceFeedback = {
-      code: 200,
-      data: category,
-      status: statusEnum.SUCCESS,
-      message: `Successfully fetched category with ID ${req.params.id}.`,
-    };
-    return feedback;
-  }
-
-  async getCategoryByName(req: Request) {
-    if (!req.params.name) {
-      const feedback: serviceFeedback = {
-        code: 400,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `Name is required to fetch category.`,
-      };
-      return feedback;
+    if (req.query.id) {
+      category = await getCategoryById(req.query.id as string);
     }
-
-    const category = await getCategoryByName(req.params.name);
 
     if (
       category &&
@@ -76,16 +58,9 @@ class CategoryService {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
-        message: `Category with name ${req.params.name} does not exist.`,
-      };
-    }
-
-    if (!category) {
-      const feedback: serviceFeedback = {
-        code: 404,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `Category with name ${req.params.name} does not exist.`,
+        message: req.query.name
+          ? `Category with name ${req.query.name} does not exist.`
+          : `Category with ID ${req.query.id} does not exist.`,
       };
       return feedback;
     }
@@ -94,7 +69,9 @@ class CategoryService {
       code: 200,
       data: category,
       status: statusEnum.SUCCESS,
-      message: `Successfully fetched category with name ${req.params.name}.`,
+      message: req.query.name
+        ? `Successfully fetched category with name ${req.query.name}.`
+        : `Successfully fetched category with ID ${req.query.ID}.`,
     };
     return feedback;
   }

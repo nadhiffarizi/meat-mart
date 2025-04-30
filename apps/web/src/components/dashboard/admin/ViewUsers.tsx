@@ -23,7 +23,7 @@ function ViewUsers() {
     async function getUsers() {
       try {
         const response = await api(
-          `admin/users`,
+          `admin/users/all`,
           'GET',
           {},
           session?.user.access_token,

@@ -48,7 +48,7 @@ function CreateAdminForm() {
 
         try {
           const existingAccount = await api(
-            `admin/users/getUserByEmail/${values.email}?includeDeleted=true`,
+            `admin/users?email=${values.email}&includeDeleted=true`,
             'GET',
             {},
             session?.user.access_token,

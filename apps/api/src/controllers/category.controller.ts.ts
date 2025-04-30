@@ -7,7 +7,7 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import '@/interface/global.interface';
 
 export class CategoryController {
-  async readCategories(req: Request, res: Response, next: NextFunction) {
+  async getAllCategories(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.user?.role !== 'SUPER_ADMIN' && req.user?.role !== 'ADMIN') {
         return responseHandler(
@@ -27,7 +27,7 @@ export class CategoryController {
     }
   }
 
-  async readCategory(req: Request, res: Response, next: NextFunction) {
+  async getCategory(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.user?.role !== 'SUPER_ADMIN') {
         return responseHandler(
@@ -39,27 +39,7 @@ export class CategoryController {
         );
       }
 
-      let data: serviceFeedback = await categoryService.getCategoryById(req);
-
-      responseHandler(res, data.message, data.status, data.data, data.code);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getCategoryByName(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (req.user?.role !== 'SUPER_ADMIN') {
-        return responseHandler(
-          res,
-          `You have insufficient permission to access.`,
-          statusEnum.FAILED,
-          null,
-          403,
-        );
-      }
-
-      let data: serviceFeedback = await categoryService.getCategoryByName(req);
+      let data: serviceFeedback = await categoryService.getCategory(req);
 
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {

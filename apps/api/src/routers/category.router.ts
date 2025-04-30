@@ -12,13 +12,8 @@ export class CategoryRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/', verifyToken, categoryController.readCategories);
-    this.router.get('/:id', verifyToken, categoryController.readCategory);
-    this.router.get(
-      '/getCategoryByName/:name',
-      verifyToken,
-      categoryController.getCategoryByName,
-    );
+    this.router.get('/all', verifyToken, categoryController.getAllCategories);
+    this.router.get('/', verifyToken, categoryController.getCategory);
     this.router.post(
       '/',
       verifyToken,

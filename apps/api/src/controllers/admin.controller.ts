@@ -7,9 +7,9 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import '@/interface/global.interface';
 
 export class AdminController {
-  async readUsers(req: Request, res: Response, next: NextFunction) {
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      if (req.user?.role !== 'SUPER_ADMIN') {
+      if (req.user?.role !== 'SUPER_ADMIN' && req.user?.role !== 'ADMIN') {
         return responseHandler(
           res,
           `You have insufficient permission to access.`,
@@ -27,7 +27,7 @@ export class AdminController {
     }
   }
 
-  async readUser(req: Request, res: Response, next: NextFunction) {
+  async getUser(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.user?.role !== 'SUPER_ADMIN') {
         return responseHandler(
@@ -39,27 +39,7 @@ export class AdminController {
         );
       }
 
-      let data: serviceFeedback = await adminService.getUserById(req);
-
-      responseHandler(res, data.message, data.status, data.data, data.code);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getUserByEmail(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (req.user?.role !== 'SUPER_ADMIN') {
-        return responseHandler(
-          res,
-          `You have insufficient permission to access.`,
-          statusEnum.FAILED,
-          null,
-          403,
-        );
-      }
-
-      let data: serviceFeedback = await adminService.getUserByEmail(req);
+      let data: serviceFeedback = await adminService.getUser(req);
 
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {

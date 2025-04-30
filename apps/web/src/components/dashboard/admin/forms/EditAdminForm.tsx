@@ -34,11 +34,12 @@ function EditAdminForm({ id }: { id: string }) {
     async function getUserData() {
       try {
         const response = await api(
-          `admin/users/${id}`,
+          `admin/users?id=${id}`,
           'GET',
           {},
           session?.user.access_token,
         );
+        console.log('RESPONSE.DATA =>', response.data);
         setUserDetails(response.data);
       } catch (error) {
         console.log(error);
