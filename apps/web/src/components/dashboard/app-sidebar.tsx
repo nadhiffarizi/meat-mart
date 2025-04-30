@@ -2,9 +2,11 @@
 import {
   Calendar,
   CircleUser,
+  CreditCard,
   FileChartColumn,
   Home,
   Inbox,
+  Package,
   PackageSearch,
   Search,
   Settings,
@@ -42,6 +44,12 @@ const items = [
     icon: TicketPercent,
   },
   { title: 'Report', url: '/dashboard/reports', icon: FileChartColumn },
+  {
+    title: 'Transactions',
+    url: '/dashboard/transaction-list',
+    icon: CreditCard,
+  },
+  { title: 'Orders', url: '/dashboard/order-list', icon: Package },
   { title: 'My Profile', url: '/dashboard/profile', icon: CircleUser },
 ];
 

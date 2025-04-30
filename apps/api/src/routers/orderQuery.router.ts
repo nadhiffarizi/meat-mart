@@ -1,7 +1,8 @@
 import orderController from '@/controllers/order.controller';
+import orderQueryController from '@/controllers/orderQuery.controller';
 import { Router } from 'express';
 
-export class OrderRouter {
+export class OrderRouterQuery {
   private router: Router;
 
   constructor() {
@@ -11,10 +12,9 @@ export class OrderRouter {
 
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT 
-    this.router.post('/admin/cancel', orderController.cancelOrderByAdmin);
-    this.router.post("/admin/sendorder", orderController.sendOrderByAdmin)
-    this.router.post('/confirm', orderController.confirmOrderByCust);
 
+    this.router.get('/list', orderQueryController.getOrderListUser);
+    this.router.get('/admin/list', orderQueryController.getOrderListAdmin);
     // .... continue api
   }
 
@@ -24,4 +24,4 @@ export class OrderRouter {
   }
 }
 
-export default new OrderRouter()
+export default new OrderRouterQuery()

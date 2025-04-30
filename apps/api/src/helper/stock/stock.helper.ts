@@ -181,24 +181,24 @@ export const updateStockQuantity = async (stockId: string, cartQuantity: number,
     })
     switch (MODE) {
         case 'SUBTRACT':
-            const addedStock = await prisma.stocks.update({
+            const subtractedStock = await prisma.stocks.update({
                 where: {
                     id: stockId
                 }, data: {
                     quantity: stockQuantity?.quantity! - cartQuantity
                 }
             })
-            return addedStock
+            return subtractedStock
             break;
         case 'ADD':
-            const subtractedStock = await prisma.stocks.update({
+            const addedStock = await prisma.stocks.update({
                 where: {
                     id: stockId
                 }, data: {
                     quantity: stockQuantity?.quantity! + cartQuantity
                 }
             })
-            return subtractedStock
+            return addedStock
         default:
             return null
     }

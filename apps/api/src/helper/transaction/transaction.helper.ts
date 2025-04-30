@@ -214,7 +214,7 @@ export const getTrxById = async (trxId: string) => {
     return trx
 }
 
-export const updateTrxStatus = async (trxId: string, userId: string, statusToBe: E_TransactionStatus) => {
+export const updateTrxStatus = async (trxId: string, statusToBe: E_TransactionStatus) => {
     /**update status transaction based on input parameter */
 
     const updatedTrx = await prisma.transactions.update({

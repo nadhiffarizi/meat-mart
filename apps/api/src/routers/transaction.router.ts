@@ -15,8 +15,8 @@ export class TransactionRouter {
 
     this.router.post('/create', transactionController.create);
     this.router.post('/cancel', transactionController.cancel);
-    this.router.post('/admin/reject', transactionController.rejectPaymentProof);
-    this.router.post('/admin/cancel', transactionController.adminConfirm);
+    this.router.post('/admin/rejectpayment', transactionController.rejectPaymentProof);
+    this.router.post('/admin/confirmpayment', transactionController.adminConfirm);
     this.router.post('/upload/paymentproof', uploader().single("image"), transactionController.uploadTrxProof);
     // .... continue api
   }

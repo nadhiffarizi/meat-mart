@@ -131,3 +131,18 @@ export const getOrderByTrxId = async (trxId: string) => {
     })
     return orders
 }
+
+export const getOrderById = async (orderId: string) => {
+    if (!orderId) return null
+    /**returns order by orderId */
+    const order = await prisma.transactionDetails.findUnique({
+        select: {
+            status: true
+        },
+        where: {
+            id: orderId
+        }
+    })
+
+    return order
+}

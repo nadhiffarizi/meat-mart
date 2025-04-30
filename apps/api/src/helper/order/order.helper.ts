@@ -103,7 +103,7 @@ export const confirmOrderById = async (orderId: string) => {
 }
 
 
-export const updateOrderStatus = async (trxId: string, statusToBe: E_OrderStatus) => {
+export const updateOrderStatusByTrxId = async (trxId: string, statusToBe: E_OrderStatus) => {
     const updatedTrxIds = await prisma.transactionDetails.updateMany({
         where: {
             transaction_id: trxId
@@ -113,4 +113,18 @@ export const updateOrderStatus = async (trxId: string, statusToBe: E_OrderStatus
     })
 
     return updatedTrxIds
+}
+
+export const updateOrderStatusById = async (orderId: string, statusToBe: E_OrderStatus) => {
+
+    if (!orderId) return null
+    const updatedOrders = await prisma.transactionDetails.update({
+        where: {
+            id: orderId
+        }, data: {
+            status: statusToBe
+        }
+    })
+
+    return updatedOrders
 }

@@ -1,5 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums"
-import { updateOrderStatus } from "@/helper/order/order.helper"
+import { updateOrderStatusByTrxId } from "@/helper/order/order.helper"
 import { getOrderByTrxId } from "@/helper/order/orderQuery.helper"
 import { returnServiceFeedback } from "@/helper/responseHandler.helper"
 import { getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper"
@@ -17,7 +17,7 @@ class TransactionServiceAdmin {
         try {
             if (user?.role === E_Role.CUSTOMER) throw new Error("Unauthorized role")
             // change status trx
-            const updatedTrx = await updateTrxStatus(trxId!, user?.id!, E_TransactionStatus.CONFIRMED_ADMIN)
+            const updatedTrx = await updateTrxStatus(trxId!, E_TransactionStatus.CONFIRMED_ADMIN)
 
             // find orders
             const orders = await getOrderByTrxId(updatedTrx.id)
@@ -25,7 +25,7 @@ class TransactionServiceAdmin {
             const orderDetails = []
             for (let order of orders) {
                 // change status for trxIds
-                const updatedTrxDetails = await updateOrderStatus(order.transaction_id, E_OrderStatus.ON_PROCESS)
+                const updatedTrxDetails = await updateOrderStatusByTrxId(order.transaction_id, E_OrderStatus.ON_PROCESS)
                 orderDetails.push(updatedTrxDetails)
             }
 
@@ -44,7 +44,7 @@ class TransactionServiceAdmin {
         try {
             if (user?.role === E_Role.CUSTOMER) throw new Error("Unauthorized role")
             // change status trx
-            const updatedTrx = await updateTrxStatus(trxId!, user?.id!, E_TransactionStatus.AWAITING_PAYMENT)
+            const updatedTrx = await updateTrxStatus(trxId!, E_TransactionStatus.AWAITING_PAYMENT)
 
             // find orders
             const orders = await getOrderByTrxId(updatedTrx.id)
@@ -52,7 +52,7 @@ class TransactionServiceAdmin {
             const orderDetails = []
             for (let order of orders) {
                 // change status for trxIds
-                const updatedTrxDetails = await updateOrderStatus(order.transaction_id, E_OrderStatus.AWAITING_PAYMENT)
+                const updatedTrxDetails = await updateOrderStatusByTrxId(order.transaction_id, E_OrderStatus.AWAITING_PAYMENT)
                 orderDetails.push(updatedTrxDetails)
             }
 
