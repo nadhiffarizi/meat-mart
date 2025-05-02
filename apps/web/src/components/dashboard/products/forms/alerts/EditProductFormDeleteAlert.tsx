@@ -25,7 +25,7 @@ async function deleteProduct(
   setDisabled: any,
 ) {
   try {
-    const response = await api(`product/${id}`, 'DELETE', {}, token);
+    const response = await api(`dashboard/product/${id}`, 'DELETE', {}, token);
 
     if (response) {
       setDisabled(true);

@@ -10,6 +10,14 @@ const productCreateSchema = z.object({
   categories: z.array(z.string()),
 });
 
+const productUpdateSchema = z.object({
+  name: z.string(),
+  price: z.number(),
+  weight: z.number(),
+  categories: z.array(z.string()),
+  existingPictures: z.array(z.string()).optional(),
+});
+
 export const validateProductCreateBody = (
   req: Request,
   res: Response,
@@ -17,6 +25,25 @@ export const validateProductCreateBody = (
 ) => {
   try {
     productCreateSchema.parse(req.body);
+    next();
+  } catch (error) {
+    return responseHandler(
+      res,
+      'Invalid request body',
+      statusEnum.FAILED,
+      null,
+      400,
+    );
+  }
+};
+
+export const validateProductUpdateBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    productUpdateSchema.parse(req.body);
     next();
   } catch (error) {
     return responseHandler(

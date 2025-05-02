@@ -7,6 +7,7 @@ export const findProductById = async (id: string) => {
     },
     include: {
       ProductCategories: true,
+      ProductPictures: true,
     },
   });
   return data;
@@ -25,7 +26,6 @@ export const findProductByStockId = async (stockId: string) => {
   return { ...product };
 };
 
-//tentative
 export const findProductByName = async (name: string) => {
   const data = await prisma.products.findUnique({
     where: {
@@ -33,6 +33,7 @@ export const findProductByName = async (name: string) => {
     },
     include: {
       ProductCategories: true,
+      ProductPictures: true,
     },
   });
   return data;

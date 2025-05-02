@@ -1,4 +1,4 @@
-export default interface IProductCategory {
+export default interface IGetProductCategory {
   id: string;
   product_id: string;
   category_id: string;

@@ -6,7 +6,7 @@ import {
   findProductById,
   findProductByName,
 } from '@/helper/product/product.helper';
-import { cloudinaryUpload } from '@/helper/cloudinary.helper';
+import { cloudinaryRemove, cloudinaryUpload } from '@/helper/cloudinary.helper';
 import { createSlug } from '@/helper/slug.helper';
 
 class ProductService {
@@ -14,16 +14,14 @@ class ProductService {
     let allProducts;
     if (req.query.includeDeleted === 'true') {
       allProducts = await prisma.products.findMany({
-        include: { ProductCategories: true },
+        include: { ProductCategories: true, ProductPictures: true },
       });
     } else {
       allProducts = await prisma.products.findMany({
         where: {
           deleted_at: null,
         },
-        include: {
-          ProductCategories: true,
-        },
+        include: { ProductCategories: true, ProductPictures: true },
       });
     }
 
@@ -219,7 +217,7 @@ class ProductService {
     }
 
     const existingProductName = await findProductByName(req.body.name);
-    if (existingProductName) {
+    if (existingProductName && existingProductName.id !== req.params.id) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,
@@ -229,12 +227,66 @@ class ProductService {
       return feedback;
     }
 
+    const { existingPictures, picture, categories, ...updatedBody } = req.body;
+
     const updatedProduct = await prisma.products.update({
-      data: req.body,
+      data: updatedBody,
       where: {
         id: req.params.id,
       },
     });
+
+    const picturesToDelete = existingProduct.ProductPictures.filter(
+      (pp) => !existingPictures.includes(pp.link),
+    );
+
+    if (picturesToDelete.length) {
+      await Promise.all(
+        picturesToDelete.map(async (pp) => {
+          await cloudinaryRemove(pp.link);
+        }),
+      );
+      await prisma.productPictures.deleteMany({
+        where: {
+          link: {
+            in: picturesToDelete.map((pp) => pp.link),
+          },
+        },
+      });
+    }
+
+    const categoriesToDelete = existingProduct.ProductCategories.filter(
+      (pc) => !categories.includes(pc.category_id),
+    );
+
+    if (categoriesToDelete.length) {
+      await prisma.productCategories.deleteMany({
+        where: {
+          category_id: {
+            in: categoriesToDelete.map((pc) => pc.category_id),
+          },
+        },
+      });
+    }
+
+    const existingCategoryIds = existingProduct.ProductCategories.map(
+      (pc) => pc.category_id,
+    );
+
+    const categoriesToAdd = req.body.categories.filter(
+      (catId: string) => !existingCategoryIds.includes(catId),
+    );
+
+    if (categoriesToAdd.length) {
+      await prisma.productCategories.createMany({
+        data: categoriesToAdd.map((catId: string) => ({
+          product_id: req.params.id,
+          category_id: catId,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
     const feedback: serviceFeedback = {
       code: 200,
       data: updatedProduct,

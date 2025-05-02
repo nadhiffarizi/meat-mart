@@ -144,7 +144,7 @@ class CategoryService {
     }
 
     const existingCategoryName = await getCategoryByName(req.body.name);
-    if (existingCategoryName) {
+    if (existingCategoryName && existingCategoryName.id !== req.params.id) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,

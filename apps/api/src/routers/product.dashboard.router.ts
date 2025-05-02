@@ -1,7 +1,10 @@
 import productController from '@/controllers/product.dashboard.controller';
 import { uploader } from '@/helper/multer.helper';
 import { verifyToken } from '@/middleware/authorize.middleware';
-import { validateCategoryCreateAndUpdateBody } from '@/middleware/category.middleware';
+import {
+  validateProductCreateBody,
+  validateProductUpdateBody,
+} from '@/middleware/product.middleware';
 import { Router } from 'express';
 
 export class ProductRouter {
@@ -24,13 +27,13 @@ export class ProductRouter {
     this.router.post(
       '/',
       verifyToken,
-      validateCategoryCreateAndUpdateBody,
+      validateProductCreateBody,
       productController.createProduct,
     );
     this.router.patch(
       '/:id',
       verifyToken,
-      validateCategoryCreateAndUpdateBody,
+      validateProductUpdateBody,
       productController.updateProduct,
     );
     this.router.delete('/:id', verifyToken, productController.deleteProduct);

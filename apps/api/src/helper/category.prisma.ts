@@ -1,17 +1,17 @@
 import { prisma } from '../config';
 
 export const getCategoryByName = async (name: string) => {
-  const user = await prisma.categories.findUnique({
-    where: { name },
+  const category = await prisma.categories.findUnique({
+    where: { name: name },
   });
 
-  return user;
+  return category;
 };
 
 export const getCategoryById = async (id: string) => {
-  const user = await prisma.categories.findUnique({
+  const category = await prisma.categories.findUnique({
     where: { id },
   });
 
-  return user;
+  return category;
 };
