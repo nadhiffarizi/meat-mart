@@ -13,22 +13,3 @@ export interface IGetUsers {
   updated_at: string;
   deleted_at?: string;
 }
-
-export interface IGetCategories {
-  id: string;
-  name: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
-}
-
-export interface IGetProducts {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;
-  weight: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
-}

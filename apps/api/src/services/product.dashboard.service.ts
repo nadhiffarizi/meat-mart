@@ -13,11 +13,16 @@ class ProductService {
   async getAllProducts(req: Request) {
     let allProducts;
     if (req.query.includeDeleted === 'true') {
-      allProducts = await prisma.products.findMany();
+      allProducts = await prisma.products.findMany({
+        include: { ProductCategories: true },
+      });
     } else {
       allProducts = await prisma.products.findMany({
         where: {
           deleted_at: null,
+        },
+        include: {
+          ProductCategories: true,
         },
       });
     }
@@ -164,12 +169,23 @@ class ProductService {
       return feedback;
     }
 
+    const { categories, ...newBody } = req.body;
+
     const newProduct = await prisma.products.create({
       data: {
-        ...req.body,
+        ...newBody,
         slug: createSlug(req.body.name),
       },
     });
+
+    await Promise.all(
+      req.body.categories.map((category_id: string) => {
+        return prisma.productCategories.create({
+          data: { product_id: newProduct.id, category_id: category_id },
+        });
+      }),
+    );
+
     const feedback: serviceFeedback = {
       code: 201,
       data: newProduct,

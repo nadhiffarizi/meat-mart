@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
-import { IGetProducts } from '@/app/interfaces/user.interface';
+import { IGetDashboardProducts } from '../../../../app/interfaces/product.dashboard.interface';
 import EditProductFormDeleteAlert from './alerts/EditProductFormDeleteAlert';
 import EditProductFormAlert from './alerts/EditProductFormAlert';
 
@@ -21,7 +21,8 @@ function EditProductForm({ id }: { id: string }) {
   const status = searchParams?.get('status');
   const { data: session, update } = useSession();
   const [disabled, setDisabled] = useState(false);
-  const [categoryDetails, setCategoryDetails] = useState<IGetProducts>();
+  const [categoryDetails, setCategoryDetails] =
+    useState<IGetDashboardProducts>();
 
   useEffect(() => {
     async function getCategoryData() {

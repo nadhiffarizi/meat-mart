@@ -7,6 +7,7 @@ const productCreateSchema = z.object({
   name: z.string(),
   price: z.number(),
   weight: z.number(),
+  categories: z.array(z.string()),
 });
 
 export const validateProductCreateBody = (

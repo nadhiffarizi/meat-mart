@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Toaster, toast } from 'sonner';
 import { useFormik } from 'formik';
@@ -7,16 +7,22 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
-import { IGetProducts } from '@/app/interfaces/user.interface';
+import { IGetDashboardProducts } from '../../../../app/interfaces/product.dashboard.interface';
 import ReactivateProductFormAlert from './alerts/ReactivateProductFormAlert';
 import AddProductFormAlert from './alerts/AddProductFormAlert';
 import Image from 'next/image';
+import { IGetCategories } from '@/app/interfaces/category.interface';
+import Link from 'next/link';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for this product.'),
   price: Yup.number().required('Please set a price for this product.'),
   weight: Yup.number().required('Please enter the unit for your price.'),
   picture: Yup.mixed<File[]>().optional(),
+  categories: Yup.array()
+    .of(Yup.string())
+    .min(1, 'Please select at least one category for your product')
+    .required('Please select at least one category for your product.'),
 });
 
 function CreateProductForm() {
@@ -26,6 +32,7 @@ function CreateProductForm() {
   const { data: session, update } = useSession();
   const [disabled, setDisabled] = useState(false);
   const [openCategoryRecovery, setOpenCategoryRecovery] = useState(false);
+  const [allCategories, setAllCategories] = useState<IGetCategories[]>([]);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -41,12 +48,30 @@ function CreateProductForm() {
     }
   };
 
+  useEffect(() => {
+    try {
+      async function getAllCategories() {
+        const allCategories = await api(
+          `category/all`,
+          'GET',
+          {},
+          session?.user.access_token,
+        );
+        setAllCategories(allCategories.data);
+      }
+      getAllCategories();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [session?.user.access_token]);
+
   const formik = useFormik({
     initialValues: {
       name: '',
       price: '',
       weight: '',
       picture: [] as File[],
+      categories: [] as string[],
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -59,7 +84,7 @@ function CreateProductForm() {
             {},
             session?.user.access_token,
           );
-          if ((existingProduct.data as IGetProducts).deleted_at) {
+          if ((existingProduct.data as IGetDashboardProducts).deleted_at) {
             setOpenCategoryRecovery(true);
             return;
           }
@@ -86,7 +111,7 @@ function CreateProductForm() {
           if (response) {
             toast.success(response.message || 'Product successfully created!');
             router.push(`/dashboard/products/new?status=successful`);
-            return (response.data as IGetProducts).id;
+            return (response.data as IGetDashboardProducts).id;
           } else {
             toast.error(response.message || 'Something went wrong!');
             setDisabled(false);
@@ -208,6 +233,66 @@ function CreateProductForm() {
         )}
       </div>
 
+      <div className="flex flex-col gap-1">
+        <label htmlFor="weight">
+          Categories <span className="text-red-500">*</span>
+        </label>
+        <div className="flex flex-col gap-1">
+          {allCategories.length ? (
+            <></>
+          ) : (
+            <div>
+              Please{' '}
+              <Link href={`/dashboard/categories/new`} className="underline">
+                create a category
+              </Link>{' '}
+              before creating your first product.
+            </div>
+          )}
+          {allCategories.map((category) => {
+            const isChecked = formik.values.categories.includes(category.id);
+            return (
+              <label
+                key={category.id}
+                htmlFor="category"
+                className="flex items-center gap-2 whitespace-nowrap"
+              >
+                {category.name}
+                <input
+                  type="checkbox"
+                  name="categories"
+                  id="category"
+                  value={category.id}
+                  checked={isChecked}
+                  onChange={(e) => {
+                    const { value, checked } = e.currentTarget;
+                    if (checked) {
+                      return formik.setFieldValue('categories', [
+                        ...formik.values.categories,
+                        value,
+                      ]);
+                    } else {
+                      return formik.setFieldValue(
+                        'categories',
+                        formik.values.categories.filter(
+                          (categoryId) => categoryId !== value,
+                        ),
+                      );
+                    }
+                  }}
+                  disabled={disabled}
+                />
+              </label>
+            );
+          })}
+          {formik.touched.categories && formik.errors.categories && (
+            <div className="text-red-500 text-sm">
+              {formik.errors.categories}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2">
         <label htmlFor="picture">Product Pictures</label>
         <input
@@ -217,6 +302,7 @@ function CreateProductForm() {
           multiple
           className="bg-[#F7FBFF] w-full rounded-md py-2 px-4 border border-[#D4D7E3]"
           accept="image/*"
+          disabled={disabled}
           onChange={(event) => {
             const files = event.currentTarget.files;
             if (files) {
@@ -258,6 +344,7 @@ function CreateProductForm() {
                     );
                     formik.setFieldValue('picture', updatedPictures);
                   }}
+                  disabled={disabled}
                   className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-tr rounded-bl hover:bg-red-600"
                 >
                   ✕
