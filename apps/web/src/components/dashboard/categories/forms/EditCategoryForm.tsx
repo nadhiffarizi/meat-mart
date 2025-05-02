@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
-import { IGetCategories } from '@/app/interfaces/user.interface';
+import { IGetCategories } from '../../../../app/interfaces/category.interface';
 import EditCategoryFormDeleteAlert from './alerts/EditCategoryFormDeleteAlert';
 import EditCategoryFormAlert from './alerts/EditCategoryFormAlert';
 

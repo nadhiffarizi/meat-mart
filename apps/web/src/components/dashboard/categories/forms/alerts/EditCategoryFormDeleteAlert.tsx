@@ -74,7 +74,10 @@ function EditCategoryFormDeleteAlert({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will delete this category.
+              Deleting this category may leave some of your existing products
+              category-less. They would still purchasable, but they could not be
+              filtered by category. Please reassign them to other categories for
+              the best SEO practices.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
