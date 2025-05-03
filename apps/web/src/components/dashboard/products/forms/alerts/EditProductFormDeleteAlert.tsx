@@ -74,7 +74,8 @@ function EditProductFormDeleteAlert({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will delete this product.
+              This action cannot be undone. This will delete this product and
+              data associated with this product such as its pictures.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

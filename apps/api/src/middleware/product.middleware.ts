@@ -10,6 +10,10 @@ const productCreateSchema = z.object({
   categories: z.array(z.string()),
 });
 
+const productRestoreSchema = z.object({
+  name: z.string(),
+});
+
 const productUpdateSchema = z.object({
   name: z.string(),
   price: z.number(),
@@ -24,7 +28,12 @@ export const validateProductCreateBody = (
   next: NextFunction,
 ) => {
   try {
-    productCreateSchema.parse(req.body);
+    if (req.query.restore === 'true') {
+      productRestoreSchema.parse(req.body);
+      console.log('req.body in restore:', req.body);
+    } else {
+      productCreateSchema.parse(req.body);
+    }
     next();
   } catch (error) {
     return responseHandler(

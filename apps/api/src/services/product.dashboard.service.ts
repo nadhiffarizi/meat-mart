@@ -148,6 +148,17 @@ class ProductService {
         where: { name: req.body.name },
         data: { deleted_at: null },
       });
+
+      await prisma.productCategories.updateMany({
+        where: { product_id: req.params.id },
+        data: { deleted_at: null },
+      });
+
+      await prisma.productPictures.updateMany({
+        where: { product_id: req.params.id },
+        data: { deleted_at: null },
+      });
+
       const feedback: serviceFeedback = {
         code: 200,
         data: restoredProduct,
@@ -318,6 +329,16 @@ class ProductService {
       };
       return feedback;
     }
+
+    await prisma.productCategories.updateMany({
+      where: { product_id: req.params.id },
+      data: { deleted_at: new Date() },
+    });
+
+    await prisma.productPictures.updateMany({
+      where: { product_id: req.params.id },
+      data: { deleted_at: new Date() },
+    });
 
     const deletedProduct = await prisma.products.update({
       where: {

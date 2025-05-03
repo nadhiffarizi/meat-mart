@@ -27,7 +27,7 @@ async function reactivateProduct(
 ) {
   try {
     const response = await api(
-      `product?restore=true`,
+      `dashboard/product?restore=true`,
       'POST',
       {
         body: {
