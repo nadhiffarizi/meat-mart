@@ -8,7 +8,7 @@ import { Category } from './columns';
 
 function ViewCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const { data: session, update, status } = useSession();
+  const { data: session, update } = useSession();
 
   useEffect(() => {
     async function getCategories() {

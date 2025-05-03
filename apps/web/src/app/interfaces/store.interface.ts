@@ -1,0 +1,16 @@
+export interface IGetStores {
+  id: string;
+  storeadmin_id: string;
+  name: string;
+  status: 'CENTRAL' | 'BRANCH';
+  address: string;
+  province: string;
+  city: string;
+  district: string;
+  postal_code: string;
+  latitude: string;
+  longitude: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+}
