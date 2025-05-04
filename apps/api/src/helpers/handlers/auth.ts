@@ -2,7 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { generateAuthToken } from '../token';
-import { ISocialUserData } from '@/interface/User.interface';
+import { Address, ISocialUserData } from '../../interface/User.interface';
+import { getCoordinates } from '../geocode';
 
 const prisma = new PrismaClient();
 
@@ -58,3 +59,90 @@ export const registerSocialUser = async (data: ISocialUserData) => {
     throw error;
   }
 };
+
+export async function addUserAddress(
+  email: string,
+  addressData: Omit<Address, 'id'>,
+): Promise<Address> {
+  try {
+    const fullAddress = [
+      addressData.address,
+      addressData.district,
+      addressData.city,
+      addressData.province,
+      'Indonesia',
+    ]
+      .filter(Boolean)
+      .join(', ');
+
+    // Get coordinates
+    const coords = await getCoordinates(fullAddress);
+
+    const completeAddress = {
+      ...addressData,
+      latitude: coords?.lat.toString() || '',
+      longitude: coords?.lng.toString() || '',
+    };
+
+    // Save to database
+    const response = await fetch('/api/addresses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, address: completeAddress }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add address');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error adding address:', error);
+    throw error;
+  }
+}
+
+export async function updateUserAddress(
+  email: string,
+  id: string,
+  addressData: Address,
+): Promise<Address> {
+  try {
+    const fullAddress = [
+      addressData.address,
+      addressData.district,
+      addressData.city,
+      addressData.province,
+      'Indonesia',
+    ]
+      .filter(Boolean)
+      .join(', ');
+
+    const coords = await getCoordinates(fullAddress);
+
+    const updatedAddress = {
+      ...addressData,
+      latitude: coords?.lat.toString() || addressData.latitude || '',
+      longitude: coords?.lng.toString() || addressData.longitude || '',
+    };
+
+    const response = await fetch(`/api/addresses/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, address: updatedAddress }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update address');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error updating address:', error);
+    throw error;
+  }
+}

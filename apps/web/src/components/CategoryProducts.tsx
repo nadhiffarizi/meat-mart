@@ -12,7 +12,6 @@ interface CategoryProductsProps {
   subcategorySlug: string;
 }
 
-// Mock data - replace with real API calls
 const mockProducts = [
   {
     id: '1',
@@ -24,7 +23,6 @@ const mockProducts = [
     isNew: true,
     isSpecial: false,
   },
-  // Add more products...
 ];
 
 export default function CategoryProducts({
@@ -120,10 +118,5 @@ export default function CategoryProducts({
         </div>
       </main>
     </div>
-    //   );<div className="m-auto my-5  grid grid-cols-2 text-xs md:text-sm md:grid-cols-3  lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
-    //   {productList.map((card, key) => (
-    //     <Card {...card} key={key} />
-    //   ))}
-    // </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { IProfile } from '@/interfaces/card.interface';
+import { Alert, Snackbar } from '@mui/material';
 
 interface ProfileFormProps {
   profile: IProfile;
@@ -21,14 +22,30 @@ export default function ProfileForm({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
+    provider: profile.provider,
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const [phoneNumber, setPhoneNumber] = useState('');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numericValue = value.replace(/\D/g, '');
+    // setPhoneNumber(numericValue);
+    setFormData((prev) => ({
+      ...prev,
+      phoneNumber: numericValue,
+    }));
+    if (numericValue.length > 13 || numericValue.length < 11) {
+      setError('Perhatikan nomor telepon Anda');
+    } else {
+      setError('');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,11 +71,11 @@ export default function ProfileForm({
           emailUpdate: formData.email,
           first_name: formData.firstName,
           last_name: formData.lastName,
-          phone_number: formData.phoneNumber,
+          phone_number: phoneNumber,
           password: formData.currentPassword,
           newPassword: formData.newPassword,
         });
-        console.log('EMAILDIGANTI', changeEmail);
+
         setSuccess('Profil berhasil diperbarui! Cek email untuk verifikasi');
         setTimeout(() => onCancel(), 3000);
       }
@@ -127,13 +144,23 @@ export default function ProfileForm({
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Email
           </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 "
-          />
+          {formData.provider !== 'credentials' ? (
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              disabled
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 "
+            />
+          ) : (
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 "
+            />
+          )}
 
           <p className="mt-1 text-sm text-gray-500">
             Lakukan verifikasi saat email diubah
@@ -148,9 +175,10 @@ export default function ProfileForm({
             type="tel"
             name="phoneNumber"
             value={formData.phoneNumber}
-            onChange={handleChange}
+            onChange={handlePhoneChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
+          {/* <p className="text-xs text-red-500 mb-4">{error}</p> */}
         </div>
 
         <div className="md:col-span-2 border-t border-gray-200 pt-4">

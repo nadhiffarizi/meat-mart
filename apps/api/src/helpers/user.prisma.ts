@@ -1,4 +1,3 @@
-import { statusEnum } from '@/enums/statusEnum.enums';
 import { prisma } from '../config';
 import { transporter } from './nodemailer';
 
@@ -11,6 +10,7 @@ export const getUserByEmail = async (email: string) => {
       password: true,
       is_verified: true,
       role: true,
+      provider: true,
     },
   });
 
@@ -20,7 +20,7 @@ export const getUserByEmail = async (email: string) => {
 export const sendVerificationEmail = async (email: string, token: string) => {
   // const verificationUrl = `${process.env.BASE_URL}/verify-email?token=${encodeURIComponent(token)}`;
   const verificationUrl = `${process.env.BASE_URL}/verify-email?token=${encodeURIComponent(token)}`;
-
+  console.log('GIVE VERIFICATION EMAIL', verificationUrl);
   await transporter.sendMail({
     from: `MeatMart`,
     to: email,

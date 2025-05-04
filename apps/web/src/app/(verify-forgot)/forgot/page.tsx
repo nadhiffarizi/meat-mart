@@ -1,12 +1,15 @@
 'use client';
 import { resendVerificationEmail, resetEmail } from '@/helpers/handlers/auth';
 import { useFormik } from 'formik';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 type Props = {};
 
 export default function page({}: Props) {
+  const router = useRouter();
   const [success, setSuccess] = useState<boolean>(false);
+  const [errMessage, setErrMessage] = useState('');
 
   const formik = useFormik({
     initialValues: {
@@ -16,8 +19,16 @@ export default function page({}: Props) {
       if (!values.email) return;
       try {
         const result = await resetEmail(values.email);
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 5000);
+        if ('error' in result) {
+          setErrMessage(result.error);
+          return;
+        }
+        if (result?.url) {
+          router.push(result.url);
+        } else {
+          setSuccess(true);
+          setTimeout(() => setSuccess(false), 5000);
+        }
         // if (result.success) {
         //   setSuccess(true);
         //   setTimeout(() => setSuccess(false), 5000);
@@ -26,6 +37,9 @@ export default function page({}: Props) {
         // }
       } catch (error) {
         console.log(error);
+        setErrMessage(
+          error instanceof Error ? error.message : 'An unknown error occurred',
+        );
       }
     },
   });
@@ -50,6 +64,9 @@ export default function page({}: Props) {
             <div className="mt-4 mb-2 p-2 bg-green-100 text-green-700 rounded">
               We've sent you a reset email
             </div>
+          )}
+          {errMessage && (
+            <p className="text-red-600 mb-4 text-xs">{errMessage}</p>
           )}
           <button
             type="submit"

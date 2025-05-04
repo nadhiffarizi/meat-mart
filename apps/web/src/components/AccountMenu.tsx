@@ -77,7 +77,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            {profile?.first_name || 'username'}
+            {profile?.first_name || ''}
           </Button>
         </Tooltip>
       </Box>

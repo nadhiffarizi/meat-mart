@@ -48,13 +48,20 @@ export default function SetPasswordPage() {
             setError(null);
             setSuccess(false);
             if (values.password === values.confirmPassword) {
-              await verifyEmail(values.token, values.password);
+              const result = await verifyEmail(values.token, values.password);
+              if ('error' in result) {
+                setError(result.error);
+                return;
+              }
+              if (result?.url) {
+                push(result.url);
+              } else {
+                setSuccess(true);
 
-              setSuccess(true);
-
-              setTimeout(() => setSuccess(false), 5000);
-              open.current = true;
-              push('/login');
+                setTimeout(() => setSuccess(false), 5000);
+                open.current = true;
+                push('/login');
+              }
             } else {
               throw new Error(
                 'Your Password and confirm Password did not match',

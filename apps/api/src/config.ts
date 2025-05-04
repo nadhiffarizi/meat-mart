@@ -20,3 +20,4 @@ export const node_account = {
   user: process.env.NODEMAILER_USER || '',
   pass: process.env.NODEMAILER_PASS || '',
 };
+export const opencage_apikey = process.env.OPENCAGE_API_KEY;

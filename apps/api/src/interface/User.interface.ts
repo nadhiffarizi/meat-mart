@@ -26,3 +26,18 @@ export interface ISocialUserData {
   provider: string;
   provider_id?: string;
 }
+
+export interface Address {
+  id: string;
+  user_id: string;
+  recipient_name: string;
+  recipient_phone_number: string;
+  is_selected: boolean;
+  address: string;
+  province: string;
+  city: string;
+  district: string;
+  postal_code: string;
+  latitude: string;
+  longitude: string;
+}

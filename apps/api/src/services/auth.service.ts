@@ -92,18 +92,28 @@ class AuthService {
       };
     }
 
+    if (existingUser.provider !== 'credentials') {
+      return {
+        code: 403,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `The email that you've entered is social login email. Please, use social login button`,
+      };
+    }
+
     if (!existingUser.is_verified) {
       const verificationToken = uuidv4();
       const tokenExpiry = new Date(Date.now() + 3600000);
 
       await sendVerificationEmail(email, verificationToken);
-      await prisma.users.update({
+      const updated = await prisma.users.update({
         where: { email },
         data: {
           verification_link: verificationToken,
           verification_expiry: tokenExpiry,
         },
       });
+      console.log('MENGIRIM EMAIL VERIFIKASI LAGI', updated);
       return {
         code: 403,
         data: null,
@@ -177,7 +187,7 @@ class AuthService {
         message: 'Invalid verification token',
       };
     }
-    console.log('TOKENN', token);
+
     const user = await prisma.users.findUnique({
       where: { verification_link: token },
     });
@@ -187,7 +197,7 @@ class AuthService {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: 'Invalid verification token',
+        message: 'Invalid verification link',
       };
     }
 
@@ -261,6 +271,15 @@ class AuthService {
     const user = await prisma.users.findUnique({
       where: { email },
     });
+
+    if (!user) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Email does not exist. Please, enter the correct email',
+      };
+    }
     if (user?.provider !== 'credentials') {
       return {
         code: 400,
@@ -474,6 +493,7 @@ class AuthService {
         email: true,
         is_verified: true,
         image_url: true,
+        provider: true,
       },
     });
     if (!getUser) {

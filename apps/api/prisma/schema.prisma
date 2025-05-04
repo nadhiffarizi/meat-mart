@@ -79,9 +79,9 @@ model Users {
 }
 
 model UserAddresses {
-  id                     String    @id @default(uuid())
+  id                     String   @id @default(uuid())
   user_id                String
-  users                  Users     @relation(fields: [user_id], references: [id])
+  users                  Users    @relation(fields: [user_id], references: [id])
   recipient_name         String
   recipient_phone_number String
   is_selected            Boolean
@@ -92,9 +92,9 @@ model UserAddresses {
   postal_code            String
   latitude               String
   longitude              String
-  created_at             DateTime  @default(now())
-  updated_at             DateTime  @updatedAt()
-  deleted_at             DateTime?
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt()
+  // deleted_at             DateTime?
 
   @@map("addresses")
 }

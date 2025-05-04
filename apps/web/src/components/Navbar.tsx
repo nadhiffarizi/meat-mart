@@ -10,7 +10,7 @@ import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
 
 const Navbar = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
@@ -27,13 +27,6 @@ const Navbar = () => {
       setUserLocation(savedLocation);
     }
   }, []);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   useEffect(() => {
     const handleScroll = (): void => {
@@ -102,7 +95,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center justify-end ml-4">
-            {session ? (
+            {status === 'authenticated' && (
               <>
                 {' '}
                 <Link
@@ -118,7 +111,8 @@ const Navbar = () => {
                 </Link>
                 <AccountMenu />
               </>
-            ) : (
+            )}
+            {status === 'unauthenticated' && (
               <>
                 <Link
                   href="/login"

@@ -14,12 +14,8 @@ import Image from 'next/image';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { usePathname, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/ProfileForm';
-
-const cld = new Cloudinary({
-  cloud: {
-    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  },
-});
+import { cloudName, uploadPreset } from '@/helpers/config';
+import AddressManager from '@/components/Addressemanager';
 
 interface profileSlug {
   params: {
@@ -33,26 +29,28 @@ const subcategories = [
 ];
 
 export default function ProfilePage({ params }: profileSlug) {
+  const { push } = useRouter();
   const { data: session, status } = useSession();
   const [profile, setProfile] = useState<IProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const pathname = usePathname();
 
   const currentSlug = pathname.split('/')[2];
-  const profileCat = subcategories.find((cat) => cat.slug === params.slug);
-
   useEffect(() => {
     async function loadProfile() {
       try {
+        if (status === 'unauthenticated') {
+          push('/');
+        }
         if (status === 'authenticated' && session.user?.email) {
           const data = await getProfile(session.user.email);
-          console.log('GET PROFILE', data);
           setProfile(data);
           if (data.image_url) {
             setImagePreview(data.image_url);
@@ -69,6 +67,14 @@ export default function ProfilePage({ params }: profileSlug) {
     loadProfile();
   }, [status, session]);
 
+  if (status !== 'authenticated') {
+    return (
+      <div className="text-center py-10 h-screen animate-pulse">
+        <p className="mt-20">Loading profile...</p>
+      </div>
+    );
+  }
+
   const handleCameraClick = () => {
     setShowModal(true);
 
@@ -81,7 +87,6 @@ export default function ProfilePage({ params }: profileSlug) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (
       !file.type.match('image/jpeg') &&
       !file.type.match('image/png') &&
@@ -92,7 +97,6 @@ export default function ProfilePage({ params }: profileSlug) {
       return;
     }
 
-    // Validate file size (1MB max)
     if (file.size > 1 * 1024 * 1024) {
       setError('File size should be less than 1MB');
       return;
@@ -106,18 +110,13 @@ export default function ProfilePage({ params }: profileSlug) {
     reader.readAsDataURL(file);
 
     try {
-      console.log('MENCOBA UPLOAD TO CL');
       setUploading(true);
       setError('');
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      console.log('cloudName', cloudName);
 
-      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-      console.log('cloudName', uploadPreset);
       if (!cloudName || !uploadPreset) {
         throw new Error('Cloudinary configuration is missing');
       }
-      // Create form data for Cloudinary upload
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', uploadPreset);
@@ -126,18 +125,16 @@ export default function ProfilePage({ params }: profileSlug) {
         method: 'POST',
         body: formData,
       });
-      console.log('Uploading to:', uploadUrl);
+
       const cloudinaryData = await cloudinaryResponse.json();
 
       if (cloudinaryData.secure_url) {
-        // Update profile image in database
         if (session?.user?.email) {
           const updatedProfile = await updateProfileImage(
             session.user.email,
             cloudinaryData.secure_url,
           );
 
-          // Update local state
           setProfile(updatedProfile);
           setImagePreview(cloudinaryData.secure_url);
 
@@ -150,42 +147,33 @@ export default function ProfilePage({ params }: profileSlug) {
     } finally {
       setUploading(false);
       setShowModal(false);
-      // router.refresh();
     }
   };
 
   const handleSubmit = async (updatedData: any) => {
-    console.log('APAKAH AKU DIPANGGIL?', updatedData);
     try {
       await updateUser(updatedData);
-      // router.push('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (loading) {
     return (
-      <div className="text-center py-8 h-screen animate-pulse">
-        Loading profile...
+      <div className="h-screen animate-pulse">
+        <p className="text-center  mt-44"> Loading profile...</p>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500 screen">{error}</div>;
+    return (
+      <div className="text-center py-10 text-red-500 min-h-96">{error}</div>
+    );
   }
 
-  // if (!profile?.is_verified) {
-  //   return (
-  //     <div className="text-center py-8 h-screen">
-  //       We've sent you a verification email. Please, verify your email
-  //     </div>
-  //   );
-  // }
-
   return (
-    <div className="w-[70%] mx-auto pb-4 bg-red rounded-sm ">
+    <div className="md:w-[90%] w-[90%] lg:w-[70%] mx-auto pb-4 bg-red rounded-sm">
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
@@ -308,7 +296,7 @@ export default function ProfilePage({ params }: profileSlug) {
               ) : (
                 <>
                   <div className="px-6 py-8 sm:p-10">
-                    <div className="flex flex-col items-center mb-8"></div>
+                    <AddressManager />
                   </div>
                 </>
               )}
