@@ -36,11 +36,14 @@ export function Card({ product }: { product: IProduct }) {
     }
 
     // call api first
-    const resAddCart = await addToCartAPI('cart/add', {
-      quantity: 1,
-      productId: product.id,
-      userId: '1',
-    });
+    const resAddCart = await addToCartAPI(
+      'cart/add',
+      {
+        quantity: 1,
+        productId: product.id,
+      },
+      session.user.access_token!,
+    );
 
     if (resAddCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
@@ -48,7 +51,10 @@ export function Card({ product }: { product: IProduct }) {
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('cart/get', '1');
+    const resGetCart = await getCartDataAPI(
+      'cart/get',
+      session.user.access_token!,
+    );
     if (resGetCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
       return;

@@ -2,6 +2,7 @@ import authController, { AuthController } from '@/controllers/auth.controller';
 import cartController from '@/controllers/cart.controller';
 import discountController from '@/controllers/discount.controller';
 import orderController from '@/controllers/transaction.controller';
+import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class DiscountRouter {
@@ -15,8 +16,8 @@ export class DiscountRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT
 
-    this.router.get('/get/:cartId', discountController.getDiscounts);
-    this.router.post('/redeem', discountController.redeemDiscount);
+    this.router.get('/get/:cartId', verifyToken, discountController.getDiscounts);
+    this.router.post('/redeem', verifyToken, discountController.redeemDiscount);
     // .... continue api
   }
 

@@ -10,6 +10,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  SelectChangeEvent,
   TextField,
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
@@ -23,16 +24,20 @@ import {
   statusFilterToArray,
   statusFilterUpdate,
 } from '@/helper/filter/transactionFilter.helper';
-import { trxFilterContext } from '@/app/transaction-list/page';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
+import { useSession } from 'next-auth/react';
+import { getStoreByAdmin } from '@/helper/store.helper';
+import IStore from '@/interface/store.interface';
+import { trxFilterContext } from '@/app/dashboard/transaction-list/page';
 
 export default function SearchBarTransactionListAdmin() {
-  // consume context
+  // global state
   const filterContext = React.useContext(trxFilterContext);
+  const { data: session, status } = useSession();
 
   // localstate
-  const [status, setStatus] = React.useState<IFilterStatus>({
+  const [filterStatus, setStatus] = React.useState<IFilterStatus>({
     AWAITING_PAYMENT: false,
     CANCELED: false,
     CONFIRMED_ADMIN: false,
@@ -43,20 +48,8 @@ export default function SearchBarTransactionListAdmin() {
   const [invoiceNumber, setInvoiceNumber] = React.useState('');
   const [from, setFrom] = React.useState<PickerValue>(null);
   const [until, setUntil] = React.useState<PickerValue>(null);
-  const [personName, setPersonName] = React.useState<string[]>([]);
-
-  const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-  ];
+  const [storeOptions, setStoreOptions] = React.useState<IStore[]>();
+  const [stores, setStores] = React.useState<IStore[]>([]);
 
   React.useEffect(() => {
     if (from && until && from.toDate().getTime() > until.toDate().getTime()) {
@@ -68,12 +61,38 @@ export default function SearchBarTransactionListAdmin() {
     const filters: IFilterTransactions = {
       from: !from ? null : from.toDate().getTime(),
       invoiceNumber: invoiceNumber,
-      statusArray: statusFilterToArray(status),
+      statusArray: statusFilterToArray(filterStatus),
       until: !until ? null : until.toDate().getTime(),
+      stores: stores,
     };
 
     filterContext?.setFilterTransactions({ ...filters });
-  }, [from, until, status, invoiceNumber]);
+  }, [from, until, filterStatus, invoiceNumber, stores]);
+
+  React.useEffect(() => {
+    // request store list
+    if (status === 'loading' || status === 'unauthenticated') {
+      return;
+    }
+
+    const promiseGetStore = getStoreByAdmin(
+      'store/list',
+      session?.user.access_token!,
+    );
+    promiseGetStore
+      .then((v) => {
+        if (v.status !== 200)
+          throw new Error('Something wrong, try fetching store later');
+        return v.json();
+      })
+      .then((value) => {
+        console.log(value['data']);
+        setStoreOptions([...value['data']]);
+      })
+      .catch((error) => {
+        callToast((error as Error).message, 'ERROR', 2000);
+      });
+  }, [status]);
 
   // HANDLER
   // onkey enter update cart qtty
@@ -112,6 +131,29 @@ export default function SearchBarTransactionListAdmin() {
     setUntil(newValue);
   };
 
+  // onchange stores
+  const handleChangeStores = (e: SelectChangeEvent<IStore[]>) => {
+    const targetName = (e.target.value as IStore[]).at(
+      (e.target.value as IStore[]).length - 1,
+    );
+    if (!storeOptions) return;
+
+    const indexOption = storeOptions?.findIndex(
+      (store) => store.name === String(targetName),
+    );
+
+    if (stores.includes(storeOptions[indexOption])) {
+      const indexStore = stores.findIndex(
+        (store) => store.name === String(targetName),
+      );
+      const newStores = stores.toSpliced(indexStore, 1);
+      setStores([...newStores]);
+    } else {
+      stores.push(storeOptions[indexOption]);
+      setStores([...stores]);
+    }
+  };
+
   // reset button
   const handleResetFilter = () => {
     setStatus({
@@ -123,25 +165,27 @@ export default function SearchBarTransactionListAdmin() {
     });
 
     setInvoiceNumber('');
+    setSearchInput('');
     setFrom(null);
     setUntil(null);
+    setStores([]);
   };
 
   // generate status filter
   const statusBar = () => {
     return (
       <div className="w-full lg:h-[70px] flex gap-5 items-center bg-white ">
-        <p className="font-semibold">Status</p>
+        <p className="font-semibold text-primaryText">Status</p>
         <Button
           id="btn-waiting-payment"
           style={{ textTransform: 'none' }}
           onClick={() =>
-            setStatus(statusFilterUpdate('AWAITING_PAYMENT', status))
+            setStatus(statusFilterUpdate('AWAITING_PAYMENT', filterStatus))
           }
-          className={`relative !rounded-full !bg-slate-50 ${status.AWAITING_PAYMENT ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          className={`relative !rounded-full !bg-slate-50 ${filterStatus.AWAITING_PAYMENT ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
-            className={`${status.AWAITING_PAYMENT ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            className={`${filterStatus.AWAITING_PAYMENT ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
           >
             Waiting Payment
           </p>
@@ -149,11 +193,13 @@ export default function SearchBarTransactionListAdmin() {
         <Button
           id="btn-canceled"
           style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('CANCELED', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.CANCELED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          onClick={() =>
+            setStatus(statusFilterUpdate('CANCELED', filterStatus))
+          }
+          className={`relative !rounded-full !bg-slate-50 ${filterStatus.CANCELED ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
-            className={`${status.CANCELED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            className={`${filterStatus.CANCELED ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
           >
             Canceled
           </p>
@@ -161,11 +207,13 @@ export default function SearchBarTransactionListAdmin() {
         <Button
           id="btn-pending-admin"
           style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('PENDING_ADMIN', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.PENDING_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          onClick={() =>
+            setStatus(statusFilterUpdate('PENDING_ADMIN', filterStatus))
+          }
+          className={`relative !rounded-full !bg-slate-50 ${filterStatus.PENDING_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
-            className={`${status.PENDING_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            className={`${filterStatus.PENDING_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
           >
             Pending Admin
           </p>
@@ -174,12 +222,12 @@ export default function SearchBarTransactionListAdmin() {
           id="btn-confirmed-admin"
           style={{ textTransform: 'none' }}
           onClick={() =>
-            setStatus(statusFilterUpdate('CONFIRMED_ADMIN', status))
+            setStatus(statusFilterUpdate('CONFIRMED_ADMIN', filterStatus))
           }
-          className={`relative !rounded-full !bg-slate-50 ${status.CONFIRMED_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          className={`relative !rounded-full !bg-slate-50 ${filterStatus.CONFIRMED_ADMIN ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
-            className={`${status.CONFIRMED_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            className={`${filterStatus.CONFIRMED_ADMIN ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
           >
             Confirmed Admin
           </p>
@@ -187,11 +235,11 @@ export default function SearchBarTransactionListAdmin() {
         <Button
           id="btn-done"
           style={{ textTransform: 'none' }}
-          onClick={() => setStatus(statusFilterUpdate('DONE', status))}
-          className={`relative !rounded-full !bg-slate-50 ${status.DONE ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
+          onClick={() => setStatus(statusFilterUpdate('DONE', filterStatus))}
+          className={`relative !rounded-full !bg-slate-50 ${filterStatus.DONE ? `!ring-secondaryGreen !ring-2` : `!ring-slate-400 !ring-1`}  !h-fit`}
         >
           <p
-            className={`${status.DONE ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
+            className={`${filterStatus.DONE ? 'text-secondaryGreen font-medium' : 'text-slate-500'} `}
           >
             Done
           </p>
@@ -200,15 +248,15 @@ export default function SearchBarTransactionListAdmin() {
           id="btn-reset"
           style={{ textTransform: 'none' }}
           onClick={handleResetFilter}
-          className="relative  !h-fit"
+          className="relative  !rounded-md !h-fit"
         >
-          <p className=" text-secondaryGreen font-semibold">Reset filter</p>
+          <p className=" text-orangeAccent font-semibold">Reset filter</p>
         </Button>
       </div>
     );
   };
   return (
-    <div className="w-full lg:h-[150px] flex flex-col bg-white shadow-md rounded-md py-3 lg:px-5">
+    <div className="w-full lg:h-[150px] flex flex-col bg-white ring-slate-200 ring-1 rounded-md py-3 lg:px-5">
       <div className="w-full lg:h-[70px] flex gap-5 bg-white ">
         <div className="w-1/4  h-full ">
           {/** for input search bar */}
@@ -219,6 +267,7 @@ export default function SearchBarTransactionListAdmin() {
             placeholder="Search invoice here"
             onChange={(e) => handleChange(e)}
             onKeyDown={handleKeyDown}
+            value={searchInput}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -240,18 +289,25 @@ export default function SearchBarTransactionListAdmin() {
               labelId="demo-multiple-checkbox-label"
               id="demo-multiple-checkbox"
               multiple
-              value={personName}
-              // onChange={handleChange}
+              value={stores}
+              onChange={handleChangeStores}
               input={<OutlinedInput label="Store" />}
-              // renderValue={(selected) => selected.join(', ')}
+              renderValue={(selected) => selected.map((s) => s.name).join(', ')}
               // MenuProps={MenuProps}
             >
-              {names.map((name) => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox />
-                  <ListItemText primary={name} />
-                </MenuItem>
-              ))}
+              {storeOptions &&
+                storeOptions.map((store: IStore, index: number) => (
+                  <MenuItem key={index} value={store.name}>
+                    <Checkbox
+                      checked={
+                        stores.findIndex((s) => s.name === store.name) === -1
+                          ? false
+                          : true
+                      }
+                    />
+                    <ListItemText primary={store.name} />
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </div>

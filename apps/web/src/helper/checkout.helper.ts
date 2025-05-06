@@ -44,15 +44,6 @@ export const createTransactionPayload = (
   cartState: ICart[],
   userId?: string,
 ) => {
-  //   {
-  //     "orderInputs": [
-  //     {
-  //         "cartId": "5b64e312-570f-4f51-9bae-810c807f113b",
-  //         "discountId": "5"
-  //     }
-  //     ],
-  //     "userId": "1"
-  // }
 
   /**return payload orderinputs and userId */
   const orderInputs: IOrderInput[] = [];
@@ -70,14 +61,14 @@ export const createTransactionPayload = (
 
 };
 
-export const createTransactionAPI = async (apiRoute: string, payload: any) => {
+export const createTransactionAPI = async (apiRoute: string, payload: any, token: string) => {
   console.log(payload);
 
   const response = await apiRequest(
     apiRoute,
     'POST',
     { ...payload },
-    { 'Content-Type': 'application/json', Accept: 'application/json' },
+    { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
   );
   // console.log(await response.json());
   return response;

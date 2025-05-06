@@ -6,12 +6,13 @@ import { IconButton, MenuItem } from '@mui/material';
 import { subtractCartState } from '@/redux/slice/cart.slice';
 import { subtractCartAPI } from '@/helper/cart.helper';
 import * as React from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function CartCard({ cartItem }: { cartItem: ICart }) {
   // get global state
   const cartState = useAppSelector((state) => state.cartState);
-  const userState = useAppSelector((state) => state.userState);
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
 
   // handler
   const removeProduct = (
@@ -28,11 +29,14 @@ export default function CartCard({ cartItem }: { cartItem: ICart }) {
     );
 
     // call cart service to update cart
-    subtractCartAPI('cart/subtract', {
-      productId: cartItem.product.id,
-      quantity: cartItem.quantity,
-      userId: userState.id,
-    });
+    subtractCartAPI(
+      'cart/subtract',
+      {
+        productId: cartItem.product.id,
+        quantity: cartItem.quantity,
+      },
+      session?.user.access_token!,
+    );
   };
 
   return (

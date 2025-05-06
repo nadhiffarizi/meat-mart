@@ -9,6 +9,9 @@ import { getDataTransactionAPI } from '@/helper/transaction.helper';
 import { callToast } from '@/helper/notify.helper';
 import { ITransaction } from '@/interface/transaction.interface';
 import SearchBarTransactionListAdmin from '@/components/dashboard/transaction-list/SearchBarTransactionList.component';
+import { useSession } from 'next-auth/react';
+import TransactionListCardAdmin from '@/components/dashboard/transaction-list/TransactionListCard.component';
+import TransactionAdminTable from '@/components/dashboard/transaction-list/TransactionListAdminTable.component';
 
 // filter context type
 export interface TransactionFilterContextType {
@@ -35,6 +38,7 @@ export default function TransactionListPageAdmin() {
   const [filterTransactions, setFilterTransactions] = React.useState<
     IFilterTransactions | undefined
   >(undefined);
+  const { data: session, status } = useSession();
 
   //local state
   const router = useRouter();
@@ -51,55 +55,53 @@ export default function TransactionListPageAdmin() {
     const params = setQueryParams(filterTransactions);
     router.replace(`${pathName}?${params.toString()}`);
 
-    try {
+    if (status === 'loading' || !session?.user.access_token) {
       setLoading(true);
-      const getTrxResponse = getDataTransactionAPI(
-        `transaction/list?${params.toString()}`,
-        filterTransactions!,
-      );
-
-      getTrxResponse
-        .then((v) => {
-          if (v.status !== 200) throw new Error();
-          return v.json();
-        })
-        .then((value) => setTrxData(value['data']))
-        .catch(() =>
-          callToast('No data satisfy filter criteria', 'INFO', 2000),
-        );
-    } catch (error) {
-      callToast((error as Error).message, 'ERROR', 2000);
+      return;
     }
+
+    setLoading(true);
+    const getTrxResponse = getDataTransactionAPI(
+      `transaction/list/admin?${params.toString()}`,
+      filterTransactions!,
+      session?.user.access_token!,
+    );
+
+    getTrxResponse
+      .then((v) => {
+        if (v.status !== 200) {
+          callToast('No data satisfy filter criteria', 'INFO', 2000);
+          throw new Error();
+        }
+        return v.json();
+      })
+      .then((value) => setTrxData(value['data']))
+      .catch(() => callToast('No data satisfy filter criteria', 'INFO', 2000));
     setLoading(false);
 
     // call get transaction to get list of transactions
-  }, [filterTransactions, isChange]);
+  }, [filterTransactions, isChange, status]);
 
   return (
-    <React.Fragment>
-      {/** order item list */}
-      <div className=" w-full flex flex-col gap-10   rounded-md overflow-auto ">
-        <h1 className=" text-start text-3xl font-semibold text-secondaryGreen">
-          Admin Transaction List
-        </h1>
+    <div className=" w-full flex flex-col gap-7 rounded-md overflow-auto px-2">
+      <h1 className=" text-start text-3xl font-semibold text-primaryText">
+        Admin Transaction List
+      </h1>
 
-        <div className="w-full">
-          <trxFilterContext.Provider
-            value={{ filterTransactions, setFilterTransactions }}
-          >
-            <SearchBarTransactionListAdmin />
-          </trxFilterContext.Provider>
-        </div>
-
-        {trxData &&
-          trxData.map((trx, index: number) => {
-            return (
-              <trxChangeContext.Provider value={{ isChange, setChange }}>
-                <TransactionListCard trx={trx} key={index} />
-              </trxChangeContext.Provider>
-            );
-          })}
+      <div className="w-full ">
+        <trxFilterContext.Provider
+          value={{ filterTransactions, setFilterTransactions }}
+        >
+          <SearchBarTransactionListAdmin />
+        </trxFilterContext.Provider>
       </div>
-    </React.Fragment>
+      <div className="w-full">
+        {trxData && (
+          <trxChangeContext.Provider value={{ isChange, setChange }}>
+            <TransactionAdminTable trxData={trxData} />
+          </trxChangeContext.Provider>
+        )}
+      </div>
+    </div>
   );
 }

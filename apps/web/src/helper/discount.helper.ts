@@ -1,13 +1,13 @@
 import { IDiscount } from "@/interface/discount.interface"
 import { apiRequest } from "./api.helper"
 
-export const getAvailableDiscountsAPI = async (apiRouter: string) => {
-    const response = await apiRequest(apiRouter, 'GET', { "Content-Type": "application/json", "Accept": "application/json" })
+export const getAvailableDiscountsAPI = async (apiRouter: string, token: string) => {
+    const response = await apiRequest(apiRouter, 'GET', { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 
-export const redeemDiscountAPI = async (apiRouter: string, payload: { cartId: string, discountId: string }) => {
-    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+export const redeemDiscountAPI = async (apiRouter: string, payload: { cartId: string, discountId: string }, token: string) => {
+    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 

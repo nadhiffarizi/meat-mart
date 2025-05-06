@@ -5,8 +5,8 @@ import ChooseAddressCheckout from '@/components/Checkout/ChooseAddressCheckout.c
 import PaymentSummaryCart from '@/components/Checkout/PaymentSummaryCart.component';
 import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { Cancel, Delete } from '@mui/icons-material';
-import { Box, Button, Checkbox, IconButton, TextField } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -14,15 +14,38 @@ export default function CartPage() {
   const cartState = useAppSelector((state) => state.cartState);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [isLoading, setLoading] = React.useState<boolean>(false);
+  const { data: session, status } = useSession();
 
   // handle delete all
   const handleDeleteAllCart = async () => {};
 
   React.useEffect(() => {
     dispatch(updateCheckoutProgress('CART'));
+    if (status === 'loading') {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [session]);
+  React.useEffect(() => {
+    dispatch(updateCheckoutProgress('CART'));
+    if (status === 'loading') {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  if (cartState.length === 0) {
+  if (isLoading === true) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
+  if (cartState.length === 0 && !isLoading) {
     return (
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
         <div className="flex flex-col items-center justify-center gap-10 w-4/5 max-w-[2000px] min-w-[600px] h-screen py-5 px-5 ">

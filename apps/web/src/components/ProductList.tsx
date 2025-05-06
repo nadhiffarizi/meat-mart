@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
 import { getProducts } from '@/helper/product.helper';
 import IProduct from '@/interface/product.interface';
+import { useSession } from 'next-auth/react';
 
 export const ProductList = () => {
   // local state

@@ -1,6 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
 import ILocation from "@/interface/location.interface";
-import { serviceFeedback } from "@/interface/serviceFeedback.interface";
 import { Request } from "express";
 import { findStockByCartId, findStocksByProduct } from "@/helper/stock/stock.helper";
 import { calculateAfterDisc, findDiscountByCode, findDiscountById, findDiscountsByStockId } from "@/helper/discount/discount.helper";
@@ -8,21 +7,25 @@ import { findCartById } from "@/helper/cart/cart.helper";
 import { findProductByStockId } from "@/helper/product/product.helper";
 import { ICart, ICartAfterDIsc } from "@/interface/cart.interface";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
+import { convertRoleToEnum } from "@/helper/role.helper";
+import { E_Role } from "@prisma/client";
 
 class DiscountService {
     async getDiscounts(req: Request) {
         /** get discount by stockId*/
+        const user = req.user
+        // need info: userId, cartId
+        const { cartId } = req.params
 
         try {
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role")
+
             // placeholder for location 
             const loc1: ILocation = {
                 lat: "-6.2263977",
                 lon: "106.8584389"
             }
-
-            // need info: userId, cartId
-            const { cartId } = req.params
-
             // find stockId by cartId
             const stockId = await findStockByCartId(cartId)
 
@@ -44,10 +47,13 @@ class DiscountService {
 
     async redeemDiscount(req: Request) {
         /**give feedback to FE {discountedAmount, subtotalAfterDiscount} */
+        const user = req.user
+        // input data
+        const { cartId, discountId } = req.body
 
         try {
-            // input data
-            const { cartId, discountId } = req.body
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role")
 
             // if data not completed, failed
             if (!cartId || !discountId) throw new Error("Discount Id not completed")

@@ -8,6 +8,8 @@ import { Request } from "express";
 import { findStocksByProduct } from "@/helper/stock/stock.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { findThumbnailByProductId, findThumbnailByStockId } from "@/helper/product/product.helper";
+import { convertRoleToEnum } from "@/helper/role.helper";
+import { E_Role } from "@prisma/client";
 
 class CartService {
     async add(req: Request) {
@@ -18,13 +20,16 @@ class CartService {
         }
 
         // need info: user, address(location), productId
-        const { quantity, productId, userId } = req.body
+        const { quantity, productId } = req.body
 
         try {
+            const user = req.user
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role. Needs to be customer")
             // check if existed in the carts table
             const findItem = await prisma.carts.findFirst({
                 where: {
-                    user_id: userId,
+                    user_id: user?.id!,
                     AND: {
                         stocks: {
                             product_id: productId
@@ -35,7 +40,7 @@ class CartService {
 
             const availableStocks = await findStocksByProduct(productId, loc1)
 
-            const insertedData = await addToCart(availableStocks, Number(quantity), userId, findItem!)
+            const insertedData = await addToCart(availableStocks, Number(quantity), user?.id!, findItem!)
 
             // feedback from service
             return returnServiceFeedback(200, insertedData, statusEnum.SUCCESS, "add cart success")
@@ -48,7 +53,9 @@ class CartService {
 
     async getCart(req: Request) {
         try {
-            const { userId } = req.body
+            const user = req.user
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role. Needs to be customer")
 
             const loc1: ILocation = {
                 lat: "-6.2263977",
@@ -77,7 +84,7 @@ class CartService {
                     },
                 },
                 where: {
-                    user_id: userId
+                    user_id: user?.id!
                 }, orderBy: {
                     id: "asc"
                 }
@@ -98,32 +105,6 @@ class CartService {
     }
 
     async subtract(req: Request) {
-        // placeholder for location
-        const loc1: ILocation = {
-            lat: "-6.2263977",
-            lon: "106.8584389"
-        }
-
-        // need info: user, address(location), productId
-        const { quantity, productId, userId } = req.body
-
-        // check where is the cart data
-        const findItem = await prisma.carts.findFirst({
-            where: {
-                user_id: userId,
-                AND: {
-                    stocks: {
-                        product_id: productId
-                    }
-                }
-            }
-        })
-
-        const availableStocks = await findStocksByProduct(productId, loc1)
-        const data = await subtractCart(availableStocks, quantity, userId, findItem!)
-
-        // feedback from service
-        return returnServiceFeedback(200, data, statusEnum.SUCCESS, "subtract cart success")
 
         try {
             // placeholder for location
@@ -133,12 +114,15 @@ class CartService {
             }
 
             // need info: user, address(location), productId
-            const { quantity, productId, userId } = req.body
+            const { quantity, productId } = req.body
+            const user = req.user
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role. Needs to be customer")
 
             // check where is the cart data
             const findItem = await prisma.carts.findFirst({
                 where: {
-                    user_id: userId,
+                    user_id: user?.id!,
                     AND: {
                         stocks: {
                             product_id: productId
@@ -148,7 +132,7 @@ class CartService {
             })
 
             const availableStocks = await findStocksByProduct(productId, loc1)
-            const data = await subtractCart(availableStocks, quantity, userId, findItem!)
+            const data = await subtractCart(availableStocks, quantity, user?.id!, findItem!)
 
             // feedback from service
             return returnServiceFeedback(200, data, statusEnum.SUCCESS, "subtract cart success")
@@ -167,13 +151,17 @@ class CartService {
         }
 
         // need info: user, address(location), productId
-        const { quantity, productId, userId } = req.body
+        const { quantity, productId } = req.body
+        const user = req.user
+
 
         try {
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role. Needs to be customer")
             // check if existed in the carts table
             const findItem = await prisma.carts.findFirst({
                 where: {
-                    user_id: userId,
+                    user_id: user?.id!,
                     AND: {
                         stocks: {
                             product_id: productId
@@ -184,7 +172,7 @@ class CartService {
 
             const availableStocks = await findStocksByProduct(productId, loc1)
 
-            const insertedData = await updateCartQuantity(availableStocks, Number(quantity), userId, findItem!)
+            const insertedData = await updateCartQuantity(availableStocks, Number(quantity), user?.id!, findItem!)
 
             // feedback from service
             return returnServiceFeedback(200, insertedData, statusEnum.SUCCESS, "add cart success")

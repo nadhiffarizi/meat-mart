@@ -13,7 +13,7 @@ export class TransactionQueryRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT 
 
-    this.router.get('/', transactionQueryController.getTransactionListUser);
+    this.router.get('/', verifyToken, transactionQueryController.getTransactionListUser);
     this.router.get('/admin', verifyToken, transactionQueryController.getTransactionListAdmin);
     // .... continue api
   }

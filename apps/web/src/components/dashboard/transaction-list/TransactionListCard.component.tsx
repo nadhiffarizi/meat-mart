@@ -4,20 +4,20 @@ import { callToast } from '@/helper/notify.helper';
 import { currencyFormatter } from '@/helper/product.helper';
 import {
   cancelTransactionAPI,
+  rejectTransactionAPI,
   uploadPaymentProof,
 } from '@/helper/transaction.helper';
 import { ITransaction } from '@/interface/transaction.interface';
-import { ShoppingBag } from '@mui/icons-material';
+import { Payment, ShoppingBag } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
   Button,
   CircularProgress,
   Divider,
-  IconButton,
   Typography,
 } from '@mui/material';
-import { Files } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import * as React from 'react';
 
 export default function TransactionListCardAdmin({
@@ -27,6 +27,7 @@ export default function TransactionListCardAdmin({
 }) {
   // global state
   const changeStatus = React.useContext(trxChangeContext);
+  const { data: session, status } = useSession();
 
   //local state
   const [isLoading, setLoading] = React.useState<boolean>(false);
@@ -36,10 +37,13 @@ export default function TransactionListCardAdmin({
   const handleCancel = async (trxId: string, userId: string) => {
     try {
       setLoading(true);
-      const resCancel = await cancelTransactionAPI('transaction/cancel', {
-        trxId: trx.id,
-        userId: '1',
-      });
+      const resCancel = await rejectTransactionAPI(
+        'transaction/reject',
+        {
+          trxId: trx.id,
+        },
+        session?.user.access_token!,
+      );
 
       if (resCancel.status !== 200)
         throw new Error('Cancel transaction failed, try again later ');
@@ -59,42 +63,42 @@ export default function TransactionListCardAdmin({
   const handleUploadPayment = () => {
     fileInputRef.current?.click();
   };
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files;
-    if (!file || file.length === 0) {
-      console.log('no file selected');
-      return;
-    }
-    // console.log('selected file', file[0]);
+  // const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files;
+  //   if (!file || file.length === 0) {
+  //     console.log('no file selected');
+  //     return;
+  //   }
+  //   // console.log('selected file', file[0]);
 
-    // call api to upload
-    try {
-      setLoading(true);
-      // create formdata
-      const payload = new FormData();
-      payload.append('image', file[0]);
-      payload.append('trxId', trx.id);
-      const resUpload = await uploadPaymentProof(
-        'transaction/upload/paymentproof',
-        payload,
-      );
+  //   // call api to upload
+  //   try {
+  //     setLoading(true);
+  //     // create formdata
+  //     const payload = new FormData();
+  //     payload.append('image', file[0]);
+  //     payload.append('trxId', trx.id);
+  //     const resUpload = await uploadPaymentProof(
+  //       'transaction/upload/paymentproof',
+  //       payload,
+  //     );
 
-      if (resUpload.status !== 200) throw new Error('error uploading file');
+  //     if (resUpload.status !== 200) throw new Error('error uploading file');
 
-      const result = (await resUpload.json())['data'];
-      console.log(result);
+  //     const result = (await resUpload.json())['data'];
+  //     console.log(result);
 
-      callToast('Upload payment proof success', 'INFO', 3000);
+  //     callToast('Upload payment proof success', 'INFO', 3000);
 
-      // set change
-      changeStatus?.setChange(!changeStatus.isChange);
+  //     // set change
+  //     changeStatus?.setChange(!changeStatus.isChange);
 
-      setLoading(false);
-    } catch (error) {
-      callToast((error as Error).message, 'ERROR', 2000);
-      setLoading(false);
-    }
-  };
+  //     setLoading(false);
+  //   } catch (error) {
+  //     callToast((error as Error).message, 'ERROR', 2000);
+  //     setLoading(false);
+  //   }
+  // };
 
   // styling
   const statusFormatter = (status: string) => {
@@ -123,7 +127,6 @@ export default function TransactionListCardAdmin({
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                onChange={(e) => handleFileChange(e)}
               />
             </Button>
           );
@@ -169,14 +172,16 @@ export default function TransactionListCardAdmin({
         }}
       >
         <div className="w-full h-full flex items-center gap-5 ">
-          <ShoppingBag className="!fill-transparent !stroke-black !h-full" />
-          <p className="font-semibold text-xs">{trx.invoice_number}</p>
+          <Payment className="!fill-transparent !stroke-black !h-full" />
+          <p className="font-semibold text-xs">
+            {trx.invoice_number.toUpperCase()}
+          </p>
           <p className="text-xs">Created: {trx.created_at.split('T')[0]}</p>
           <>{statusFormatter(trx.transaction_status)}</>
         </div>
         <div className="w-2/5 h-full flex items-center justify-end gap-5">
           <p className="text-xs">
-            Pay before:{' '}
+            Paid at:{' '}
             <span className="text-yellow-500 text-xs">
               {' '}
               {trx.deadline_payment.split('T')[0]}
@@ -186,10 +191,6 @@ export default function TransactionListCardAdmin({
       </Box>
       <Box sx={{ width: '100%', height: '60%' }}>
         <div className="w-full h-full  flex justify-between gap-3">
-          <div className="w-1/4 max-w-[100px] h-full max-h-[300px] bg-white">
-            {/**image div */}
-            payment photo
-          </div>
           <div className="w-full h-full max-h-[300px] flex gap-2 py-3 px-3 bg-white ">
             <div className=" h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
               <p className="text-slate-600 text-sm">Payment Method</p>

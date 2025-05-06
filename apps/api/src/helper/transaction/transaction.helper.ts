@@ -100,13 +100,14 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILo
 }
 
 export const createTransaction = async (trxId: string, totalPrice: number, userId: string) => {
+    const now = new Date()
 
     const updatedTransaction = await prisma.transactions.update({
         where: {
             id: trxId,
         }, data: {
             total_price: totalPrice,
-            deadline_payment: setDeadlinePayment(new Date()),
+            deadline_payment: setDeadlinePayment(new Date(now.getTime() + (24 * 60 * 60 * 1000))),
             invoice_number: generateInvoiceNumber(trxId, userId)
         }
     })
@@ -116,9 +117,9 @@ export const createTransaction = async (trxId: string, totalPrice: number, userI
 
 const generateInvoiceNumber = (trxId: string, userId: string) => {
     const strTrxId = trxId.split("-")[0]
-    const userIdStr = userId.split("-")[0] || userId
+    const userIdStr = userId.split("-")[0].toUpperCase() || userId.toUpperCase()
     const dateStr = `${(new Date()).getFullYear()}${(new Date()).getMonth()}${(new Date()).getDate()}`
-    const invoiceStr = `INV-${userIdStr}-${dateStr}-${strTrxId.toUpperCase()}`
+    const invoiceStr = `INV-${dateStr}-${userIdStr}-${strTrxId.toUpperCase()}`
 
     return invoiceStr
 }

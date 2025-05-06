@@ -6,6 +6,7 @@ import { callToast } from '@/helper/notify.helper';
 import { getDataOrderAPI, syncOrderDataFromAPI } from '@/helper/order.helper';
 import { IFilterOrder } from '@/interface/filter.interface';
 import { IOrder } from '@/interface/order.interface';
+import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -33,6 +34,7 @@ export default function OrderListPageAdmin() {
   const [filterOrder, setFilterOrder] = React.useState<
     IFilterOrder | undefined
   >(undefined);
+  const { data: session, status } = useSession();
 
   //local state
   const router = useRouter();
@@ -50,10 +52,16 @@ export default function OrderListPageAdmin() {
     router.replace(`${pathName}?${params.toString()}`);
 
     try {
+      if (status === 'loading' || !session?.user.access_token) {
+        setLoading(true);
+        return;
+      }
+
       setLoading(true);
       const getOrderResponse = getDataOrderAPI(
-        `order/list?${params.toString()}`,
+        `order/list/admin?${params.toString()}`,
         filterOrder!,
+        session?.user.access_token!,
       );
 
       getOrderResponse
@@ -73,7 +81,7 @@ export default function OrderListPageAdmin() {
     setLoading(false);
 
     // call get transaction to get list of transactions
-  }, [filterOrder, isChange]);
+  }, [filterOrder, isChange, status]);
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">

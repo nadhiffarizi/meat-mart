@@ -2,8 +2,6 @@ export const apiRequest = async (apiRoute: string, method: string, data?: any, h
 
     let fetchParams = {}
     if (!formData) {
-        console.log("here");
-
         fetchParams = method === 'GET' ? ({
             method: method,
             headers: header,

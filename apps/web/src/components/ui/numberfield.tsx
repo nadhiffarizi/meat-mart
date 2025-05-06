@@ -16,6 +16,7 @@ import { addToCartAPI } from '@/helper/cart.helper';
 import { useState } from 'react';
 import { subtractCartAPI } from '@/helper/cart.helper';
 import { callToast } from '@/helper/notify.helper';
+import { useSession } from 'next-auth/react';
 
 export default function NumberFieldComponent({
   cartItem,
@@ -27,6 +28,7 @@ export default function NumberFieldComponent({
   // local state
   const id = React.useId();
   const [inputQtty, setInputQtty] = useState<number>(cartItem.quantity);
+  const { data: session } = useSession();
 
   //refresh update local state
   React.useEffect(() => {
@@ -36,11 +38,14 @@ export default function NumberFieldComponent({
   // add to cart handler
   const handleAddToCart = async (qtty: number) => {
     // call api first
-    const resAddCart = await addToCartAPI('cart/add', {
-      quantity: qtty,
-      productId: cartItem.product.id,
-      userId: '1',
-    });
+    const resAddCart = await addToCartAPI(
+      'cart/add',
+      {
+        quantity: qtty,
+        productId: cartItem.product.id,
+      },
+      session?.user.access_token!,
+    );
 
     if (resAddCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
@@ -48,7 +53,10 @@ export default function NumberFieldComponent({
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('cart/get', '1');
+    const resGetCart = await getCartDataAPI(
+      'cart/get',
+      session?.user.access_token!,
+    );
     if (resGetCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
       return;
@@ -61,11 +69,14 @@ export default function NumberFieldComponent({
   // minus cart item
   const handleSubstractToCart = async (qtty: number) => {
     // call api first
-    const resSubCart = await subtractCartAPI('cart/subtract', {
-      quantity: qtty,
-      productId: cartItem.product.id,
-      userId: '1',
-    });
+    const resSubCart = await subtractCartAPI(
+      'cart/subtract',
+      {
+        quantity: qtty,
+        productId: cartItem.product.id,
+      },
+      session?.user.access_token!,
+    );
 
     if (resSubCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
@@ -73,7 +84,10 @@ export default function NumberFieldComponent({
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('cart/get', '1');
+    const resGetCart = await getCartDataAPI(
+      'cart/get',
+      session?.user.access_token!,
+    );
     if (resGetCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
       return;
@@ -106,11 +120,14 @@ export default function NumberFieldComponent({
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
-      const resUpdateCart = await updateCartQuantity('cart/update', {
-        quantity: inputQtty,
-        productId: cartItem.product.id,
-        userId: '1',
-      });
+      const resUpdateCart = await updateCartQuantity(
+        'cart/update',
+        {
+          quantity: inputQtty,
+          productId: cartItem.product.id,
+        },
+        session?.user.access_token!,
+      );
 
       if (resUpdateCart.status !== 200) {
         callToast('Something went wrong, try again later', 'ERROR', 3000);
@@ -121,7 +138,10 @@ export default function NumberFieldComponent({
       }
 
       // get latest cart
-      const resGetCart = await getCartDataAPI('cart/get', '1');
+      const resGetCart = await getCartDataAPI(
+        'cart/get',
+        session?.user.access_token!,
+      );
       if (resGetCart.status !== 200) {
         callToast('Something went wrong, try again later', 'ERROR', 3000);
       }

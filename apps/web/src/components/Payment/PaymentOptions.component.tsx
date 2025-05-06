@@ -17,6 +17,7 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -25,6 +26,7 @@ export default function PaymentOptions() {
   const cartState = useAppSelector((state) => state.cartState);
   const userId = useAppSelector((state) => state.userState);
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
 
   //local state
   const [isLoading, setLoading] = React.useState<boolean>(false);
@@ -43,6 +45,7 @@ export default function PaymentOptions() {
         const resPostTrx = await createTransactionAPI(
           'transaction/create',
           createTransactionPayload(cartState, userId.id),
+          session?.user.access_token!,
         );
         console.log(resPostTrx);
 

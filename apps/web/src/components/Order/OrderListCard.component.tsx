@@ -13,20 +13,26 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import * as React from 'react';
 
 export default function OrderListCard({ orderData }: { orderData: IOrder }) {
   // global state
   const changeStatus = React.useContext(orderChangeContext);
   const [isLoading, setLoading] = React.useState<boolean>(false);
+  const { data: session, status } = useSession();
 
   // handler
   const handleConfirm = async (orderId: string) => {
     try {
       setLoading(true);
-      const resConfirm = await confirmOrderAPI('order/confirm', {
-        orderId: orderId,
-      });
+      const resConfirm = await confirmOrderAPI(
+        'order/confirm',
+        {
+          orderId: orderId,
+        },
+        session?.user.access_token!,
+      );
 
       if (resConfirm.status !== 200)
         throw new Error('confirm order error, try again later');

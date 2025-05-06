@@ -11,25 +11,28 @@ class OrderService {
     async getOrderListUser(req: Request) {
 
         const { status, invoice, from, until } = req.query // from and until are start date and end date search range
-        const { userId, role } = req.body
+        const user = req.user
+        console.log("user id", user?.id);
+
 
         try {
             // check role
-            const role_ = convertRoleToEnum(role)
-
-            if (role_ !== E_Role.CUSTOMER) throw new Error("role is customer, cannot access this service")
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role, cannot access this service")
 
             let orderList: any = []
 
             if (invoice) {
                 // get order list by invoice number
-                const result = await getOrderByInvoice(userId, String(invoice))
+                const result = await getOrderByInvoice(user?.id!, String(invoice))
                 if (result) {
                     orderList = [...result]
                 }
             } else {
                 // get order list by status or date 
-                orderList = [...(await getOrderByParams(userId, status as string[], from as string, until as string))]
+                orderList = [...(await getOrderByParams(user?.id!, status as string[], from as string, until as string))]
+                console.log(orderList);
+
             }
 
             // feedback from service
@@ -39,49 +42,28 @@ class OrderService {
             // feedback from service
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get order list canceled")
         }
-
-
     }
 
     async getOrderListAdmin(req: Request) {
 
-        const { status, role, from, until } = req.query // from and until are start date and end date search range
-        const { adminId } = req.body
+        const { status, from, until } = req.query // from and until are start date and end date search range
+        const user = req.user
 
         try {
-            // let orderList: any = []
-            if (!role) throw new Error("error, no role given")
-
-            // check role to authorize
-            const role_ = convertRoleToEnum(role as string)
-            if (role_ === E_Role.CUSTOMER) throw new Error("role is customer, cannot access service")
-
+            const role = convertRoleToEnum(user?.role!)
+            if (role === E_Role.CUSTOMER) throw new Error("Unauthorized role, cannot access this service")
             // find stores by admin
-            const stores = role_ === E_Role.SUPER_ADMIN ? (await findStoreBySuperAdmin()) : (await findStoreByAdmin(adminId!))
+            const stores = role === E_Role.SUPER_ADMIN ? (await findStoreBySuperAdmin()) : (await findStoreByAdmin(user?.id!))
 
             // get order by storesId
             const orderList = await getOrderbyStoresId(stores.map((store) => store.id), status as string[], from as string, until as string)
 
             // feedback from service
-            const feedback: serviceFeedback = {
-                code: 200,
-                data: orderList,
-                status: statusEnum.SUCCESS,
-                message: "get order list success"
-            }
-            return feedback
+            return returnServiceFeedback(200, orderList, statusEnum.SUCCESS, "get order list by admin success")
         } catch (error) {
             // feedback from service
-            const feedback: serviceFeedback = {
-                code: 400,
-                data: (error as Error).message,
-                status: statusEnum.FAILED,
-                message: "get order list by storeadmin failed"
-            }
-            return feedback
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get order list by aadmin failed")
         }
-
-
 
     }
 }

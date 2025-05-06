@@ -3,13 +3,13 @@ import { apiRequest } from '@/helper/api.helper'
 import { IFilterOrder, IFilterTransactions } from "@/interface/filter.interface"
 import { IOrder } from "@/interface/order.interface"
 
-export const getDataOrderAPI = async (apiRouter: string, payload: IFilterOrder) => {
-    const response = await apiRequest(apiRouter, 'GET', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+export const getDataOrderAPI = async (apiRouter: string, payload: IFilterOrder, token: string) => {
+    const response = await apiRequest(apiRouter, 'GET', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 
-export const confirmOrderAPI = async (apiRouter: string, payload: { "orderId": string }) => {
-    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+export const confirmOrderAPI = async (apiRouter: string, payload: { "orderId": string }, token: string) => {
+    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 

@@ -9,6 +9,8 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     try {
         const { authorization } = req.headers
         const token = String(authorization || "").split("Bearer ")[1]
+        console.log(authorization);
+
         const verifiedUser = verify(token, jwtAccessSecret)
         if (!verifiedUser) throw new ErrorHandler("unauthorized", 401)
         req.user = verifiedUser as IUser

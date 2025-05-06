@@ -3,25 +3,25 @@ import { apiRequest } from "./api.helper";
 import { ICart, payloadCartService } from "@/interface/cart.interface";
 import IStock from "@/interface/stocks.interface";
 
-export const addToCartAPI = async (apiRoute: string, payload: payloadCartService) => {
+export const addToCartAPI = async (apiRoute: string, payload: payloadCartService, token: string) => {
 
-    const response = await apiRequest(apiRoute, 'POST', { ...payload }, { "Content-Type": "application/json", 'Accept': 'application/json' })
+    const response = await apiRequest(apiRoute, 'POST', { ...payload }, { "Content-Type": "application/json", 'Accept': 'application/json', "Authorization": `Bearer ${token}` })
     // console.log(await response.json());
     return response
 }
 
-export const subtractCartAPI = async (apiRouter: string, payload: payloadCartService) => {
-    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+export const subtractCartAPI = async (apiRouter: string, payload: payloadCartService, token: string) => {
+    const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 
-export const updateCartQuantity = async (apiRouter: string, payload: payloadCartService) => {
-    const response = await apiRequest(apiRouter, 'PUT', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json" })
+export const updateCartQuantity = async (apiRouter: string, payload: payloadCartService, token: string) => {
+    const response = await apiRequest(apiRouter, 'PUT', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 
-export const getCartDataAPI = async (apiRoute: string, userId: string) => {
-    const response = await apiRequest(apiRoute, 'GET', { userId: userId }, { "Content-Type": "application/json" })
+export const getCartDataAPI = async (apiRoute: string, token: string) => {
+    const response = await apiRequest(apiRoute, 'GET', undefined, { "Content-Type": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 

@@ -56,5 +56,11 @@ export const setQueryParams = (filterTransactions: IFilterTransactions | undefin
             params.append('status', status)
         }
     }
+
+    if (filterTransactions.stores && filterTransactions.stores.length > 0) {
+        for (let store of filterTransactions.stores) {
+            params.append('store', store.id)
+        }
+    }
     return params
 }

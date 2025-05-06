@@ -17,19 +17,24 @@ import {
   updateCartState,
 } from '@/redux/slice/cart.slice';
 import DiscountInCartNotif from './DiscountInCartNotif.component';
+import { useSession } from 'next-auth/react';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
 
   // delete cart item
   const handleSubstractToCart = async (qtty: number) => {
     // call api first
-    const resSubCart = await subtractCartAPI('cart/subtract', {
-      quantity: qtty,
-      productId: cartItem.product.id,
-      userId: '1',
-    });
+    const resSubCart = await subtractCartAPI(
+      'cart/subtract',
+      {
+        quantity: qtty,
+        productId: cartItem.product.id,
+      },
+      session?.user.access_token!,
+    );
 
     if (resSubCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
@@ -37,7 +42,10 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('cart/get', '1');
+    const resGetCart = await getCartDataAPI(
+      'cart/get',
+      session?.user.access_token!,
+    );
     if (resGetCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
       return;

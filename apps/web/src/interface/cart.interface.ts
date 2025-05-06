@@ -16,5 +16,4 @@ export interface ICart {
 export interface payloadCartService {
     quantity?: number,
     productId?: string,
-    userId?: string,
 } 

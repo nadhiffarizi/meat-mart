@@ -108,8 +108,8 @@ export const getOrderbyStoresId = async (storesId: string[], status?: string[], 
         where: {
             AND: {
                 created_at: {
-                    gte: !from ? new Date() : from,
-                    lte: !until ? new Date() : until
+                    gte: !from ? new Date("January 01, 1979") : from,
+                    lte: !until ? new Date() : new Date(parseInt(until) + 1000 * 60 * 60 * 24)
                 }, status: {
                     in: convertOrderStatusToEnum(status as string[])
                 }, store_id: {

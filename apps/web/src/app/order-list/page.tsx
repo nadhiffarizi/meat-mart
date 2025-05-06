@@ -6,6 +6,8 @@ import { callToast } from '@/helper/notify.helper';
 import { getDataOrderAPI, syncOrderDataFromAPI } from '@/helper/order.helper';
 import { IFilterOrder } from '@/interface/filter.interface';
 import { IOrder } from '@/interface/order.interface';
+import { Backdrop, CircularProgress } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -33,16 +35,22 @@ export default function OrderListPage() {
   const [filterOrder, setFilterOrder] = React.useState<
     IFilterOrder | undefined
   >(undefined);
+  const { data: session, status } = useSession();
 
   //local state
   const router = useRouter();
   const pathName = usePathname();
-  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [orderData, setOrderData] = React.useState<IOrder[]>();
   const [isChange, setChange] = React.useState<boolean>();
 
   // when global filters change
   React.useEffect(() => {
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
     // set query params
     console.log(filterOrder);
     console.log(setQueryParams(filterOrder));
@@ -54,6 +62,7 @@ export default function OrderListPage() {
       const getOrderResponse = getDataOrderAPI(
         `order/list?${params.toString()}`,
         filterOrder!,
+        session?.user.access_token!,
       );
 
       getOrderResponse
@@ -74,6 +83,14 @@ export default function OrderListPage() {
 
     // call get transaction to get list of transactions
   }, [filterOrder, isChange]);
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">

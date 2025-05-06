@@ -6,31 +6,33 @@ import Image from 'next/image';
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
-import { useAppSelector } from '@/redux/store';
-import { countTotalInCart } from '@/helper/cart.helper';
-import { Button, IconButton } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import {
+  countTotalInCart,
+  getCartDataAPI,
+  syncCartDataFromAPI,
+} from '@/helper/cart.helper';
+import { Backdrop, Button, CircularProgress, IconButton } from '@mui/material';
 import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
 import { ShoppingBagIcon } from '@heroicons/react/16/solid';
 import NavbarDropDown from './Navbar/NavbarDropdown.component';
+import { values } from 'cypress/types/lodash';
+import { updateCartState } from '@/redux/slice/cart.slice';
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   // global state cart
   const cartState = useAppSelector((state: any) => state.cartState);
-  const adressState = useAppSelector((state: any) => state.addressState);
-
-  const { data: session } = useSession();
+  const dispatch = useAppDispatch();
+  const { data: session, status } = useSession();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState('');
-  const [totalCartQtty, setCartQtty] = useState<number>();
+  const [isLoading, setLoading] = useState<boolean>();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [cartDropdownEl, setCartDropdownEl] =
-    React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('userLocation');
@@ -58,14 +60,33 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   }, []);
 
   useEffect(() => {
-    const totalQtty = countTotalInCart(cartState);
-    setCartQtty(totalQtty);
-  }, [cartState]);
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
+    setLoading(true);
+    const resCart = getCartDataAPI('cart/get', session?.user.access_token!);
+    resCart
+      .then((v) => v.json())
+      .then((values) => {
+        dispatch(updateCartState(syncCartDataFromAPI(values['data'])));
+      });
+
+    setLoading(false);
+  }, [session]);
 
   const handleLocationSelect = (location: string) => {
     setUserLocation(location);
   };
-  // ${isFixed ? 'fixed' : 'relative'}
+
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   return (
     <div

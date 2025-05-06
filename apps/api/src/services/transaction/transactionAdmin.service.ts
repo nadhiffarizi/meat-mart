@@ -3,7 +3,6 @@ import { updateOrderStatusByTrxId } from "@/helper/order/order.helper"
 import { getOrderByTrxId } from "@/helper/order/orderQuery.helper"
 import { returnServiceFeedback } from "@/helper/responseHandler.helper"
 import { getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper"
-import { getTransactionByAdmin } from "@/helper/transaction/transactionQuery.helper"
 import { E_OrderStatus, E_Role, E_TransactionStatus } from "@prisma/client"
 import { Request } from "express"
 

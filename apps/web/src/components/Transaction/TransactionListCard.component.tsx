@@ -18,11 +18,13 @@ import {
   Typography,
 } from '@mui/material';
 import { Files } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import * as React from 'react';
 
 export default function TransactionListCard({ trx }: { trx: ITransaction }) {
   // global state
   const changeStatus = React.useContext(trxChangeContext);
+  const { data: session, status } = useSession();
 
   //local state
   const [isLoading, setLoading] = React.useState<boolean>(false);
@@ -32,10 +34,13 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
   const handleCancel = async (trxId: string, userId: string) => {
     try {
       setLoading(true);
-      const resCancel = await cancelTransactionAPI('transaction/cancel', {
-        trxId: trx.id,
-        userId: '1',
-      });
+      const resCancel = await cancelTransactionAPI(
+        'transaction/cancel',
+        {
+          trxId: trx.id,
+        },
+        session?.user.access_token!,
+      );
 
       if (resCancel.status !== 200)
         throw new Error('Cancel transaction failed, try again later ');
@@ -61,7 +66,6 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
       console.log('no file selected');
       return;
     }
-    // console.log('selected file', file[0]);
 
     // call api to upload
     try {
@@ -72,6 +76,7 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
       payload.append('trxId', trx.id);
       const resUpload = await uploadPaymentProof(
         'transaction/upload/paymentproof',
+        session?.user.access_token!,
         payload,
       );
 

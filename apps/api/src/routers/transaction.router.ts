@@ -1,5 +1,6 @@
 import transactionController from '@/controllers/transaction.controller';
 import { uploader } from '@/helper/multer.helper';
+import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class TransactionRouter {
@@ -13,11 +14,11 @@ export class TransactionRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT 
 
-    this.router.post('/create', transactionController.create);
-    this.router.post('/cancel', transactionController.cancel);
-    this.router.post('/admin/rejectpayment', transactionController.rejectPaymentProof);
-    this.router.post('/admin/confirmpayment', transactionController.adminConfirm);
-    this.router.post('/upload/paymentproof', uploader().single("image"), transactionController.uploadTrxProof);
+    this.router.post('/create', verifyToken, transactionController.create);
+    this.router.post('/cancel', verifyToken, transactionController.cancel);
+    this.router.post('/admin/rejectpayment', verifyToken, transactionController.rejectPaymentProof);
+    this.router.post('/admin/confirmpayment', verifyToken, transactionController.adminConfirm);
+    this.router.post('/upload/paymentproof', verifyToken, uploader().single("image"), transactionController.uploadTrxProof);
     // .... continue api
   }
 

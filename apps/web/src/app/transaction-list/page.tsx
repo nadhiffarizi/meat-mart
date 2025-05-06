@@ -8,6 +8,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getDataTransactionAPI } from '@/helper/transaction.helper';
 import { callToast } from '@/helper/notify.helper';
 import { ITransaction } from '@/interface/transaction.interface';
+import { useSession } from 'next-auth/react';
+import { Backdrop, CircularProgress } from '@mui/material';
 
 // filter context type
 export interface TransactionFilterContextType {
@@ -34,16 +36,21 @@ export default function TransactionListPage() {
   const [filterTransactions, setFilterTransactions] = React.useState<
     IFilterTransactions | undefined
   >(undefined);
+  const { data: session, status } = useSession();
 
   //local state
   const router = useRouter();
   const pathName = usePathname();
-  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [trxData, setTrxData] = React.useState<ITransaction[]>();
   const [isChange, setChange] = React.useState<boolean>();
 
   // when global filters change
   React.useEffect(() => {
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
     // set query params
     console.log(filterTransactions);
     console.log(setQueryParams(filterTransactions));
@@ -55,6 +62,7 @@ export default function TransactionListPage() {
       const getTrxResponse = getDataTransactionAPI(
         `transaction/list?${params.toString()}`,
         filterTransactions!,
+        session?.user.access_token!,
       );
 
       getTrxResponse
@@ -74,6 +82,13 @@ export default function TransactionListPage() {
     // call get transaction to get list of transactions
   }, [filterTransactions, isChange]);
 
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
