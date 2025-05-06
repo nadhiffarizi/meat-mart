@@ -12,9 +12,9 @@ export default function Template({ children }: Props) {
   return (
     <>
       <SessionProvider>
-        <Header />
+        {/* <Header /> */}
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </SessionProvider>
     </>
   );

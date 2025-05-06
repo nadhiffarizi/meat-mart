@@ -13,8 +13,8 @@ export class OrderRouterQuery {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT 
 
-    this.router.get('/list', orderQueryController.getOrderListUser);
-    this.router.get('/admin/list', orderQueryController.getOrderListAdmin);
+    this.router.get('/', orderQueryController.getOrderListUser);
+    this.router.get('/admin', orderQueryController.getOrderListAdmin);
     // .... continue api
   }
 
