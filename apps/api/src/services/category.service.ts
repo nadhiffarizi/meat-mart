@@ -87,6 +87,21 @@ class CategoryService {
         where: { name: req.body.name },
         data: { deleted_at: null },
       });
+
+      const activeProducts = await prisma.products.findMany({
+        where: { deleted_at: null },
+      });
+
+      await prisma.productCategories.updateMany({
+        where: {
+          category_id: existingCategory.id,
+          product_id: {
+            in: activeProducts.map((product) => product.id),
+          },
+        },
+        data: { deleted_at: null },
+      });
+
       const feedback: serviceFeedback = {
         code: 200,
         data: restoredCategory,
@@ -192,7 +207,12 @@ class CategoryService {
       return feedback;
     }
 
-    const deletedAdmin = await prisma.categories.update({
+    await prisma.productCategories.updateMany({
+      where: { category_id: existingCategory.id },
+      data: { deleted_at: new Date() },
+    });
+
+    const deletedCategory = await prisma.categories.update({
       where: {
         id: req.params.id,
       },
@@ -202,7 +222,7 @@ class CategoryService {
     });
     const feedback: serviceFeedback = {
       code: 200,
-      data: deletedAdmin,
+      data: deletedCategory,
       status: statusEnum.SUCCESS,
       message: `Category with ID ${req.params.id} successfully deleted.`,
     };

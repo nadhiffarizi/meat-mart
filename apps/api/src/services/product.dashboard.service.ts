@@ -149,13 +149,27 @@ class ProductService {
         data: { deleted_at: null },
       });
 
+      const activeCategories = await prisma.categories.findMany({
+        where: { deleted_at: null },
+      });
+
       await prisma.productCategories.updateMany({
-        where: { product_id: req.params.id },
+        where: {
+          product_id: existingProduct.id,
+          category_id: {
+            in: activeCategories.map((category) => category.id),
+          },
+        },
         data: { deleted_at: null },
       });
 
       await prisma.productPictures.updateMany({
-        where: { product_id: req.params.id },
+        where: { product_id: existingProduct.id },
+        data: { deleted_at: null },
+      });
+
+      await prisma.stocks.updateMany({
+        where: { product_id: existingProduct.id },
         data: { deleted_at: null },
       });
 
@@ -194,6 +208,21 @@ class ProductService {
         });
       }),
     );
+
+    const allStores = await prisma.stores.findMany();
+
+    const stockData = allStores.map((store) => {
+      return {
+        product_id: newProduct.id,
+        store_id: store.id,
+        quantity: 0,
+        deleted_at: store.deleted_at ? store.deleted_at : null,
+      };
+    });
+
+    await prisma.stocks.createMany({
+      data: stockData,
+    });
 
     const feedback: serviceFeedback = {
       code: 201,
@@ -336,6 +365,11 @@ class ProductService {
     });
 
     await prisma.productPictures.updateMany({
+      where: { product_id: req.params.id },
+      data: { deleted_at: new Date() },
+    });
+
+    await prisma.stocks.updateMany({
       where: { product_id: req.params.id },
       data: { deleted_at: new Date() },
     });

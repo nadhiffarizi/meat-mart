@@ -15,7 +15,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useMemo, useState } from 'react';
 
-function page() {
+function Page() {
   const [allStores, setAllStores] = useState<IGetStores[]>();
   const { data: session, update } = useSession();
 
@@ -60,7 +60,7 @@ function page() {
               <CardHeader>
                 <CardTitle>Create your first store.</CardTitle>
                 <CardDescription className="">
-                  You don't have a store yet. Create your first store to unlock
+                  You do not have a store yet. Create your first store to unlock
                   this feature.
                 </CardDescription>
               </CardHeader>
@@ -76,4 +76,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;
