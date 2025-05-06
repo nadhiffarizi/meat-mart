@@ -8,6 +8,7 @@ export const findProductById = async (id: string) => {
     include: {
       ProductCategories: true,
       ProductPictures: true,
+      Stocks: true,
     },
   });
   return data;
@@ -34,6 +35,7 @@ export const findProductByName = async (name: string) => {
     include: {
       ProductCategories: true,
       ProductPictures: true,
+      Stocks: true,
     },
   });
   return data;

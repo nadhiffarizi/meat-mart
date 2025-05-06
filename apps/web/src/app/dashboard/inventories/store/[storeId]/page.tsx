@@ -1,7 +1,21 @@
+import ViewStocks from '@/components/dashboard/stocks/ViewStocks';
 import React from 'react';
 
-function page() {
-  return <div></div>;
+type Props = {
+  params: {
+    storeId: string;
+  };
+};
+
+function page({ params: { storeId } }: Props) {
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="text-primaryText text-3xl font-semibold">
+        Manage Stocks
+      </div>
+      <ViewStocks storeId={storeId} />
+    </div>
+  );
 }
 
 export default page;

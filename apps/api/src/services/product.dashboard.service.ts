@@ -14,14 +14,22 @@ class ProductService {
     let allProducts;
     if (req.query.includeDeleted === 'true') {
       allProducts = await prisma.products.findMany({
-        include: { ProductCategories: true, ProductPictures: true },
+        include: {
+          ProductCategories: true,
+          ProductPictures: true,
+          Stocks: true,
+        },
       });
     } else {
       allProducts = await prisma.products.findMany({
         where: {
           deleted_at: null,
         },
-        include: { ProductCategories: true, ProductPictures: true },
+        include: {
+          ProductCategories: true,
+          ProductPictures: true,
+          Stocks: true,
+        },
       });
     }
 
