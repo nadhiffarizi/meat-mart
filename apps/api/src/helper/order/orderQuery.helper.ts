@@ -1,8 +1,12 @@
 import prisma from "@/prisma"
-import { convertOrderStatusToEnum } from "../convertStatus.helper"
+import { convertOrderStatusToEnum, convertTransactionStatusToEnum } from "../convertStatus.helper"
 import { getTransactionByInvoice } from "../transaction/transactionQuery.helper"
-import { E_OrderStatus } from "@prisma/client"
+import { E_OrderStatus, E_Role } from "@prisma/client"
 import { findProductById, findThumbnailByProductId } from "../product/product.helper"
+import { IUser } from "@/interface/User.interface"
+import { convertRoleToEnum } from "../role.helper"
+import { findStoreByAdmin, findStoreBySuperAdmin } from "../store/store.helper"
+import { getTrxById } from "../transaction/transaction.helper"
 
 
 export const getOrderByInvoice = async (userId: string, invoice: string) => {
@@ -145,4 +149,115 @@ export const getOrderById = async (orderId: string) => {
     })
 
     return order
+}
+
+export const getOrderAdminByInvoice = async (admin: IUser | undefined, invoice: string) => {
+    /**returns order list by invoice number */
+    if (!admin) throw new Error("no admin user found ")
+
+    // populate admin ids
+    let adminIds: any[] = []
+    const role = convertRoleToEnum(admin.role)
+    if (role === E_Role.ADMIN) {
+        adminIds = [admin.id]
+    } else {
+        // super user
+        const admins = await prisma.users.findMany({
+            where: {
+                role: {
+                    in: [E_Role.ADMIN, E_Role.SUPER_ADMIN]
+                }
+            }
+        })
+        admins.forEach((a) => adminIds.push(a.id))
+    }
+
+    // get orders data
+    const orders = await prisma.transactionDetails.findMany({
+        where: {
+            stores: {
+                storeadmin_id: {
+                    in: adminIds
+                }
+            },
+            transactions: {
+                invoice_number: String(invoice)
+            }
+        },
+
+    })
+
+    // add invoice number and product name in order list data
+    const orderList: any[] = []
+    for (let o of orders) {
+        const productName = (await findProductById(o.product_id))?.name
+        const temp = {
+            ...o, ...{ "invoice_number": invoice }, ...{ "product_name": productName }
+        }
+        orderList.push(temp)
+    }
+
+    return orderList
+}
+
+export const getOrderAdminByParams = async (admin: IUser | undefined, status?: string[], from?: string, until?: string, storesId?: string[]) => {
+
+    if (!admin) throw new Error("no admin user found ")
+    // populate stores id and admin Ids
+    let stores: any = []
+    let adminIds = []
+    if (admin.role === E_Role.ADMIN) {
+        stores = [...await findStoreByAdmin(admin.id)]
+        adminIds = [admin.role]
+    } else {
+        stores = [...await findStoreBySuperAdmin()]
+        const users = await prisma.users.findMany({
+            where: {
+                role: {
+                    in: [E_Role.SUPER_ADMIN, E_Role.ADMIN]
+                }
+            }
+        })
+
+        adminIds = [...users.map((user) => user.id)]
+    }
+
+    // get orders data 
+    const orders = await prisma.transactionDetails.findMany({
+        where: {
+            AND: {
+                deleted_at: null,
+                created_at: {
+                    gte: !from ? new Date("January 01, 1979") : new Date(parseInt(from)),
+                    lte: !until ? new Date() : new Date(parseInt(until) + 1000 * 60 * 60 * 24) //plus 1 day
+                },
+                status: {
+                    in: [...convertOrderStatusToEnum(status as string[])]
+                },
+                stores: {
+                    id: {
+                        in: !storesId || (storesId as string[]).length === 0 ? stores.map((store: any) => store.id) : [...storesId].map((id) => id)
+                    },
+                    storeadmin_id: {
+                        in: adminIds
+                    }
+                }
+
+            }
+        }, orderBy: {
+            created_at: 'desc'
+        }
+    })
+
+    // add product name and invoice number
+    const orderList: any[] = []
+    for (let o of orders) {
+        const productName = (await findProductById(o.product_id))?.name
+        const invoice = (await getTrxById(o.transaction_id))?.invoice_number
+        const temp = {
+            ...o, ...{ "invoice_number": invoice }, ...{ "product_name": productName }
+        }
+        orderList.push(temp)
+    }
+    return orderList
 }

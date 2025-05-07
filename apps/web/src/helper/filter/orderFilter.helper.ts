@@ -63,5 +63,11 @@ export const setQueryParams = (filterOrder: IFilterOrder | undefined) => {
             params.append('status', status)
         }
     }
+
+    if (filterOrder.stores && filterOrder.stores.length > 0) {
+        for (let store of filterOrder.stores) {
+            params.append('store', store.id)
+        }
+    }
     return params
 }

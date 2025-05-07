@@ -1,5 +1,5 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
-import { getOrderByInvoice, getOrderByParams, getOrderbyStoresId } from "@/helper/order/orderQuery.helper";
+import { getOrderAdminByInvoice, getOrderAdminByParams, getOrderByInvoice, getOrderByParams, getOrderbyStoresId } from "@/helper/order/orderQuery.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { convertRoleToEnum } from "@/helper/role.helper";
 import { findStoreByAdmin, findStoreBySuperAdmin } from "@/helper/store/store.helper";
@@ -46,17 +46,25 @@ class OrderService {
 
     async getOrderListAdmin(req: Request) {
 
-        const { status, from, until } = req.query // from and until are start date and end date search range
         const user = req.user
+        const { store, status, invoice, from, until } = req.query // from and until are start date and end date search range
 
         try {
             const role = convertRoleToEnum(user?.role!)
             if (role === E_Role.CUSTOMER) throw new Error("Unauthorized role, cannot access this service")
-            // find stores by admin
-            const stores = role === E_Role.SUPER_ADMIN ? (await findStoreBySuperAdmin()) : (await findStoreByAdmin(user?.id!))
+            let orderList: any = []
+            if (invoice) {
+                // get by invoice number
 
-            // get order by storesId
-            const orderList = await getOrderbyStoresId(stores.map((store) => store.id), status as string[], from as string, until as string)
+                const orderByInvoice = await getOrderAdminByInvoice(user, invoice as string)
+                // console.log(orderByInvoice);
+
+                orderList = [...orderByInvoice]
+            } else {
+                // get order by params 
+                const orderByParams = await getOrderAdminByParams(user, status as string[], from as string, until as string, store as string[])
+                orderList = [...orderByParams]
+            }
 
             // feedback from service
             return returnServiceFeedback(200, orderList, statusEnum.SUCCESS, "get order list by admin success")

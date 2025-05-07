@@ -39,8 +39,6 @@ class OrderServiceAdmin {
             // feedback from service
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get order list canceled")
         }
-
-
     }
 
     async sendOrderByAdmin(req: Request) {
@@ -50,8 +48,10 @@ class OrderServiceAdmin {
         try {
             if (user?.role === E_Role.CUSTOMER) throw new Error("Unauthorized access")
             const order = await getOrderById(orderId)
+            console.log(order?.status);
+
             if (order?.status !== E_OrderStatus.ON_PROCESS || !order) throw new Error("Unauthorized access. Order cannot be sent")
-            const updatedOrder = await updateOrderStatusById(orderId, E_OrderStatus.ON_PROCESS)
+            const updatedOrder = await updateOrderStatusById(orderId, E_OrderStatus.ON_DELIVERY)
 
             // feedback from service
             return returnServiceFeedback(200, updatedOrder, statusEnum.SUCCESS, "send order by admin success")

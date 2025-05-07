@@ -77,7 +77,7 @@ export default function TransactionAdminTable({
     const data = (await response.json())['data'];
     console.log(data);
 
-    trxContext?.setChange(!trxContext);
+    trxContext?.setChange(!trxContext.isChange);
   };
 
   const handleConfirmPayment = async () => {
@@ -98,7 +98,7 @@ export default function TransactionAdminTable({
     const data = (await response.json())['data'];
     console.log(data);
 
-    trxContext?.setChange(!trxContext);
+    trxContext?.setChange(!trxContext.isChange);
   };
 
   // render menu

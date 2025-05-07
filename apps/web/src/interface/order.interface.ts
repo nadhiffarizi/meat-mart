@@ -9,6 +9,7 @@ export interface IOrder {
     price_per_product: number,
     sub_total: number,
     product_name?: string,
+    invoice_number?: string,
     product: IProduct
     status: string,
     quantity: number,

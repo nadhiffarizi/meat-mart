@@ -39,5 +39,6 @@ export interface IFilterOrder {
     invoiceNumber: string | undefined,
     from: number | null,
     until: number | null,
-    statusArray: string[] | undefined
+    statusArray: string[] | undefined,
+    stores?: IStore[] | undefined
 }

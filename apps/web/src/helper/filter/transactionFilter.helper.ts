@@ -1,4 +1,4 @@
-import { IFilterStatus, IFilterTransactions } from "@/interface/filter.interface";
+import { IFilterStatus, IFilterStatusOrder, IFilterTransactions } from "@/interface/filter.interface";
 
 export const statusFilterUpdate = (statusFilter: string, statusState: IFilterStatus) => {
     let temp = { ...statusState }
@@ -23,7 +23,7 @@ export const statusFilterUpdate = (statusFilter: string, statusState: IFilterSta
     return temp
 }
 
-export const statusFilterToArray = (statusState: IFilterStatus) => {
+export const statusFilterToArray = (statusState: IFilterStatus | IFilterStatusOrder) => {
     if (!statusState) return undefined
 
     const statusArray: string[] = []
