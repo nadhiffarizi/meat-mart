@@ -22,6 +22,7 @@ import transactionQueryRouter from './routers/transactionQuery.router';
 import categoryRouter from './routers/category.router';
 import storeRouter from './routers/store.router';
 import stockRouter from './routers/stock.router';
+import discountDashboardRouter from './routers/discount.dashboard.router';
 
 export default class App {
   private app: Express;
@@ -77,6 +78,7 @@ export default class App {
     this.app.use('/api/dashboard/product', productDashboardRouter.getRouter());
     this.app.use('/api/store', storeRouter.getRouter());
     this.app.use('/api/stock', stockRouter.getRouter());
+    this.app.use('/api/discount', discountDashboardRouter.getRouter());
   }
 
   public start(): void {

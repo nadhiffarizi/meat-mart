@@ -1,9 +1,9 @@
-import categoryController from '@/controllers/category.controller';
+import discountController from '@/controllers/discount.dashboard.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import { validateCategoryCreateAndUpdateBody } from '@/middleware/category.middleware';
 import { Router } from 'express';
 
-export class CategoryRouter {
+export class DiscountRouter {
   private router: Router;
 
   constructor() {
@@ -12,21 +12,21 @@ export class CategoryRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/all', verifyToken, categoryController.getAllCategories);
-    this.router.get('/', verifyToken, categoryController.getCategory);
+    this.router.get('/all', verifyToken, discountController.getAllDiscounts);
+    this.router.get('/', verifyToken, discountController.getDiscount);
     this.router.post(
       '/',
       verifyToken,
       validateCategoryCreateAndUpdateBody,
-      categoryController.createCategory,
+      discountController.createDiscount,
     );
     this.router.patch(
       '/:id',
       verifyToken,
       validateCategoryCreateAndUpdateBody,
-      categoryController.updateCategory,
+      discountController.updateDiscount,
     );
-    this.router.delete('/:id', verifyToken, categoryController.deleteCategory);
+    this.router.delete('/:id', verifyToken, discountController.deleteDiscount);
     // .... continue api
   }
 
@@ -35,4 +35,4 @@ export class CategoryRouter {
   }
 }
 
-export default new CategoryRouter();
+export default new DiscountRouter();

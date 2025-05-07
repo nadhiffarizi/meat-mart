@@ -183,8 +183,8 @@ model Stores {
 
 model Discounts {
   id                      String          @id @default(uuid())
-  product_id              String
-  products                Products        @relation(fields: [product_id], references: [id])
+  product_id              String?
+  products                Products?        @relation(fields: [product_id], references: [id])
   store_id                String
   stores                  Stores          @relation(fields: [store_id], references: [id])
   start_date              DateTime
