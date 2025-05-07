@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
 import { IGetDashboardProducts } from '../../../../app/interfaces/product.dashboard.interface';
-import EditProductFormAlert from './alerts/EditProductFormAlert';
+import EditStockFormAlert from './alerts/EditStockFormAlert';
 import { IGetCategories } from '@/app/interfaces/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -41,7 +41,7 @@ function EditStockForm({
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value) || value === '') {
+    if (/^\d*$/.test(value) || value === '') {
       const numericValue = value === '' ? '' : Math.max(0, Number(value));
       formik.setFieldValue('quantity', numericValue);
     }
@@ -93,7 +93,7 @@ function EditStockForm({
         if (response) {
           toast.success(response.message || 'Stock successfully recorded!');
           router.push(
-            `/dashboard/inventories/${productId}/edit?status=successful`,
+            `/dashboard/inventories/store/${storeId}/product/${productId}/edit?status=successful`,
           );
         } else {
           toast.error(response.message || 'Something went wrong!');
@@ -107,9 +107,9 @@ function EditStockForm({
   });
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
-      <EditProductFormAlert status={status} />
+      <EditStockFormAlert status={status} storeId={storeId} />
       <div className="flex flex-col gap-2">
-        <label htmlFor="name">Current Stock</label>
+        <label htmlFor="name">Latest Stock</label>
         <input
           type="text"
           name="name"

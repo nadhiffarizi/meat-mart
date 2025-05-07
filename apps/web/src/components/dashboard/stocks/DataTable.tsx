@@ -57,9 +57,11 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4 w-full justify-between gap-2">
         <Input
           placeholder="Filter products..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={
+            (table.getColumn('productName')?.getFilterValue() as string) ?? ''
+          }
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn('productName')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

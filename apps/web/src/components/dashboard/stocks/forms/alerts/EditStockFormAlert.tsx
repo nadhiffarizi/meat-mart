@@ -3,7 +3,13 @@ import { CircleCheckBig } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
-function EditProductFormAlert({ status }: { status: string | null }) {
+function EditStockFormAlert({
+  status,
+  storeId,
+}: {
+  status: string | null;
+  storeId: string;
+}) {
   return (
     <div>
       {status == 'successful' && (
@@ -13,7 +19,10 @@ function EditProductFormAlert({ status }: { status: string | null }) {
               <div className="text-lg font-semibold">Inventory Recorded</div>
               <div className="text-sm">
                 Click{' '}
-                <Link href={'/dashboard/products'} className="underline">
+                <Link
+                  href={`/dashboard/inventories/store/${storeId}`}
+                  className="underline"
+                >
                   here to return to dashboard.
                 </Link>{' '}
               </div>
@@ -26,4 +35,4 @@ function EditProductFormAlert({ status }: { status: string | null }) {
   );
 }
 
-export default EditProductFormAlert;
+export default EditStockFormAlert;
