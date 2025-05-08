@@ -102,7 +102,7 @@ class DiscountService {
 
   async createDiscount(req: Request) {
     const existingDiscount = await getDiscountByDiscountCode(
-      req.body.discountCode,
+      req.body.discount_code,
     );
 
     if (
@@ -110,17 +110,21 @@ class DiscountService {
       existingDiscount &&
       existingDiscount.deleted_at
     ) {
-      const existingProduct = await findProductById(
-        existingDiscount.product_id,
-      );
+      let existingProduct;
+      if (existingDiscount.product_id) {
+        existingProduct = await findProductById(existingDiscount.product_id);
+      }
       const existingStore = await getStoreById(existingDiscount.store_id);
 
-      if (existingProduct?.deleted_at || existingStore?.deleted_at) {
+      if (
+        (existingDiscount.product_id && existingProduct?.deleted_at) ||
+        existingStore?.deleted_at
+      ) {
         const feedback: serviceFeedback = {
           code: 403,
           data: null,
           status: statusEnum.FAILED,
-          message: `Discount with discountCode ${req.body.discountCode} cannot been restored because the product or store associated with it has been deleted.`,
+          message: `Discount with discountCode ${req.body.discount_code} cannot been restored because the product or store associated with it has been deleted.`,
         };
         return feedback;
       }
@@ -133,13 +137,13 @@ class DiscountService {
           code: 409,
           data: null,
           status: statusEnum.FAILED,
-          message: `Another discount associated with product with productId ${req.body.productId} already exists.`,
+          message: `Another discount associated with product with productId ${req.body.product_id} already exists.`,
         };
         return feedback;
       }
 
       const restoredDiscount = await prisma.discounts.update({
-        where: { discount_code: req.body.discountCode },
+        where: { discount_code: req.body.discount_code },
         data: { deleted_at: null },
       });
 
@@ -147,7 +151,7 @@ class DiscountService {
         code: 200,
         data: restoredDiscount,
         status: statusEnum.SUCCESS,
-        message: `Discount with discountCode ${req.body.discountCode} has been restored.`,
+        message: `Discount with discountCode ${req.body.discount_code} has been restored.`,
       };
       return feedback;
     }
@@ -157,7 +161,7 @@ class DiscountService {
         code: 409,
         data: null,
         status: statusEnum.FAILED,
-        message: `Discount with discount code ${req.body.discountCode} already exists.`,
+        message: `Discount with discount code ${req.body.discount_code} already exists.`,
       };
       return feedback;
     }
@@ -165,70 +169,71 @@ class DiscountService {
     let newDiscount;
 
     if (
-      req.body.promotionType !== 'BOGO' &&
-      req.body.discountPercentage &&
-      req.body.discountAmount
+      req.body.promotion_type !== 'BOGO' &&
+      req.body.discount_percentage &&
+      req.body.discount_amount
     ) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `Cannot create amount-based discounts with both discountPercentage and discountAmount applied. Please opt for one.`,
+        message: `Cannot create amount-based discounts with both discount_percentage and discount_amount applied. Please opt for one.`,
       };
       return feedback;
     }
 
-    if (req.body.productId) {
+    if (req.body.product_id) {
       const existingDiscountOnProductId = await prisma.discounts.findFirst({
-        where: { product_id: req.body.productId, deleted_at: null },
+        where: { product_id: req.body.product_id, deleted_at: null },
       });
       if (existingDiscountOnProductId) {
         const feedback: serviceFeedback = {
           code: 409,
           data: null,
           status: statusEnum.FAILED,
-          message: `Another discount associated with product with productId ${req.body.productId} already exists.`,
+          message: `Another discount associated with product with productId ${req.body.product_id} already exists.`,
         };
         return feedback;
       }
     }
 
     let newDiscountBody = {
-      product_id: req.body.productId,
-      store_id: req.body.storeId,
-      start_date: new Date(req.body.startDate),
-      end_date: new Date(req.body.endDate),
-      discount_code: req.body.discountCode,
+      store_id: req.body.store_id,
+      start_date: new Date(req.body.start_date),
+      end_date: new Date(req.body.end_date),
+      discount_code: req.body.discount_code,
       is_valid: true,
-      promotion_type: req.body.promotionType,
+      promotion_type: req.body.promotion_type,
     };
 
-    if (req.body.promotionType === 'custom') {
+    if (req.body.promotion_type === 'custom') {
       newDiscount = await prisma.discounts.create({
         data: {
           ...newDiscountBody,
-          discount_amount: req.body.discountAmount ?? null,
-          discount_percentage: req.body.discountPercentage ?? null,
+          product_id: req.body.product_id,
+          discount_amount: req.body.discount_amount ?? null,
+          discount_percentage: req.body.discount_percentage ?? null,
         },
       });
     }
 
-    if (req.body.promotionType === 'MINIMUM_BUY') {
+    if (req.body.promotion_type === 'MINIMUM_BUY') {
       newDiscount = await prisma.discounts.create({
         data: {
           ...newDiscountBody,
-          discount_amount: req.body.discountAmount ?? null,
-          discount_percentage: req.body.discountPercentage ?? null,
-          minimum_purchase: req.body.minimumPurchase,
-          maximum_discount_amount: req.body.maximumDiscountAmount,
+          discount_amount: req.body.discount_amount ?? null,
+          discount_percentage: req.body.discount_percentage ?? null,
+          minimum_purchase: req.body.minimum_purchase,
+          maximum_discount_amount: req.body.maximum_discount_amount,
         },
       });
     }
 
-    if (req.body.promotionType === 'BOGO') {
+    if (req.body.promotion_type === 'BOGO') {
       newDiscount = await prisma.discounts.create({
         data: {
           ...newDiscountBody,
+          product_id: req.body.product_id,
         },
       });
     }
@@ -237,7 +242,7 @@ class DiscountService {
       code: 201,
       data: newDiscount,
       status: statusEnum.SUCCESS,
-      message: `Discount with discount code ${req.body.discountCode} successfully created.`,
+      message: `Discount with discount code ${req.body.discount_code} successfully created.`,
     };
     return feedback;
   }
@@ -266,7 +271,7 @@ class DiscountService {
     }
 
     const existingDiscountCodeName = await getDiscountByDiscountCode(
-      req.body.discountCode,
+      req.body.discount_code,
     );
     if (
       existingDiscountCodeName &&
@@ -276,7 +281,7 @@ class DiscountService {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `${req.body.discountName} is identical to another discountCode. Discount codes must be unique.`,
+        message: `${req.body.discount_code} is identical to another discount_code. Discount codes must be unique.`,
       };
       return feedback;
     }

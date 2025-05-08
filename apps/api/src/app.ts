@@ -78,7 +78,10 @@ export default class App {
     this.app.use('/api/dashboard/product', productDashboardRouter.getRouter());
     this.app.use('/api/store', storeRouter.getRouter());
     this.app.use('/api/stock', stockRouter.getRouter());
-    this.app.use('/api/discount', discountDashboardRouter.getRouter());
+    this.app.use(
+      '/api/dashboard/discount',
+      discountDashboardRouter.getRouter(),
+    );
   }
 
   public start(): void {

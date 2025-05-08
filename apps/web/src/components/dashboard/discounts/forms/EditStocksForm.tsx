@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helpers/api';
 import { IGetDashboardProducts } from '../../../../app/interfaces/product.dashboard.interface';
-import EditStockFormAlert from './alerts/EditStockFormAlert';
+import EditStockFormAlert from './alerts/EditDiscountFormAlert';
 import { IGetCategories } from '@/app/interfaces/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ const validationSchema = Yup.object({
   ),
   status: Yup.mixed<'ADD' | 'SUBTRACT' | 'SNAPSHOT'>()
     .oneOf(['ADD', 'SUBTRACT', 'SNAPSHOT'])
-    .required('Please pick a valid status.'),
+    .required(),
 });
 
 function EditStockForm({

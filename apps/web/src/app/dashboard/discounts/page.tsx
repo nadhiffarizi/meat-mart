@@ -51,7 +51,7 @@ function Page() {
                 address="kjbhxdb"
                 store_id={store.id}
                 key={store.id}
-                linkTo="inventories"
+                linkTo="discounts"
               />
             );
           })

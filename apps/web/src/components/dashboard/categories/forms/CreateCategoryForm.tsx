@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
 import AddAdminFormAlert from '../../admin/forms/Alerts/AddAdminFormAlert';
-import { IGetCategories } from '@/app/interfaces/user.interface';
+import { IGetCategories } from '@/app/interfaces/category.interface';
 import ReactivateCategoryFormAlert from './alerts/ReactivateCategoryFormAlert';
 import AddCategoryFormAlert from './alerts/AddCategoryFormAlert';
 

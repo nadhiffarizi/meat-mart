@@ -16,13 +16,15 @@ export function LocationCard({
   name,
   address,
   store_id,
+  linkTo,
 }: {
   name: string;
   address: string;
   store_id: string;
+  linkTo: string;
 }) {
   return (
-    <Link href={`/dashboard/inventories/store/${store_id}`}>
+    <Link href={`/dashboard/${linkTo}/store/${store_id}`}>
       <Card className="flex flex-col justify-between w-[200px] md:w-[350px] break-words ">
         <CardHeader>
           <CardTitle>{name}</CardTitle>

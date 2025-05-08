@@ -1,6 +1,7 @@
 import discountController from '@/controllers/discount.dashboard.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import { validateCategoryCreateAndUpdateBody } from '@/middleware/category.middleware';
+import { validateDiscountCreateBody } from '@/middleware/discount.middleware';
 import { Router } from 'express';
 
 export class DiscountRouter {
@@ -17,7 +18,7 @@ export class DiscountRouter {
     this.router.post(
       '/',
       verifyToken,
-      validateCategoryCreateAndUpdateBody,
+      validateDiscountCreateBody,
       discountController.createDiscount,
     );
     this.router.patch(
