@@ -9,20 +9,37 @@ class StoreService {
   async getAllStores(req: Request) {
     let allStores;
     if (req.query.includeDeleted === 'true') {
-      allStores = await prisma.stores.findMany();
+      if (req.query.storeAdminId) {
+        allStores = await prisma.stores.findMany({
+          where: { storeadmin_id: req.query.storeAdminId as string },
+        });
+      } else {
+        allStores = await prisma.stores.findMany();
+      }
     } else {
-      allStores = await prisma.stores.findMany({
-        where: {
-          deleted_at: null,
-        },
-      });
+      if (req.query.storeAdminId) {
+        allStores = await prisma.stores.findMany({
+          where: {
+            storeadmin_id: req.query.storeAdminId as string,
+            deleted_at: null,
+          },
+        });
+      } else {
+        allStores = await prisma.stores.findMany({
+          where: {
+            deleted_at: null,
+          },
+        });
+      }
     }
 
     const feedback: serviceFeedback = {
       code: 200,
       data: allStores,
       status: statusEnum.SUCCESS,
-      message: `Successfully fetched all stores.`,
+      message: req.query.storeAdminId
+        ? `Successfully fetched all stores with storeadmin_id ${req.query.storeAdminId}.`
+        : `Successfully fetched all stores.`,
     };
     return feedback;
   }

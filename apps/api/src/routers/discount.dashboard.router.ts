@@ -1,7 +1,10 @@
 import discountController from '@/controllers/discount.dashboard.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import { validateCategoryCreateAndUpdateBody } from '@/middleware/category.middleware';
-import { validateDiscountCreateBody } from '@/middleware/discount.middleware';
+import {
+  validateDiscountCreateBody,
+  validateDiscountUpdateBody,
+} from '@/middleware/discount.middleware';
 import { Router } from 'express';
 
 export class DiscountRouter {
@@ -24,7 +27,7 @@ export class DiscountRouter {
     this.router.patch(
       '/:id',
       verifyToken,
-      validateCategoryCreateAndUpdateBody,
+      validateDiscountUpdateBody,
       discountController.updateDiscount,
     );
     this.router.delete('/:id', verifyToken, discountController.deleteDiscount);

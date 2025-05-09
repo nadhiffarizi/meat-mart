@@ -287,7 +287,11 @@ class DiscountService {
     }
 
     const updatedDiscount = await prisma.discounts.update({
-      data: req.body,
+      data: {
+        ...req.body,
+        start_date: new Date(req.body.start_date),
+        end_date: new Date(req.body.end_date),
+      },
       where: {
         id: req.params.id,
       },

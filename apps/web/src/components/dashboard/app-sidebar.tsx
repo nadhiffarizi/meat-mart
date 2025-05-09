@@ -27,11 +27,16 @@ import Image from 'next/image';
 import meatMart from '@/media/image/meat-mart-large.jpeg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 // Menu items.
 const items = [
-  { title: 'User Management', url: '/dashboard/users', icon: UserRoundPen },
+  {
+    title: 'User Management',
+    url: '/dashboard/users',
+    icon: UserRoundPen,
+    hideTo: 'ADMIN',
+  },
   {
     title: 'Products',
     url: '/dashboard/products',
@@ -46,6 +51,7 @@ const items = [
     title: 'Discounts',
     url: '/dashboard/discounts',
     icon: TicketPercent,
+    hideTo: 'SUPER_ADMIN',
   },
   { title: 'Report', url: '/dashboard/reports', icon: FileChartColumn },
   { title: 'My Profile', url: '/dashboard/profile', icon: CircleUser },
@@ -53,6 +59,7 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { data: session, update, status } = useSession();
   return (
     <Sidebar>
       <SidebarContent className="flex flex-col justify-between py-4 px-5">
@@ -68,13 +75,19 @@ export function AppSidebar() {
           <nav className="space-y-4">
             {items.map((item) => {
               let isActive = false;
-              if (pathname === item.url) isActive = true;
+              if (pathname.includes(item.url)) isActive = true;
 
               return (
                 <Link
                   href={item.url}
                   key={item.url}
-                  className="bg-blue-200 flex items-center gap-2 w-full py-2 px-4 rounded-2xl"
+                  className={
+                    item.hideTo
+                      ? item.hideTo === session?.user.role
+                        ? `hidden`
+                        : `bg-blue-200 flex items-center gap-2 w-full py-2 px-4 rounded-2xl`
+                      : `bg-blue-200 flex items-center gap-2 w-full py-2 px-4 rounded-2xl`
+                  }
                 >
                   <span
                     className={`flex items-center justify-center w-5 h-5 ${isActive ? 'text-white' : 'text-gray-200'}`}

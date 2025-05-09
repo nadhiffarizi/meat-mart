@@ -22,19 +22,29 @@ function Page() {
   useEffect(() => {
     async function getAllStores() {
       try {
-        const response = await api(
-          `store/all`,
-          'GET',
-          {},
-          session?.user.access_token,
-        );
+        let response;
+        if (session?.user.role === 'ADMIN') {
+          response = await api(
+            `store/all?storeAdminId=${session?.user.id}`,
+            'GET',
+            {},
+            session?.user.access_token,
+          );
+        } else if (session?.user.role === 'SUPER_ADMIN') {
+          response = await api(
+            `store/all`,
+            'GET',
+            {},
+            session?.user.access_token,
+          );
+        }
         setAllStores(response.data as IGetStores[]);
       } catch (error: any) {
         console.log(error);
       }
     }
     getAllStores();
-  }, [session?.user.access_token]);
+  }, [session?.user]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -47,15 +57,15 @@ function Page() {
           allStores.map((store) => {
             return (
               <LocationCard
-                name=" njkbhbh"
-                address="kjbhxdb"
+                name={store.name}
+                address={store.address}
                 store_id={store.id}
                 key={store.id}
                 linkTo="discounts"
               />
             );
           })
-        ) : (
+        ) : session?.user.role === 'SUPER_ADMIN' ? (
           <Link href={'/dashboard'}>
             <Card className="flex flex-col justify-between w-[200px] md:w-[350px] break-words ">
               <CardHeader>
@@ -71,6 +81,19 @@ function Page() {
               </CardFooter>
             </Card>
           </Link>
+        ) : (
+          <Card className="flex flex-col justify-between w-[200px] md:w-[350px] break-words ">
+            <CardHeader>
+              <CardTitle>
+                Please request your supervisor to assign you a store.
+              </CardTitle>
+              <CardDescription className="">
+                You are not assigned a store yet. Await assignment to your first
+                store to unlock this feature.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="w-full flex md:justify-end"> </CardFooter>
+          </Card>
         )}
       </div>
     </div>

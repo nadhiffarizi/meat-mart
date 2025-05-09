@@ -16,14 +16,13 @@ export class DiscountRouter {
     // dont forget to include middleware function before SIT
 
     this.router.get('/get/:cartId', discountController.getDiscounts);
-    this.router.post('/redeem', discountController.redeemDiscount);
+    // this.router.post('/redeem', discountController.redeemDiscount);
     // .... continue api
   }
-
 
   getRouter(): Router {
     return this.router;
   }
 }
 
-export default new DiscountRouter()
+export default new DiscountRouter();

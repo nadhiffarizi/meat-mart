@@ -1,3 +1,4 @@
+import EditDiscountForm from '@/components/dashboard/discounts/forms/EditDiscountForm';
 import EditProductForm from '@/components/dashboard/products/forms/EditProductForm';
 import EditStockForm from '@/components/dashboard/stocks/forms/EditStocksForm';
 import React from 'react';
@@ -5,16 +6,16 @@ import React from 'react';
 type Props = {
   params: {
     storeId: string;
-    productId: string;
+    discountId: string;
   };
 };
 
-function page({ params: { storeId, productId } }: Props) {
+function page({ params: { storeId, discountId } }: Props) {
   return (
     <div className="flex flex-col gap-8">
       <div className="text-primaryText text-3xl font-semibold">Edit Stocks</div>
 
-      <EditStockForm storeId={storeId} productId={productId} />
+      <EditDiscountForm storeId={storeId} id={discountId} />
     </div>
   );
 }
