@@ -8,7 +8,7 @@ import express, {
   Router,
 } from 'express';
 import cors from 'cors';
-import { PORT } from './config';
+import { PORT, supabase } from './config';
 import authRouter from './routers/auth.router';
 import adminRouter from './routers/admin.router';
 import cartRouter from './routers/cart.router';
@@ -20,6 +20,9 @@ import orderRouter from './routers/order.router';
 import transactionQueryRouter from './routers/transactionQuery.router';
 import orderQueryRouter from './routers/orderQuery.router';
 import storeRouter from './routers/store.router';
+import { deadlinePayment } from './helper/cronjob/transaction.cron';
+import { orderConfirmation } from './helper/cronjob/order.cron';
+// import { midTransSnap } from './helper/transaction/transaction.helper';
 
 export default class App {
   private app: Express;
@@ -29,12 +32,14 @@ export default class App {
     this.configure();
     this.routes();
     this.handleError();
+    this.cron()
   }
 
   private configure(): void {
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+
   }
 
   private handleError(): void {
@@ -73,6 +78,14 @@ export default class App {
     this.app.use('/api/discount', discountRouter.getRouter());
     this.app.use('/api/product', adminRouter.getRouter());
     this.app.use('/api/store/list', storeRouter.getRouter());
+    // this.app.post('/midtrans', () => {
+    //   midTransSnap()
+    // })
+  }
+
+  private cron(): void {
+    // deadlinePayment().start() // cron for deadline payment
+    // orderConfirmation().start() // cron for order confirmation
   }
 
   public start(): void {

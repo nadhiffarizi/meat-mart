@@ -61,8 +61,6 @@ class OrderServiceAdmin {
             return returnServiceFeedback(406, (error as Error).message, statusEnum.FAILED, "send order by admin failed")
 
         }
-
-
     }
 
 }

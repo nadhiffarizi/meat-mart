@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
@@ -21,3 +22,6 @@ export const node_account = {
   user: process.env.NODEMAILER_USER || '',
   pass: process.env.NODEMAILER_PASS || '',
 };
+export const supabase = createClient(process.env.SUPABASE_PROJECT!, process.env.SUPABASE_ANONKEY!)
+export const midtransServerKey = process.env.MIDTRANS_SERVER_KEY || ''
+export const xenditSecretKey = process.env.XENDIT_SECRET_KEY || ''

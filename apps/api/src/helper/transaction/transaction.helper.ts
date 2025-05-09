@@ -9,6 +9,10 @@ import { calculateAfterDisc, findDiscountByCode, findDiscountById } from "../dis
 import { findProductByStockId } from "../product/product.helper"
 import { updateStockQuantity } from "../stock/stock.helper"
 import { getOrderByTrxId } from "../order/orderQuery.helper"
+import { midtransServerKey, xenditSecretKey } from "@/config"
+// import * as midtransClient from 'midtrans-client'
+import { Xendit } from 'xendit-node'
+
 
 export const createDefaultTrxId = async (userId: string) => {
     const trxDefault = await prisma.transactions.create({
@@ -125,7 +129,7 @@ const generateInvoiceNumber = (trxId: string, userId: string) => {
 }
 
 export const setDeadlinePayment = (now: Date) => {
-    return new Date(now.getTime() + 2 * 60 * 60 * 1000) // added 2 hours
+    return new Date(now.getTime() + 1 * 60 * 60 * 1000) // added 2 hours
 }
 
 export const cancelTransaction = async (userId: string, trxId: string) => {
@@ -227,4 +231,40 @@ export const updateTrxStatus = async (trxId: string, statusToBe: E_TransactionSt
     })
 
     return updatedTrx
+}
+
+// export const midTransSnap = () => {
+//     let snap = new midtransClient.Snap({
+//         isProduction: false,
+//         serverKey: midtransServerKey
+//     })
+
+//     let parameter = {
+//         "transaction_details": {
+//             "order_id": "YOUR-ORDERID-123456",
+//             "gross_amount": 10000
+//         },
+//         "credit_card": {
+//             "secure": true
+//         },
+//         "customer_details": {
+//             "first_name": "budi",
+//             "last_name": "pratama",
+//             "email": "budi.pra@example.com",
+//             "phone": "08111222333"
+//         }
+//     };
+
+//     snap.createTransaction(parameter)
+//         .then((transaction: any) => {
+//             // transaction token
+//             let transactionToken = transaction.token;
+//             console.log('transactionToken:', transactionToken);
+//         })
+// }
+
+export const xenditSnap = () => {
+    const xenditClient = new Xendit({
+        secretKey: xenditSecretKey
+    })
 }
