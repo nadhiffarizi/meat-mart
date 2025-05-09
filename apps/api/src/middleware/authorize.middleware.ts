@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import e, { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { jwtAccessSecret, jwtRefreshSecret } from '../config';
 import { ErrorHandler } from '../helpers/responseHandler.helper';
@@ -18,6 +18,7 @@ export const verifyToken = (
 
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

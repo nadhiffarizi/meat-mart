@@ -8,6 +8,7 @@ import {
   PackageSearch,
   Search,
   Settings,
+  StoreIcon,
   TicketPercent,
   UserRoundPen,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ import { usePathname } from 'next/navigation';
 // Menu items.
 const items = [
   { title: 'User Management', url: '/dashboard/users', icon: UserRoundPen },
+  { title: 'Stores', url: '/dashboard/stores', icon: StoreIcon },
   {
     title: 'Products',
     url: '/dashboard/products',

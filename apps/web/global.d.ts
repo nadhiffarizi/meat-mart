@@ -1,4 +1,4 @@
-/** @format */
+import { E_Role } from '@prisma/client';
 
 declare module 'next-auth' {
   interface User {
@@ -10,7 +10,7 @@ declare module 'next-auth' {
     provider?: string;
     access_token?: string;
     refresh_token?: string;
-    role?: string;
+    role?: E_Role;
     phone_number?: string | null;
     is_verified?: boolean;
   }
@@ -24,7 +24,7 @@ declare module 'next-auth' {
       image_url?: string | null;
       provider?: string;
       access_token?: string;
-      role?: string;
+      role?: E_Role;
       phone_number?: string | null;
       is_verified?: boolean;
     } & DefaultSession['user'];
@@ -40,6 +40,7 @@ declare module 'next-auth/jwt' {
     access_token?: string;
     refresh_token?: string;
     provider?: string;
+    role?: E_Role;
   }
 }
 

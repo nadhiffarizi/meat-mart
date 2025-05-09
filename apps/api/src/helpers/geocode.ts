@@ -13,6 +13,7 @@ export async function getCoordinates(
     }
 
     const data = await response.json();
+    console.log('HELPERS GEOCODE', data.results[0].geometry);
 
     if (data.results?.length > 0) {
       return {

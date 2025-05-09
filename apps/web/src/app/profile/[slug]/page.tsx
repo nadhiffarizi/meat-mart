@@ -15,7 +15,7 @@ import { Cloudinary } from '@cloudinary/url-gen';
 import { usePathname, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/ProfileForm';
 import { cloudName, uploadPreset } from '@/helpers/config';
-import AddressManager from '@/components/Addressemanager';
+import AddressManager from '@/components/AddressManager';
 
 interface profileSlug {
   params: {
@@ -168,7 +168,9 @@ export default function ProfilePage({ params }: profileSlug) {
 
   if (error) {
     return (
-      <div className="text-center py-10 text-red-500 min-h-96">{error}</div>
+      <div className="text-center py-10 text-red-500 h-screen">
+        <p className="text-center  mt-44"> Failed to load profile</p>
+      </div>
     );
   }
 

@@ -12,8 +12,7 @@ import {
 import { IUser } from '@/interface/User.interface';
 import { generateAuthToken } from '@/helpers/token';
 import { v4 as uuidv4 } from 'uuid';
-import { addHours, isAfter } from 'date-fns';
-import { Prisma } from '@prisma/client';
+import { isAfter } from 'date-fns';
 import { registerSocialUser } from '@/helpers/handlers/auth';
 
 class AuthService {
@@ -485,7 +484,7 @@ class AuthService {
   async getUserByEmail(req: Request) {
     const { email } = req.body;
     const getUser = await prisma.users.findUnique({
-      where: { email, role: 'CUSTOMER' },
+      where: { email },
       select: {
         first_name: true,
         last_name: true,
@@ -494,6 +493,7 @@ class AuthService {
         is_verified: true,
         image_url: true,
         provider: true,
+        role: true,
       },
     });
     if (!getUser) {
@@ -532,7 +532,7 @@ class AuthService {
 
   async socialRegister(req: Request) {
     try {
-      const { email, fullName, image, provider, provider_id } = req.body;
+      const { email, fullName, image, provider, provider_id, role } = req.body;
 
       if (!email || !provider) {
         throw new Error('Email and provider are required');
@@ -544,6 +544,7 @@ class AuthService {
         image,
         provider,
         provider_id,
+        role,
       });
 
       return {

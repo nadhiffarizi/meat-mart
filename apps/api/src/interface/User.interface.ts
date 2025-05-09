@@ -25,6 +25,7 @@ export interface ISocialUserData {
   image?: string;
   provider: string;
   provider_id?: string;
+  role?: string;
 }
 
 export interface Address {

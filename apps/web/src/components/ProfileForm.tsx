@@ -102,7 +102,9 @@ export default function ProfileForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded mb-4">{error}</div>
+        <div className="bg-red-50 text-red-600 p-4 rounded mb-4 text-sm font-medium">
+          {`! ${error}`}
+        </div>
       )}
 
       {success && (
@@ -121,7 +123,7 @@ export default function ProfileForm({
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
             required
           />
         </div>
@@ -135,7 +137,7 @@ export default function ProfileForm({
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
             required
           />
         </div>
@@ -144,7 +146,7 @@ export default function ProfileForm({
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Email
           </label>
-          {formData.provider !== 'credentials' ? (
+          {profile.provider !== 'credentials' ? (
             <input
               type="email"
               name="email"
@@ -176,7 +178,7 @@ export default function ProfileForm({
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handlePhoneChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
           />
           {/* <p className="text-xs text-red-500 mb-4">{error}</p> */}
         </div>
@@ -197,9 +199,13 @@ export default function ProfileForm({
               <input
                 type="password"
                 name="currentPassword"
-                value={formData.currentPassword}
+                value={
+                  profile.provider !== 'credentials'
+                    ? ''
+                    : formData.currentPassword
+                }
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
               />
             </div>
 
@@ -210,9 +216,11 @@ export default function ProfileForm({
               <input
                 type="password"
                 name="newPassword"
-                value={formData.newPassword}
+                value={
+                  profile.provider !== 'credentials' ? '' : formData.newPassword
+                }
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-blue-500 focus:gray-blue-500"
               />
             </div>
 
@@ -223,9 +231,13 @@ export default function ProfileForm({
               <input
                 type="password"
                 name="confirmPassword"
-                value={formData.confirmPassword}
+                value={
+                  profile.provider !== 'credentials'
+                    ? ''
+                    : formData.confirmPassword
+                }
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
               />
             </div>
           </div>
@@ -236,14 +248,14 @@ export default function ProfileForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="px-4 py-2 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-500"
           disabled={isLoading}
         >
           Batal
         </button>
         <button
           type="submit"
-          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orangeAccent hover:bg-primaryGreen focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orangeAccent"
+          className="px-4 py-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-orangeAccent hover:bg-primaryGreen  "
           disabled={isLoading}
         >
           {isLoading ? 'Menyimpan...' : 'Simpan Perubahan'}

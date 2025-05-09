@@ -10,6 +10,7 @@ import {
 import Google from 'next-auth/providers/google';
 import { jwtDecode } from 'jwt-decode';
 import { InvalidAuthError } from './interfaces/auth.error';
+import { E_Role } from '@prisma/client';
 
 export interface ISocialUserData {
   email: string;
@@ -17,6 +18,7 @@ export interface ISocialUserData {
   image?: string;
   provider: string;
   provider_id: string;
+  role: string;
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -70,12 +72,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (account?.provider === 'google') {
         try {
           // Register or get existing user from your database
-          const userData: ISocialUserData = {
+          const userData: Partial<ISocialUserData> = {
             email: profile?.email as string,
             fullName: profile?.name as string,
             image: profile?.picture as string,
             provider: account.provider,
             provider_id: profile?.sub as string,
+            role: 'SUPER_ADMIN' || 'ADMIN' || 'CUSTOMER',
           };
 
           const socialUser = await registerSocialUser({
@@ -100,15 +103,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async jwt({ token, user }) {
+      console.log('JWT callback - user role:', user?.role);
       if (user) {
         token.access_token = user.access_token;
         token.refresh_token = user.refresh_token;
         token.provider = user.provider;
+        token.role = user.role;
       }
       return token;
     },
 
     async session({ session, token }) {
+      console.log('Session callback - token role:', token.role);
       if (token.access_token) {
         const user = jwtDecode(token.access_token!) as User;
         // session.user.id = user.id as string;

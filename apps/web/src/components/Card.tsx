@@ -5,6 +5,7 @@ import { ICard } from '../interfaces/card.interface';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { Snackbar, Alert, Button } from '@mui/material';
+import { Plus } from 'lucide-react';
 
 export function Card(props: ICard) {
   const { data: session } = useSession();
@@ -86,7 +87,7 @@ export function Card(props: ICard) {
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
                     }`}
                 >
-                  +
+                  <Plus size={18} />
                 </button>
               </div>
             </div>

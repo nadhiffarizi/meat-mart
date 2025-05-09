@@ -1,8 +1,4 @@
 import addressController from '@/controllers/address.controller';
-import {
-  verifyRefreshToken,
-  verifyToken,
-} from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class AddressRouter {
@@ -14,7 +10,6 @@ export class AddressRouter {
   }
 
   private initializeRoutes(): void {
-    // this.router.post("/mail", authController.sendVerificationEmail);
     this.router.get('/get', addressController.getAddressByEmail);
     this.router.post('/', addressController.addFirstAddress);
     this.router.patch('/:id', addressController.updateAddress);

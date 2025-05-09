@@ -180,6 +180,46 @@ class AdminService {
     };
     return feedback;
   }
+  async getListAdmin(req: Request) {
+    const { email } = req.query;
+    try {
+      const existingUser = await getUserByEmail(email as string);
+      if (existingUser?.role !== 'SUPER_ADMIN') {
+        return {
+          code: 403,
+          data: null,
+          status: statusEnum.FAILED,
+          message: `You have insufficient permission to access.`,
+        };
+      }
+
+      const countAdmin = await prisma.users.count({
+        where: { role: 'ADMIN' },
+      });
+      if (countAdmin == 0) {
+        return {
+          code: 200,
+          data: null,
+          status: statusEnum.SUCCESS,
+          message: 'There is no admin',
+        };
+      } else {
+        const listAllAdmin = await prisma.users.findMany({
+          where: { role: 'ADMIN' },
+        });
+
+        return {
+          code: 200,
+          data: listAllAdmin,
+          status: statusEnum.SUCCESS,
+          message: 'successfuly fetching admin',
+        };
+      }
+    } catch (error) {
+      console.error('Fetching admin error:', error);
+      throw new Error('Error during fetching admin');
+    }
+  }
 }
 
 export default new AdminService();

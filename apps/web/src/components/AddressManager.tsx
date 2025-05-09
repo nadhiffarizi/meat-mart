@@ -9,27 +9,15 @@ import {
   deleteUserAddress,
   setPrimaryAddress,
 } from '@/helpers/handlers/auth';
-import {
-  Alert,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Snackbar,
-  TextField,
-} from '@mui/material';
+import { Alert, SelectChangeEvent, Snackbar } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Address } from '@/interfaces/card.interface';
 import { useLocations } from '@/hooks/useLocations';
+import AddressForm from './AddressForm';
+import { DeleteConfirmationDialog } from './DeleteConfirm';
 
 export default function AddressManager() {
   const { data: session } = useSession();
@@ -39,18 +27,13 @@ export default function AddressManager() {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const {
-    provinces,
-    cities,
-    districts,
-    loadingTime,
-    errorMessage,
-    setSelectedProvince,
-    setSelectedCity,
-    selectedProvince,
-    selectedCity,
-  } = useLocations();
+  const { provinces, cities, districts, setSelectedProvince, setSelectedCity } =
+    useLocations();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
   const [currentAddress, setCurrentAddress] = useState<Partial<Address>>({
     recipient_name: '',
     recipient_phone_number: '',
@@ -61,14 +44,12 @@ export default function AddressManager() {
     postal_code: '',
     is_selected: false,
   });
-  console.log('CURRENT', currentAddress);
+
   useEffect(() => {
     async function loadAddresses() {
       try {
         if (session) {
-          console.log('Fetching addresses for:', session.user.email);
           const data = await getUserAddresses(session.user.email);
-
           setAddresses(data);
         }
       } catch (err) {
@@ -113,63 +94,95 @@ export default function AddressManager() {
     setCurrentAddress((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!currentAddress.recipient_name)
+      newErrors.recipient_name = 'Recipient name is required';
+    if (!currentAddress.recipient_phone_number)
+      newErrors.recipient_phone_number = 'Phone number is required';
+
+    if (!currentAddress.address) newErrors.address = 'Address is required';
+    if (!currentAddress.province_id)
+      newErrors.province = 'Province is required';
+    if (!currentAddress.city_id) newErrors.city = 'City is required';
+    if (!currentAddress.district_id)
+      newErrors.district = 'District is required';
+    if (!currentAddress.postal_code)
+      newErrors.postal_code = 'Postal code is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       if (!session?.user?.email) return;
 
       if (editMode) {
-        console.log('HALO UPDATE DULU NIH', currentAddress);
         const updatedAddress = await updateUserAddress(
           session.user.email,
           currentAddress.id!,
           currentAddress as Address,
         );
-
         setAddresses(
           addresses.map((addr) =>
             addr.id === currentAddress.id ? updatedAddress : addr,
           ),
         );
       } else {
+        console.log('KETAMBAH di new address');
         const newAddress = await addUserAddress(
           session.user.email,
           currentAddress as Omit<Address, 'id'>,
         );
-        console.log('HALO ADD DULU NIH');
         setAddresses([...addresses, newAddress]);
+        console.log('KETAMBAH', newAddress);
       }
       setOpenDialog(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save address');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+  const handleDeleteClick = (id: string) => {
+    if (!session?.user?.email) return;
 
-  const handleDelete = async (id: string) => {
+    const addressToDelete = addresses.find((addr) => addr.id === id);
+
+    if (addressToDelete?.is_selected) {
+      setAlertMessage('Cannot delete selected address');
+      setAlertOpen(true);
+      return;
+    }
+
+    setAddressToDelete(id);
+    setAlertMessage('Yakin hapus alamatmu?');
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!addressToDelete || !session?.user?.email) return;
+
     try {
-      if (!session?.user?.email) return;
-      const addressToDelete = addresses.find((addr) => addr.id === id);
-      if (addressToDelete?.is_selected) {
-        setAlertMessage('Cannot delete selected address');
-        setAlertOpen(true);
-        return;
-      }
-
-      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
-
-      await deleteUserAddress(session.user.email, id);
-
+      await deleteUserAddress(session.user.email, addressToDelete);
       const updatedAddresses = await getUserAddresses(session.user.email);
-
       setAddresses(updatedAddresses);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete address');
+    } finally {
+      setDeleteDialogOpen(false);
+      setAddressToDelete(null);
     }
   };
 
   const handleSetPrimary = async (id: string) => {
     try {
       if (!session?.user?.email) return;
-
       const updatedAddresses = await setPrimaryAddress(session.user.email, id);
       setAddresses(updatedAddresses);
     } catch (err) {
@@ -213,9 +226,10 @@ export default function AddressManager() {
       return updatedAddress;
     });
   };
+
   if (loading) {
     return (
-      <div className=" py-10 h-screen animate-pulse">
+      <div className="py-10 h-screen animate-pulse">
         <p className="mt-20 text-center">Loading addresses...</p>
       </div>
     );
@@ -224,28 +238,21 @@ export default function AddressManager() {
   if (error) {
     return (
       <div className="text-center py-10 text-red-500 min-h-96">
-        {'Gagal Memuat Alamat'}
+        Gagal Memuat Alamat
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 min-h-96">
+    <div className="space-y-6 min-h-96 font-inter">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Alamat</h2>
-        <Button
-          variant="contained"
-          color="primary"
+        <button
           onClick={handleOpenAddDialog}
-          sx={{
-            backgroundColor: '#013028',
-            '&:hover': {
-              backgroundColor: '#fb7011',
-            },
-          }}
+          className="text-sm bg-orangeAccent text-white  py-2 px-4 rounded-full hover:bg-slate-500"
         >
-          Add Address
-        </Button>
+          + Add Address
+        </button>
       </div>
 
       {addresses.length === 0 ? (
@@ -253,7 +260,7 @@ export default function AddressManager() {
           <p className="text-gray-500 min-h-96">Anda belum memiliki alamat</p>
         </div>
       ) : (
-        <div className="grid gap-4 ">
+        <div className="grid gap-4 text-sm">
           {addresses.map((address) => (
             <div
               key={address.id}
@@ -274,7 +281,7 @@ export default function AddressManager() {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 tesxt-xs">
                     {address.recipient_phone_number}
                   </p>
                   <p className="text-gray-600">
@@ -290,7 +297,7 @@ export default function AddressManager() {
                     <EditIcon />
                   </button>
                   <button
-                    onClick={() => handleDelete(address.id)}
+                    onClick={() => handleDeleteClick(address.id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <DeleteIcon />
@@ -299,20 +306,12 @@ export default function AddressManager() {
               </div>
               {!address.is_selected && (
                 <div className="mt-4">
-                  <Button
-                    variant="outlined"
-                    size="small"
+                  <button
                     onClick={() => handleSetPrimary(address.id)}
-                    sx={{
-                      color: '#000',
-                      borderColor: '#fb7011',
-                      '&:hover': {
-                        backgroundColor: '#fb7011',
-                      },
-                    }}
+                    className="border border-orangeAccent px-3 py-2 text-xs rounded-full"
                   >
                     Jadikan Alamat Utama
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>
@@ -320,133 +319,19 @@ export default function AddressManager() {
         </div>
       )}
 
-      <Dialog
+      <AddressForm
         open={openDialog}
+        editMode={editMode}
+        currentAddress={currentAddress}
+        provinces={provinces}
+        cities={cities}
+        districts={districts}
+        isSubmitting={isSubmitting}
         onClose={handleCloseDialog}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>
-          {editMode ? 'Edit Alamat' : 'Tambah Alamat Baru'}
-        </DialogTitle>
-        <DialogContent>
-          <div className="space-y-4 mt-4">
-            <TextField
-              fullWidth
-              label="Nama Penerima"
-              name="recipient_name"
-              value={currentAddress.recipient_name}
-              onChange={handleInputChange}
-            />
-            <TextField
-              fullWidth
-              label="Nomor Telepon"
-              name="recipient_phone_number"
-              value={currentAddress.recipient_phone_number}
-              onChange={handleInputChange}
-            />
-            <TextField
-              fullWidth
-              label="Alamat Lengkap"
-              name="address"
-              value={currentAddress.address}
-              onChange={handleInputChange}
-              multiline
-              rows={3}
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <FormControl fullWidth>
-                <InputLabel>Provinsi</InputLabel>
-                <Select
-                  value={currentAddress.province_id || ''}
-                  label="Provinsi"
-                  onChange={(e) => handleLocationChange(e, 'province')}
-                  //disabled={loading.province}
-                >
-                  {provinces.map((province) => (
-                    <MenuItem key={province.code} value={province.code}>
-                      {province.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl
-                fullWidth
-                //  disabled={!currentAddress.province_id || loading.cities}
-              >
-                <InputLabel>Kota/Kabupaten</InputLabel>
-                <Select
-                  value={currentAddress.city_id || ''}
-                  label="Kota/Kabupaten"
-                  onChange={(e) => handleLocationChange(e, 'city')}
-                >
-                  {cities.map((city) => (
-                    <MenuItem key={city.code} value={city.code}>
-                      {city.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <FormControl
-                fullWidth
-                //disabled={!currentAddress.city_id || loading.districts}
-              >
-                <InputLabel>Kecamatan</InputLabel>
-                <Select
-                  value={currentAddress.district_id || ''}
-                  label="Kecamatan"
-                  onChange={(e) => handleLocationChange(e, 'district')}
-                >
-                  {districts.map((district) => (
-                    <MenuItem key={district.code} value={district.code}>
-                      {district.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                fullWidth
-                label="Kode Pos"
-                name="postal_code"
-                value={currentAddress.postal_code}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleCloseDialog}
-            variant="outlined"
-            sx={{
-              color: '#000',
-              borderColor: '#013028',
-              '&:hover': {
-                backgroundColor: '#FFF3E0',
-                borderColor: '#fb7011',
-              },
-            }}
-          >
-            Batal
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            color="primary"
-            className="bg-primaryGreen rounded-md"
-            variant="contained"
-            sx={{
-              backgroundColor: '#013028',
-              '&:hover': {
-                backgroundColor: '#fb7011',
-              },
-            }}
-          >
-            Simpan
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onSubmit={handleSubmit}
+        onInputChange={handleInputChange}
+        onLocationChange={handleLocationChange}
+      />
       <Snackbar
         open={alertOpen}
         autoHideDuration={6000}
@@ -456,11 +341,16 @@ export default function AddressManager() {
         <Alert
           severity="error"
           onClose={() => setAlertOpen(false)}
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', fontFamily: 'Inter, sans-serif' }}
         >
           {alertMessage}
         </Alert>
       </Snackbar>
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

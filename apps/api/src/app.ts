@@ -12,6 +12,7 @@ import { PORT } from './config';
 import authRouter from './routers/auth.router';
 import adminRouter from './routers/admin.router';
 import addressRouter from './routers/address.router';
+import storeRouter from './routers/store.router';
 
 export default class App {
   private app: Express;
@@ -57,6 +58,7 @@ export default class App {
     this.app.use('/api/addresses', addressRouter.getRouter());
     this.app.use('/api/admin', adminRouter.getRouter());
     this.app.use('/api/product', adminRouter.getRouter());
+    this.app.use('/api/store', storeRouter.getRouter());
   }
 
   public start(): void {

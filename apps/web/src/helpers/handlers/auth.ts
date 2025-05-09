@@ -7,7 +7,6 @@ import { auth_secret } from '../config';
 import { Address, IProfile } from '@/interfaces/card.interface';
 
 export const login = async (credentials: Partial<Record<string, unknown>>) => {
-  console.log('Aku mencoba masuk ya gaess FRONT END nich');
   try {
     const res = await api('auth/login', 'POST', {
       body: credentials,
@@ -16,7 +15,7 @@ export const login = async (credentials: Partial<Record<string, unknown>>) => {
     if (!res.data?.access_token || !res.data?.refresh_token) {
       throw new Error('Invalid login response');
     }
-    console.log('INI RESnya', res);
+
     return {
       access_token: res.data.access_token,
       refresh_token: res.data.refresh_token,
@@ -36,7 +35,6 @@ export const register = async (newUser: { email: string }) => {
       contentType: 'application/json',
     });
 
-    console.log('Registration success:', data);
     return data;
   } catch (error) {
     console.error('Registration error:', error);
@@ -61,7 +59,7 @@ export const verifyEmail = async (token: string, password: string) => {
       body: { token, password },
       contentType: 'application/json',
     });
-    console.log('Registration success:', data);
+
     return data;
   } catch (error) {
     console.error('Verification error:', error);
@@ -74,15 +72,10 @@ export const verifyEmail = async (token: string, password: string) => {
 
 export const resendVerificationEmail = async (email: string) => {
   try {
-    console.log('MASUK HANDLERS RESEND VERIFICATION');
     const data = await api('auth/resend-verification', 'POST', {
       body: { email },
       contentType: 'application/json',
     });
-
-    // if (!data.success) {
-    //   throw new Error(data.message || 'Failed to resend verification email');
-    // }
 
     return data;
   } catch (error) {
@@ -101,10 +94,6 @@ export const resetEmail = async (email: string) => {
       contentType: 'application/json',
     });
 
-    // if (!data.success) {
-    //   throw new Error(data.message || 'Failed to send reset email');
-    // }
-
     return data;
   } catch (error) {
     console.error('Reset email error', error);
@@ -114,8 +103,6 @@ export const resetEmail = async (email: string) => {
     };
   }
 };
-
-//(err) => (err instanceof Error ? { error: err.message } : err)
 
 export const resetPassword = async (token: string, password: string) => {
   try {
@@ -132,10 +119,10 @@ export const resetPassword = async (token: string, password: string) => {
 
 export const refreshToken = async () => {
   const cookie = cookies();
-  const ftoken = cookie.get('next-auth.session-token')?.value;
-  if (!ftoken) throw new Error('No session token found');
+  const ntoken = cookie.get('next-auth.session-token')?.value;
+  if (!ntoken) throw new Error('No session token found');
   const decoded = (await decode({
-    token: ftoken,
+    token: ntoken,
     secret: auth_secret,
     salt: 'next-auth.session-token',
   })) as { refresh_token?: string };
@@ -165,7 +152,6 @@ export const updateUser = async (data: {
   password: string;
   newPassword: string;
 }) => {
-  console.log('UPDETEUSER', data);
   try {
     await api('auth/', 'PATCH', {
       body: data,
@@ -183,7 +169,7 @@ export const getProfile = async (email: string) => {
       body: { email },
       contentType: 'application/json',
     });
-    console.log(res.data);
+
     return res.data;
   } catch (error) {
     console.log('Error UPDATE PROFILE', error);
@@ -197,7 +183,6 @@ export async function registerSocialUser(data: {
   provider: string;
   provider_id: string;
 }) {
-  console.log('APAKAH REGISTER SOCIAL terpanggil? di src/helper/handlers/auth');
   try {
     const res = await api('auth/social', 'POST', {
       body: data,
@@ -219,7 +204,6 @@ export const updateProfileImage = async (email: string, imageUrl: string) => {
 };
 
 export async function getUserAddresses(email: string): Promise<Address[]> {
-  console.log('DI HANDLERS?', email);
   const response = await api(
     `addresses/get?email=${encodeURIComponent(email)}`,
     'GET',
@@ -227,8 +211,6 @@ export async function getUserAddresses(email: string): Promise<Address[]> {
       contentType: 'application/json',
     },
   );
-
-  console.log('RESPON ADDRESSNYA', response);
 
   return response.data;
 }
@@ -269,10 +251,6 @@ export async function deleteUserAddress(
       contentType: 'application/json',
     });
     return response;
-    // if (!response.ok) {
-    //   const error = await response.json();
-    //   throw new Error(error.message || 'Failed to delete address');
-    // }
   } catch (error) {
     console.error('Delete address error:', error);
     throw error;

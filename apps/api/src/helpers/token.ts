@@ -29,7 +29,11 @@ export const generateAuthToken = async (user?: IUser, email?: string) => {
     expiresIn: '30m',
   });
   const refresh_token = sign(
-    { email: existingUser.email, provider: existingUser.provider },
+    {
+      email: existingUser.email,
+      provider: existingUser.provider,
+      role: existingUser.role,
+    },
     jwtRefreshSecret,
     {
       expiresIn: '1h',
