@@ -137,7 +137,7 @@ class DiscountService {
           code: 409,
           data: null,
           status: statusEnum.FAILED,
-          message: `Another discount associated with product with productId ${req.body.product_id} already exists.`,
+          message: `Another discount associated with product with productId ${existingDiscount.product_id} already exists.`,
         };
         return feedback;
       }

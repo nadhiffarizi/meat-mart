@@ -20,6 +20,7 @@ import { useSession } from 'next-auth/react';
 
 async function reactivateDiscount(
   discountCode: string,
+  storeId: string,
   router: any,
   token: string | undefined,
   setDisabled: any,
@@ -31,7 +32,7 @@ async function reactivateDiscount(
       'POST',
       {
         body: {
-          discountCode: discountCode,
+          discount_code: discountCode,
         },
         contentType: 'application/json',
       },
@@ -42,7 +43,7 @@ async function reactivateDiscount(
       setDisabled(true);
       setOpenDiscountRecovery(false);
       toast.success(response.message || 'Discount successfully restored!');
-      router.push(`/dashboard/categories/new?status=restored`);
+      router.push(`/dashboard/discounts/store/${storeId}/new?status=restored`);
     } else {
       setOpenDiscountRecovery(false);
       setDisabled(false);
@@ -58,11 +59,13 @@ async function reactivateDiscount(
 function ReactivateDiscountFormAlert({
   setDisabled,
   discountCode,
+  storeId,
   setOpenDiscountRecovery,
   openDiscountRecovery,
 }: {
   setDisabled: Dispatch<SetStateAction<boolean>>;
   discountCode: string;
+  storeId: string;
   setOpenDiscountRecovery: Dispatch<SetStateAction<boolean>>;
   openDiscountRecovery: boolean;
 }) {
@@ -96,6 +99,8 @@ function ReactivateDiscountFormAlert({
               onClick={() => {
                 reactivateDiscount(
                   discountCode,
+
+                  storeId,
                   router,
                   session?.user.access_token,
                   setDisabled,

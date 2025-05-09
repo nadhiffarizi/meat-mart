@@ -215,13 +215,23 @@ export const discountUpdateSchema = z
     }
   });
 
+export const discountRestoreSchema = z.object({
+  discount_code: z.string(),
+});
+
 export const validateDiscountCreateBody = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    discountCreateSchema.parse(req.body);
+    if (req.query.restore === 'true') {
+      discountRestoreSchema.parse(req.body);
+      console.log('req.body in restore:', req.body);
+    } else {
+      discountCreateSchema.parse(req.body);
+    }
+
     next();
   } catch (error) {
     return responseHandler(

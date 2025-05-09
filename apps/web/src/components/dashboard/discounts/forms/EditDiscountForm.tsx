@@ -93,7 +93,13 @@ const validationSchema = Yup.object({
   },
 );
 
-function EditDiscountForm({ id, storeId }: { id: string; storeId: string }) {
+function EditDiscountForm({
+  discountId,
+  storeId,
+}: {
+  discountId: string;
+  storeId: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams?.get('status');
@@ -192,7 +198,7 @@ function EditDiscountForm({ id, storeId }: { id: string; storeId: string }) {
     async function getDiscountData() {
       try {
         const response = await api(
-          `dashboard/discount?id=${id}`,
+          `dashboard/discount?id=${discountId}`,
           'GET',
           {},
           session?.user.access_token,
@@ -203,7 +209,7 @@ function EditDiscountForm({ id, storeId }: { id: string; storeId: string }) {
       }
     }
     getDiscountData();
-  }, [id, session?.user.access_token]);
+  }, [discountId, session?.user.access_token]);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -228,7 +234,7 @@ function EditDiscountForm({ id, storeId }: { id: string; storeId: string }) {
       try {
         setDisabled(true);
         const response = await api(
-          `dashboard/discount/${id}`,
+          `dashboard/discount/${discountId}`,
           'PATCH',
           {
             body: {
@@ -243,7 +249,7 @@ function EditDiscountForm({ id, storeId }: { id: string; storeId: string }) {
         if (response) {
           toast.success(response.message || 'Changes successfully saved!');
           router.push(
-            `/dashboard/discounts/store/${storeId}/discount/${id}/edit?status=successful`,
+            `/dashboard/discounts/store/${storeId}/discount/${discountId}/edit?status=successful`,
           );
         } else {
           toast.error(response.message || 'Something went wrong!');
@@ -502,7 +508,8 @@ function EditDiscountForm({ id, storeId }: { id: string; storeId: string }) {
       </Button>
 
       <EditDiscountFormDeleteAlert
-        id={id}
+        discountId={discountId}
+        storeId={storeId}
         disabled={disabled}
         setDisabled={setDisabled}
       />

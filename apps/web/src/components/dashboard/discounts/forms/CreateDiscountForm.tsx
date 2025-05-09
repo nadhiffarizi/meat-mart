@@ -251,6 +251,7 @@ function CreateDiscountForm({ storeId }: { storeId: string }) {
       <AddDiscountFormAlert status={status} storeId={storeId} />
       <ReactivateDiscountFormAlert
         discountCode={formik.values.discount_code as string}
+        storeId={storeId}
         setDisabled={setDisabled}
         setOpenDiscountRecovery={setOpenDiscountRecovery}
         openDiscountRecovery={openDiscountRecovery}

@@ -15,7 +15,7 @@ function page({ params: { storeId, discountId } }: Props) {
     <div className="flex flex-col gap-8">
       <div className="text-primaryText text-3xl font-semibold">Edit Stocks</div>
 
-      <EditDiscountForm storeId={storeId} id={discountId} />
+      <EditDiscountForm storeId={storeId} discountId={discountId} />
     </div>
   );
 }

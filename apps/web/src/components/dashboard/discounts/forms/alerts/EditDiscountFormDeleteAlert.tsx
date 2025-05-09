@@ -19,18 +19,26 @@ import { api } from '@/helpers/api';
 import { useSession } from 'next-auth/react';
 
 async function deleteDiscount(
-  id: string,
+  discountId: string,
+  storeId: string,
   router: any,
   token: string | undefined,
   setDisabled: any,
 ) {
   try {
-    const response = await api(`dashboard/discount/${id}`, 'DELETE', {}, token);
+    const response = await api(
+      `dashboard/discount/${discountId}`,
+      'DELETE',
+      {},
+      token,
+    );
 
     if (response) {
       setDisabled(true);
       toast.success(response.message || 'Discount successfully deleted!');
-      router.push(`/dashboard/categories/${id}/edit?status=deleted`);
+      router.push(
+        `/dashboard/discounts/store/${storeId}/discount/${discountId}/edit?status=deleted`,
+      );
     } else {
       setDisabled(false);
       toast.error(response.message || 'Something went wrong!');
@@ -44,11 +52,13 @@ async function deleteDiscount(
 function EditDiscountFormDeleteAlert({
   disabled,
   setDisabled,
-  id,
+  discountId,
+  storeId,
 }: {
   disabled: boolean;
   setDisabled: Dispatch<SetStateAction<boolean>>;
-  id: string;
+  discountId: string;
+  storeId: string;
 }) {
   const { data: session, update } = useSession();
   const router = useRouter();
@@ -84,7 +94,8 @@ function EditDiscountFormDeleteAlert({
             <button
               onClick={() => {
                 deleteDiscount(
-                  id,
+                  discountId,
+                  storeId,
                   router,
                   session?.user.access_token,
                   setDisabled,
