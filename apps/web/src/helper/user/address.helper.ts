@@ -1,4 +1,4 @@
-import { apiRequest } from "./api.helper"
+import { apiRequest } from "../api.helper"
 
 export const getReverseLoc = async (lat: number, lon: number) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_OPENSTREETMAP}` + `lat=${lat}&lon=${lon}`)

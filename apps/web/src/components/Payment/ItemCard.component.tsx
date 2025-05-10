@@ -1,4 +1,4 @@
-import { currencyFormatter } from '@/helper/product.helper';
+import { currencyFormatter } from '@/helper/product/product.helper';
 import { ICart } from '@/interface/cart/cart.interface';
 import { Box, IconButton } from '@mui/material';
 import * as React from 'react';

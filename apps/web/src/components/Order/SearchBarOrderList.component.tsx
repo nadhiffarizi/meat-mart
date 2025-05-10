@@ -4,7 +4,10 @@ import { Button, InputAdornment, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { IFilterOrder, IFilterStatusOrder } from '@/interface/filter.interface';
+import {
+  IFilterOrder,
+  IFilterStatusOrder,
+} from '@/interface/dashboard/filter.interface';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
 import {
