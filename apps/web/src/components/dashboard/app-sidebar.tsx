@@ -4,6 +4,7 @@ import {
   CircleUser,
   CreditCard,
   FileChartColumn,
+  Forklift,
   Home,
   Inbox,
   Package,
@@ -37,6 +38,11 @@ const items = [
     title: 'Products',
     url: '/dashboard/products',
     icon: PackageSearch,
+  },
+  {
+    title: 'Inventory',
+    url: '/dashboard/inventories',
+    icon: Forklift,
   },
   {
     title: 'Discounts',

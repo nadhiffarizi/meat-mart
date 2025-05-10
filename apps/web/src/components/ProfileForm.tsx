@@ -1,10 +1,9 @@
 'use client';
 
-import { Users } from '@prisma/client';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { IProfile } from '@/interfaces/card.interface';
+import { IProfile } from '@/interface/user/user.interface';
 import { profile } from 'console';
 
 interface ProfileFormProps {

@@ -1,4 +1,4 @@
-import { ITransaction } from '@/interface/transaction.interface';
+import { ITransaction } from '@/interface/transaction/transaction.interface';
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import * as React from 'react';
-import { currencyFormatter } from '@/helper/product.helper';
+import { currencyFormatter } from '@/helper/product/product.helper';
 import {
   Button,
   Dialog,
@@ -25,7 +25,7 @@ import { useRouter } from 'next/navigation';
 import {
   confirmTransactionAPI,
   rejectTransactionAPI,
-} from '@/helper/transaction.helper';
+} from '@/helper/transaction/transaction.helper';
 import { useSession } from 'next-auth/react';
 import { callToast } from '@/helper/notify.helper';
 import { trxChangeContext } from '@/app/dashboard/transaction-list/page';

@@ -12,6 +12,7 @@ import { getOrderByTrxId } from "../order/orderQuery.helper"
 import { midtransServerKey, xenditSecretKey } from "@/config"
 // import * as midtransClient from 'midtrans-client'
 import { Xendit } from 'xendit-node'
+import { IDiscount } from "@/interface/discount.interface"
 
 
 export const createDefaultTrxId = async (userId: string) => {
@@ -74,7 +75,7 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILo
 
         const defaultPrice = product?.products?.price!
 
-        const cartAfterDisc: ICartAfterDIsc = calculateAfterDisc(defaultPrice, discount.promotion_type, discount!, cartItem) as ICartAfterDIsc
+        const cartAfterDisc: ICartAfterDIsc = calculateAfterDisc(defaultPrice, discount.promotion_type, (discount as IDiscount)!, cartItem) as ICartAfterDIsc
 
         // add to transaction detail
         const newTrxDetail = await prisma.transactionDetails.create({

@@ -1,8 +1,8 @@
-import { createNewCartItem, indexCartById, indexProductInCart, maxStockAvailable } from "@/helper/cart.helper";
-import { syncRedeemedDiscountFromAPI } from "@/helper/discount.helper";
-import { ICart } from "@/interface/cart.interface";
-import { IDiscount } from "@/interface/discount.interface";
-import IProduct from "@/interface/product.interface";
+import { createNewCartItem, indexCartById, indexProductInCart, maxStockAvailable } from "@/helper/cart/cart.helper";
+import { syncRedeemedDiscountFromAPI } from "@/helper/discount/discount.helper";
+import { ICart } from "@/interface/cart/cart.interface";
+import { IDiscount } from "@/interface/discount/discount.interface";
+import IProduct from "@/interface/product/product.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const cartInitalState: ICart[] = []

@@ -12,6 +12,7 @@ import {
   X,
   Menu,
   LogOut,
+  Forklift,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -22,6 +23,11 @@ const navItems = [
     name: 'Products',
     href: '/dashboard/products',
     icon: <PackageSearch />,
+  },
+  {
+    name: 'Inventory',
+    href: '/dashboard/inventories',
+    icon: <Forklift />,
   },
   {
     name: 'Discounts',

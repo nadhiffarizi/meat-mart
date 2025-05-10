@@ -1,5 +1,4 @@
-import { currencyFormatter } from '@/helper/product.helper';
-import { ICart } from '@/interface/cart.interface';
+import { ICart } from '@/interface/cart/cart.interface';
 import { Cancel, Close, Delete } from '@mui/icons-material';
 import { Box, Checkbox, IconButton } from '@mui/material';
 import * as React from 'react';
@@ -9,7 +8,7 @@ import {
   indexCartById,
   subtractCartAPI,
   syncCartDataFromAPI,
-} from '@/helper/cart.helper';
+} from '@/helper/cart/cart.helper';
 import { callToast } from '@/helper/notify.helper';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import {
@@ -18,6 +17,7 @@ import {
 } from '@/redux/slice/cart.slice';
 import DiscountInCartNotif from './DiscountInCartNotif.component';
 import { useSession } from 'next-auth/react';
+import { currencyFormatter } from '@/helper/product/product.helper';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state

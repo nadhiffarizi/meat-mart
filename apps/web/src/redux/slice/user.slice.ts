@@ -1,8 +1,5 @@
 
-import { getCustomer } from "@/helper/user.helper";
-import { ICart } from "@/interface/cart.interface";
-import IProduct from "@/interface/product.interface";
-import IUser from "@/interface/user.interface";
+import { IUser } from "@/interface/user/user.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const userInitialState: IUser = {

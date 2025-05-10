@@ -1,18 +1,18 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ICard } from '../interfaces/card.interface';
+import { ICard } from '../interface/product/card.interface';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { Snackbar, Alert, Button } from '@mui/material';
-import IProduct from '@/interface/product.interface';
+import IProduct from '@/interface/product/product.interface';
 import {
   addToCartAPI,
   getCartDataAPI,
   indexProductInCart,
   isMaxAddedToCart,
   syncCartDataFromAPI,
-} from '@/helper/cart.helper';
+} from '@/helper/cart/cart.helper';
 import { callToast } from '@/helper/notify.helper';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';

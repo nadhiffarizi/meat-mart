@@ -3,7 +3,7 @@ import * as React from 'react';
 import { NumberField } from '@base-ui-components/react';
 import { MinusIcon, PlusIcon } from 'lucide-react';
 import styles from './NumberField.module.css';
-import { ICart } from '@/interface/cart.interface';
+import { ICart } from '@/interface/cart/cart.interface';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import {
@@ -11,10 +11,10 @@ import {
   maxStockAvailable,
   syncCartDataFromAPI,
   updateCartQuantity,
-} from '@/helper/cart.helper';
-import { addToCartAPI } from '@/helper/cart.helper';
+} from '@/helper/cart/cart.helper';
+import { addToCartAPI } from '@/helper/cart/cart.helper';
 import { useState } from 'react';
-import { subtractCartAPI } from '@/helper/cart.helper';
+import { subtractCartAPI } from '@/helper/cart/cart.helper';
 import { callToast } from '@/helper/notify.helper';
 import { useSession } from 'next-auth/react';
 

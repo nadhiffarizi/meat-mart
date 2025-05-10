@@ -9,6 +9,7 @@ import { ICart, ICartAfterDIsc } from "@/interface/cart.interface";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { convertRoleToEnum } from "@/helper/role.helper";
 import { E_Role } from "@prisma/client";
+import { IDiscount } from "@/interface/discount.interface";
 
 class DiscountService {
     async getDiscounts(req: Request) {
@@ -68,7 +69,7 @@ class DiscountService {
             const product = await findProductByStockId(cartData?.stock_id!)
 
             // get discounted of subtotal cartitem
-            const discountedCartItem = calculateAfterDisc(product.products?.price!, discount?.promotion_type!, discount!, cartData as ICart) as ICartAfterDIsc
+            const discountedCartItem = calculateAfterDisc(product.products?.price!, discount?.promotion_type!, (discount as IDiscount)!, cartData as ICart) as ICartAfterDIsc
 
             // feedback from service
             return returnServiceFeedback(200, { discount, ...discountedCartItem }, statusEnum.SUCCESS, "redeem discount success")

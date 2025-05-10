@@ -1,15 +1,7 @@
 'use client';
 import { useAppSelector } from '@/redux/store';
-import {
-  CheckCircle,
-  Done,
-  LocalActivityRounded,
-  LocationCityRounded,
-  LocationOn,
-  Payment,
-  ShoppingCart,
-} from '@mui/icons-material';
-import { Box, Divider, Icon, IconButton } from '@mui/material';
+import { Done, Payment, ShoppingCart } from '@mui/icons-material';
+import { Box, IconButton } from '@mui/material';
 import * as React from 'react';
 
 export default function CheckoutProgress() {

@@ -13,16 +13,20 @@ import authRouter from './routers/auth.router';
 import adminRouter from './routers/admin.router';
 import cartRouter from './routers/cart.router';
 import productRouter from './routers/product.router';
+import productDashboardRouter from './routers/product.dashboard.router';
 import userRouter from './routers/user.router';
 import discountRouter from './routers/discount.router';
 import transactionRouter from './routers/transaction.router';
 import orderRouter from './routers/order.router';
 import transactionQueryRouter from './routers/transactionQuery.router';
+import categoryRouter from './routers/category.router';
+import stockRouter from './routers/stock.router';
+import discountDashboardRouter from './routers/discount.dashboard.router';
 import orderQueryRouter from './routers/orderQuery.router';
-import storeRouter from './routers/store.router';
 import { deadlinePayment } from './helper/cronjob/transaction.cron';
 import { orderConfirmation } from './helper/cronjob/order.cron';
 import { midtransSnap } from './helper/midtrans.helper';
+import storeRouter from './routers/store.router';
 // import { midTransSnap } from './helper/transaction/transaction.helper';
 
 export default class App {
@@ -77,7 +81,12 @@ export default class App {
     this.app.use('/api/transaction', transactionRouter.getRouter());
     this.app.use('/api/transaction/list', transactionQueryRouter.getRouter());
     this.app.use('/api/discount', discountRouter.getRouter());
-    this.app.use('/api/product', adminRouter.getRouter());
+    // this.app.use('/api/product', adminRouter.getRouter());
+    this.app.use('/api/category', categoryRouter.getRouter());
+    this.app.use('/api/dashboard/product', productDashboardRouter.getRouter());
+    this.app.use('/api/store', storeRouter.getRouter());
+    this.app.use('/api/stock', stockRouter.getRouter());
+    this.app.use('/api/discount', discountDashboardRouter.getRouter());
     this.app.use('/api/store/list', storeRouter.getRouter());
     // this.app.post('/midtrans', () => {
     //   midtransSnap()

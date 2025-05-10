@@ -5,8 +5,8 @@ import { currencyFormatter } from '@/helper/product.helper';
 import {
   cancelTransactionAPI,
   uploadPaymentProof,
-} from '@/helper/transaction.helper';
-import { ITransaction } from '@/interface/transaction.interface';
+} from '@/helper/transaction/transaction.helper';
+import { ITransaction } from '@/interface/transaction/transaction.interface';
 import { ShoppingBag } from '@mui/icons-material';
 import {
   Backdrop,

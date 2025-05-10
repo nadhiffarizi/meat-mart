@@ -1,8 +1,6 @@
 'use client';
 import ProductCart from '@/components/Cart/ProductCart.Component';
-import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
-import { ICart } from '@/interface/cart.interface';
-import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
+import { ICart } from '@/interface/cart/cart.interface';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { ArrowBack, NavigateBefore, NavigateNext } from '@mui/icons-material';
 import { Box, Button, Checkbox, IconButton, TextField } from '@mui/material';

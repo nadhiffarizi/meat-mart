@@ -1,7 +1,7 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { resendVerificationEmail } from '@/helpers/handlers/auth';
+import { resendVerificationEmail } from '@/helper/auth/auth';
 import { useState } from 'react';
 
 export default function VerificationSentPage() {

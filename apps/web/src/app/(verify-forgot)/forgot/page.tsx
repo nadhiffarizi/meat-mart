@@ -1,5 +1,5 @@
 'use client';
-import { resendVerificationEmail, resetEmail } from '@/helpers/handlers/auth';
+import { resendVerificationEmail, resetEmail } from '@/helper/auth/auth';
 import { useFormik } from 'formik';
 import React, { useState } from 'react';
 

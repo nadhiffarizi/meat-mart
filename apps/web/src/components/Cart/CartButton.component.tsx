@@ -6,9 +6,9 @@ import { Button } from '@mui/material';
 import { ShoppingCart } from '@mui/icons-material';
 import { useAppSelector } from '@/redux/store';
 import { useState, useEffect } from 'react';
-import { countTotalInCart } from '@/helper/cart.helper';
+import { countTotalInCart } from '@/helper/cart/cart.helper';
 import CartCard from './CartCard.component';
-import { ICart } from '@/interface/cart.interface';
+import { ICart } from '@/interface/cart/cart.interface';
 import { useRouter } from 'next/navigation';
 
 export default function CartButtonNavbar() {

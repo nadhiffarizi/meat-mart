@@ -1,4 +1,4 @@
-import { IFilterOrder, IFilterStatusOrder } from "@/interface/filter.interface";
+import { IFilterOrder, IFilterStatusOrder } from "@/interface/dashboard/filter.interface";
 
 export const statusFilterUpdate = (statusFilter: string, statusState: IFilterStatusOrder) => {
     let temp = { ...statusState }

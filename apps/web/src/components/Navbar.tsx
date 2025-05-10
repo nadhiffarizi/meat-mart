@@ -11,14 +11,11 @@ import {
   countTotalInCart,
   getCartDataAPI,
   syncCartDataFromAPI,
-} from '@/helper/cart.helper';
+} from '@/helper/cart/cart.helper';
 import { Backdrop, Button, CircularProgress, IconButton } from '@mui/material';
 import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
-import { ShoppingBagIcon } from '@heroicons/react/16/solid';
-import NavbarDropDown from './Navbar/NavbarDropdown.component';
-import { values } from 'cypress/types/lodash';
 import { updateCartState } from '@/redux/slice/cart.slice';
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {

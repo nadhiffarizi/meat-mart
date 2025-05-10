@@ -1,4 +1,4 @@
-import { ICheckout } from "@/interface/checkout.interface";
+import { ICheckout } from "@/interface/checkout/checkout.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const checkoutInitialState: ICheckout = {

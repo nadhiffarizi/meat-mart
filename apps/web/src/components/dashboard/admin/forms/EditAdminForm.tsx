@@ -6,10 +6,10 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
-import { IGetUsers } from '@/app/interfaces/user.interface';
-import FormAlert from './Alerts/FormAlert';
+import { api } from '@/helper/api';
+import FormAlert from './Alerts/EditAdminFormAlert';
 import EditAdminFormDeleteAlert from './Alerts/EditAdminFormDeleteAlert';
+import { IGetUsers } from '@/interface/user/user.interface';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),
@@ -34,11 +34,12 @@ function EditAdminForm({ id }: { id: string }) {
     async function getUserData() {
       try {
         const response = await api(
-          `admin/users/${id}`,
+          `admin/users?id=${id}`,
           'GET',
           {},
           session?.user.access_token,
         );
+        console.log('RESPONSE.DATA =>', response.data);
         setUserDetails(response.data);
       } catch (error) {
         console.log(error);

@@ -5,11 +5,11 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
-import { IGetUsers } from '@/app/interfaces/user.interface';
+import { api } from '@/helper/api';
 import { Alert } from '@/components/ui/alert';
 import Link from 'next/link';
 import { PenOff } from 'lucide-react';
+import { IGetUsers } from '@/interface/user/user.interface';
 
 function ViewAdminForm({ id }: { id: string }) {
   const router = useRouter();
@@ -20,7 +20,7 @@ function ViewAdminForm({ id }: { id: string }) {
     async function getUserData() {
       try {
         const response = await api(
-          `admin/users/${id}`,
+          `admin/users?id=${id}`,
           'GET',
           {},
           session?.user.access_token,

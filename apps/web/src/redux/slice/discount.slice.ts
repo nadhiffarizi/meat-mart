@@ -1,4 +1,4 @@
-import { IDiscount } from "@/interface/discount.interface"
+import { IDiscount } from "@/interface/discount/discount.interface"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 const discountInitialState: IDiscount = {}

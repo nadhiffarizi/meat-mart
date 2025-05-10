@@ -16,23 +16,22 @@ import {
 import { Search } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import {
-  IFilterOrder,
-  IFilterStatus,
-  IFilterStatusOrder,
-  IFilterTransactions,
-} from '@/interface/filter.interface';
+
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
 import { useSession } from 'next-auth/react';
-import { getStoreByAdmin } from '@/helper/store.helper';
-import IStore from '@/interface/store.interface';
+import { getStoreByAdmin } from '@/helper/store/store.helper';
+import IStore from '@/interface/store/store.interface';
 import { trxFilterContext } from '@/app/dashboard/transaction-list/page';
 import {
   statusFilterToArray,
   statusFilterUpdate,
 } from '@/helper/filter/orderFilter.helper';
 import { orderFilterContext } from '@/app/dashboard/order-list/page';
+import {
+  IFilterOrder,
+  IFilterStatusOrder,
+} from '@/interface/dashboard/filter.interface';
 
 export default function SearchBarOrderListAdmin() {
   // global state
@@ -85,16 +84,16 @@ export default function SearchBarOrderListAdmin() {
       session?.user.access_token!,
     );
     promiseGetStore
-      .then((v) => {
+      .then((v: any) => {
         if (v.status !== 200)
           throw new Error('Something wrong, try fetching store later');
         return v.json();
       })
-      .then((value) => {
+      .then((value: any) => {
         console.log(value['data']);
         setStoreOptions([...value['data']]);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         callToast((error as Error).message, 'ERROR', 2000);
       });
   }, [status]);

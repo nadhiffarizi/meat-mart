@@ -12,6 +12,10 @@ const adminCreateSchema = z.object({
   phone_number: z.string().optional(),
 });
 
+const adminRestoreSchema = z.object({
+  email: z.string().email(),
+});
+
 const adminUpdateSchema = z.object({
   password: z.string().optional(),
   first_name: z.string().optional(),
@@ -28,8 +32,17 @@ export const validateAdminCreateBody = (
   res: Response,
   next: NextFunction,
 ) => {
+  console.log('restore query:', req.query.restore); // should be 'true'
+  console.log('raw body:', req.body);
   try {
-    adminCreateSchema.parse(req.body);
+    if (req.query.restore === 'true') {
+      adminRestoreSchema.parse(req.body);
+      console.log('req.body in restore:', req.body);
+    } else {
+      adminCreateSchema.parse(req.body);
+      console.log('req.body not in restore:', req.body);
+    }
+
     next();
   } catch (error) {
     return responseHandler(
