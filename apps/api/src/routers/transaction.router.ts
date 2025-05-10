@@ -2,7 +2,7 @@ import transactionController from '@/controllers/transaction.controller';
 import { uploader } from '@/helper/multer.helper';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
-
+import express from 'express'
 export class TransactionRouter {
   private router: Router;
 
@@ -12,8 +12,9 @@ export class TransactionRouter {
   }
 
   private initializeRoutes(): void {
-    // dont forget to include middleware function before SIT 
+    // dont forget to include middleware function before SIT
 
+    this.router.post('/notif/midtrans', express.raw({ type: 'application/json' }), transactionController.notifMidtrans);
     this.router.post('/create', verifyToken, transactionController.create);
     this.router.post('/create/midtrans', transactionController.createMidtrans);
     this.router.post('/cancel', verifyToken, transactionController.cancel);

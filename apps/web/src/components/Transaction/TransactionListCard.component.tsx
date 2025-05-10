@@ -103,7 +103,7 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
       <Typography variant="overline">
         <span className="text-xs bg-slate-100 py-1 px-2 rounded-md font-semibold text-secondaryGreen">
           {' '}
-          {status}
+          {status.split('_').join(' ')}
         </span>
       </Typography>
     );
@@ -157,7 +157,7 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
 
   return (
     <div
-      className="w-full max-w-[2000px] h-[230px] flex flex-col py-3 px-5 gap-2 border-b-2
+      className="w-full max-w-[2000px] flex flex-col py-3 px-5 gap-2 border-b-2
      bg-white ring-2 ring-slate-100 rounded-md"
     >
       <Box
@@ -175,7 +175,7 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
           <p className="text-xs">Created: {trx.created_at.split('T')[0]}</p>
           <>{statusFormatter(trx.transaction_status)}</>
         </div>
-        <div className="w-2/5 h-full flex items-center justify-end gap-5">
+        <div className="w-2/5 flex items-center justify-end gap-5">
           <p className="text-xs">
             Pay before:{' '}
             <span className="text-yellow-500 text-xs">
@@ -186,10 +186,14 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
         </div>
       </Box>
       <Box sx={{ width: '100%', height: '60%' }}>
-        <div className="w-full h-full  flex justify-between gap-3">
-          <div className="w-1/4 max-w-[100px] h-full max-h-[300px] bg-white">
+        <div className="w-full  flex justify-between gap-3">
+          <div className="w-1/4 max-w-[100px] max-h-[300px] bg-white">
             {/**image div */}
-            payment photo
+            <img
+              width={200}
+              height={200}
+              src={`${trx.payment_method === 'MANUAL' ? './banktransfer.png' : './midtrans2.png'}`}
+            />
           </div>
           <div className="w-full h-full max-h-[300px] flex gap-2 py-3 px-3 bg-white ">
             <div className=" h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
@@ -198,8 +202,21 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
             </div>
             <Divider orientation="vertical" flexItem />
             <div className="h-full max-h-[300px] flex flex-col py-3 px-3 bg-white ">
-              <p className="text-slate-600 text-sm">Payment Account Number</p>
-              <p className="font-semibold">49123301293</p>
+              {trx.payment_method === 'MANUAL' ? (
+                <>
+                  <p className="text-slate-600 text-sm">
+                    Payment Account Number
+                  </p>
+                  <p className="font-semibold">49123301293</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-slate-600 text-sm">
+                    Payment Account Number
+                  </p>
+                  <p className="text-slate-400 italic">Provided by Midtrans</p>
+                </>
+              )}
             </div>
           </div>
           <Divider orientation="vertical" sx={{ bgcolor: 'green' }} flexItem />

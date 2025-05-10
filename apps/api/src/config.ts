@@ -24,5 +24,6 @@ export const node_account = {
 };
 export const supabase = createClient(process.env.SUPABASE_PROJECT!, process.env.SUPABASE_ANONKEY!)
 export const midtransServerKey = process.env.MIDTRANS_SERVER_KEY || ''
+export const midtransClientKey = process.env.MIDTRANS_CLIENT_KEY || ''
 export const midtransEnpoint = process.env.MIDTRANS_ENDPOINT || ''
 export const xenditSecretKey = process.env.XENDIT_SECRET_KEY || ''

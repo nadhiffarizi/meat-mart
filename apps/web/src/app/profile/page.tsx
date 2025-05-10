@@ -1,5 +1,6 @@
 import ProfileForm from '@/components/ProfileForm';
-import { IProfile } from '@/interface/product/card.interface';
+import { profileSideMenu } from '@/helper/user/user.helper';
+import { IProfile } from '@/interface/user/user.interface';
 import { Camera, CameraAltRounded } from '@mui/icons-material';
 import { Avatar } from '@mui/material';
 import Link from 'next/link';
@@ -16,12 +17,7 @@ const profile: IProfile = {
   is_verified: true,
 };
 
-const subcategories = [
-  { id: '1', name: 'Profil', slug: 'premium-cuts' },
-  { id: '2', name: 'Alamat', slug: 'organic-options' },
-  { id: '3', name: 'Pesanan Saya', slug: 'value-packs' },
-  { id: '4', name: 'Voucher Saya', slug: 'specialty-items' },
-];
+const subcategories = profileSideMenu;
 function page({}: Props) {
   return (
     <div className="w-[70%] mx-auto px-4 py-8 bg-red rounded-sm -mt-96">
@@ -33,7 +29,7 @@ function page({}: Props) {
                 {subcategories.map((subcat) => (
                   <li key={subcat.id}>
                     <Link
-                      href={`/}`}
+                      href={`${subcat.slug}`}
                       className="block px-3 py-2 rounded hover:bg-gray-100 transition"
                     >
                       {subcat.name}

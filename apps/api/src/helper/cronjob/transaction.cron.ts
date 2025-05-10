@@ -8,7 +8,7 @@ import { updateStockQuantity } from '../stock/stock.helper';
 export const deadlinePayment = () => {
     const task = cron.schedule("*/10 * * * * * ", async () => {
         console.log("checking deadline payment..");
-        // deadline payment for 2 hrs, update where the deadline already exceeds
+        // deadline payment for 1 hrs, update where the deadline already exceeds
         // for the sake of demo, runs every 5 seconds
         // update transaction status
         const unpaidTrx = await prisma.transactions.findMany({
@@ -22,12 +22,25 @@ export const deadlinePayment = () => {
                 }
             },
             where: {
-                AND: {
-                    payment_proof: null,
-                    deadline_payment: {
-                        lte: new Date()
+                OR: [
+                    {
+                        AND: {
+                            payment_proof: null,
+                            payment_method: 'MANUAL',
+                            deadline_payment: {
+                                lte: new Date()
+                            }
+                        },
+                    }, {
+                        AND: {
+                            payment_method: 'AUTOMATIC'
+                            , deadline_payment: {
+                                lte: new Date()
+                            }
+                        },
                     }
-                }
+                ]
+
             }
         })
         await prisma.transactions.updateMany({

@@ -2,9 +2,9 @@ import { midtransEnpoint, midtransServerKey } from "@/config";
 import { IUser } from "@/interface/User.interface";
 import dotenv from "dotenv"
 
-const midtransClient = require('midtrans-client')
+export const midtransClient = require('midtrans-client')
 dotenv.config()
-const snap = new midtransClient.Snap({
+export const snap = new midtransClient.Snap({
     isProduction: false,
     serverKey: process.env.MIDTRANS_SERVER_KEY || '',
     clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
@@ -29,22 +29,9 @@ export const midtransSnap = async (trx: { "id": string, "gross_amount": number }
         "credit_card": {
             "secure": true
         },
-        // "customer_details": {
-        //     "first_name": user.first_name,
-        //     "last_name": user.last_name,
-        //     "email": user.email
-        // }
     };
 
     console.log(parameter);
-
-
-    // snap.createTransaction(parameter)
-    //     .then((transaction: any) => {
-    //         // transaction token
-    //         let transactionToken = transaction;
-    //         console.log('transactionToken:', transactionToken);
-    //     })
 
     const requestTrx = await snap.createTransaction(parameter)
     return { "token": requestTrx.token, "redirect_url": requestTrx.redirect_url }

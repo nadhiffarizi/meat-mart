@@ -72,6 +72,17 @@ export class TransactionController {
         }
     }
 
+    public async notifMidtrans(req: Request, res: Response, next: NextFunction) {
+        try {
+            // try uploading payment proof
+            const data: serviceFeedback = await transactionService.handleNotifMidtrans(req)
+            responseHandler(res, data.message, data.status, data.data, data.code)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
 
 
 }

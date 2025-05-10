@@ -1,8 +1,9 @@
+import { midtransClientKey, midtransServerKey } from "@/config";
 import { statusEnum } from "@/enums/statusEnum.enums";
 import { deleteCart, disableCart, findCartById, findCartByIds, findCartByOrderInput } from "@/helper/cart/cart.helper";
 import { cloudinaryRemove, cloudinaryUpload } from "@/helper/cloudinary.helper";
-import { midtransSnap } from "@/helper/midtrans.helper";
-import { updateCartToOrder } from "@/helper/order/order.helper";
+import { midtransClient, midtransSnap } from "@/helper/midtrans.helper";
+import { updateCartToOrder, updateOrderStatusByTrxId } from "@/helper/order/order.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { convertRoleToEnum } from "@/helper/role.helper";
 import { cancelTransaction, createDefaultTrxId, createTransaction, createTrxDetails, getTrxById, updateTrxStatus } from "@/helper/transaction/transaction.helper";
@@ -90,6 +91,43 @@ class TransactionService {
 
 
         return returnServiceFeedback(200, { ...requestTrx }, statusEnum.SUCCESS, "")
+
+    }
+    async handleNotifMidtrans(req: Request) {
+        const notification = req.body
+
+        try {
+            const apiClient = new midtransClient.Snap({
+                isProduction: false,
+                serverKey: midtransServerKey,
+                clientKey: midtransClientKey
+            });
+            console.log("enter here", notification);
+
+            const transactionStatus = notification['transaction_status']
+            if (notification['status_code'] !== '200') throw new Error(`${notification['status_code']}`)
+            let data = {}
+            if (transactionStatus == 'capture' || transactionStatus == 'settlement') {
+                if (notification['fraud_status'] === 'accept') {
+                    // TODO set transaction status on your database to 'success'
+                    // and response with 200 OK
+                    const trxId = notification['order_id']
+                    // update transaction status
+                    const updatedTrx = await updateTrxStatus(trxId, E_TransactionStatus.CONFIRMED_ADMIN)
+                    // update orders
+                    const updatedOrders = await updateOrderStatusByTrxId(trxId, E_OrderStatus.ON_PROCESS)
+                    data = { ...updatedTrx, ...updatedOrders }
+                }
+            } else {
+                // TODO set transaction status on your database to 'pending' / waiting payment
+                throw new Error(`402`)
+            }
+
+            return returnServiceFeedback(200, { ...notification, ...data }, statusEnum.SUCCESS, "payment midtrans successful")
+
+        } catch (error) {
+            return returnServiceFeedback(Number((error as Error).message[0]), null, statusEnum.FAILED, "payment midtrans failed")
+        }
 
     }
 

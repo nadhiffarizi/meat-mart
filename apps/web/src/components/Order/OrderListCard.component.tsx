@@ -15,12 +15,16 @@ import {
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function OrderListCard({ orderData }: { orderData: IOrder }) {
   // global state
   const changeStatus = React.useContext(orderChangeContext);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const { data: session, status } = useSession();
+
+  // local state
+  const router = useRouter();
 
   // handler
   const handleConfirm = async (orderId: string) => {
@@ -49,17 +53,17 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
   // formatter component
   const statusFormatter = (status: string) => {
     return (
-      <Typography variant="overline">
+      <Typography>
         <span className="bg-slate-100 py-2 px-2 rounded-md text-xs font-semibold text-secondaryGreen">
           {' '}
-          {status}
+          {status.split('_').join(' ')}
         </span>
       </Typography>
     );
   };
   return (
     <div
-      className="w-full max-w-[2000px] h-[230px] flex flex-col py-3 px-5 gap-2 border-b-2
+      className="w-full max-w-[2000px]  flex flex-col py-3 px-5 gap-2 border-b-2
      bg-white ring-2 ring-slate-100 rounded-md"
     >
       <Box sx={{ width: '100%', height: '20%' }}>
@@ -75,12 +79,12 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
       </Box>
       <Box sx={{ width: '100%', height: '60%' }}>
         <div className="w-full h-full  flex justify-between gap-3">
-          <div className="w-1/4 max-w-[100px] h-full max-h-[300px] bg-white">
+          <div className="w-1/4 max-w-[100px] max-h-[300px] bg-white">
             {/**image div */}
             <img
               width={216}
               height={100}
-              className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"
+              className="w-full rounded-lg lg:h-[70px] object-cover"
               src={orderData.product.image || '/templateproduct.png'}
               alt="product-image"
             />
@@ -118,6 +122,7 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
 
           <Button
             style={{ textTransform: 'none' }}
+            onClick={() => router.push(`${orderData.product.slug}`)}
             className="!rounded-md !bg-secondaryGreen !ring-secondaryGreen !ring-2 !w-[200px] !text-white !font-semibold"
           >
             Buy Again
