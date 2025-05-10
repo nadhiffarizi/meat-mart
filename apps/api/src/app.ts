@@ -23,6 +23,7 @@ import categoryRouter from './routers/category.router';
 import storeRouter from './routers/store.router';
 import stockRouter from './routers/stock.router';
 import discountDashboardRouter from './routers/discount.dashboard.router';
+import stockHistoryRouter from './routers/stockHistory.router';
 
 export default class App {
   private app: Express;
@@ -82,6 +83,7 @@ export default class App {
       '/api/dashboard/discount',
       discountDashboardRouter.getRouter(),
     );
+    this.app.use('/api/stockHistory', stockHistoryRouter.getRouter());
   }
 
   public start(): void {
