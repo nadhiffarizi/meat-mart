@@ -22,6 +22,7 @@ import orderQueryRouter from './routers/orderQuery.router';
 import storeRouter from './routers/store.router';
 import { deadlinePayment } from './helper/cronjob/transaction.cron';
 import { orderConfirmation } from './helper/cronjob/order.cron';
+import { midtransSnap } from './helper/midtrans.helper';
 // import { midTransSnap } from './helper/transaction/transaction.helper';
 
 export default class App {
@@ -79,7 +80,7 @@ export default class App {
     this.app.use('/api/product', adminRouter.getRouter());
     this.app.use('/api/store/list', storeRouter.getRouter());
     // this.app.post('/midtrans', () => {
-    //   midTransSnap()
+    //   midtransSnap()
     // })
   }
 

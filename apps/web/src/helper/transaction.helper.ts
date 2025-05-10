@@ -50,6 +50,6 @@ export const syncTransactionDataFromAPI = (data: any) => {
         };
         transactionData.push({ ...trx });
     });
-    console.log(transactionData);
+    // console.log(transactionData);
     return transactionData
 }

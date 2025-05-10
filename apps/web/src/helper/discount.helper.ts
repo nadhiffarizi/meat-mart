@@ -2,7 +2,7 @@ import { IDiscount } from "@/interface/discount.interface"
 import { apiRequest } from "./api.helper"
 
 export const getAvailableDiscountsAPI = async (apiRouter: string, token: string) => {
-    const response = await apiRequest(apiRouter, 'GET', { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
+    const response = await apiRequest(apiRouter, 'GET', undefined, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 
@@ -32,7 +32,7 @@ export const syncDiscountDataFromAPI = (data: any) => {
         };
         myDiscountOptions.push({ ...discountOptions });
     });
-    console.log(myDiscountOptions);
+    // console.log(myDiscountOptions);
     return myDiscountOptions
 }
 

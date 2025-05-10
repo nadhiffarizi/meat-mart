@@ -40,37 +40,42 @@ export default function PaymentOptions() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const resPostTrx = await createTransactionAPI(
+        'transaction/create',
+        createTransactionPayload(cartState, selectedValue),
+        session?.user.access_token!,
+      );
+      console.log(resPostTrx);
+
+      if (resPostTrx.status !== 200) {
+        callToast('Error creating transaction, try again', 'ERROR', 2000);
+        setLoading(false);
+        return;
+      }
+
+      // sync to local cart
+      const resTrx = await resPostTrx.json();
+      // console.log(resTrx);
+
+      dispatch(
+        updateCartState(
+          syncCartDataFromAPI(resTrx['data']['cartAfterCheckout']),
+        ),
+      );
       // Do something with selectedValue
       if (selectedValue === 'manual') {
-        const resPostTrx = await createTransactionAPI(
-          'transaction/create',
-          createTransactionPayload(cartState, userId.id),
-          session?.user.access_token!,
-        );
-        console.log(resPostTrx);
-
-        if (resPostTrx.status !== 200) {
-          callToast('Error creating transaction, try again', 'ERROR', 2000);
-          setLoading(false);
-          return;
-        }
-
-        // sync to local cart
-        const resTrx = await resPostTrx.json();
-        // console.log(resTrx);
-
-        dispatch(
-          updateCartState(
-            syncCartDataFromAPI(resTrx['data']['cartAfterCheckout']),
-          ),
-        );
-
         router.push(
           `/payment/confirm/${resTrx['data']['trx']['invoice_number']}`,
         );
         setLoading(false);
       } else {
         // selectedValue === 'automatic'
+        const redirectUrl = resTrx['data']['trx']['redirect_url'];
+        console.log('responmse automatic2', resTrx);
+        console.log(redirectUrl);
+
+        router.push(redirectUrl);
+        setLoading(false);
       }
     } catch (error) {
       callToast('Error creting transaction, try again later', 'ERROR', 3000);

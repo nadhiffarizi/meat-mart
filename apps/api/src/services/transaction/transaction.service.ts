@@ -1,6 +1,7 @@
 import { statusEnum } from "@/enums/statusEnum.enums";
 import { deleteCart, disableCart, findCartById, findCartByIds, findCartByOrderInput } from "@/helper/cart/cart.helper";
 import { cloudinaryRemove, cloudinaryUpload } from "@/helper/cloudinary.helper";
+import { midtransSnap } from "@/helper/midtrans.helper";
 import { updateCartToOrder } from "@/helper/order/order.helper";
 import { returnServiceFeedback } from "@/helper/responseHandler.helper";
 import { convertRoleToEnum } from "@/helper/role.helper";
@@ -17,7 +18,7 @@ class TransactionService {
     async create(req: Request) {
 
         try {
-            const { orderInputs } = req.body
+            const { orderInputs, method } = req.body
             const user = req.user
 
             const role = convertRoleToEnum(user?.role!)
@@ -59,13 +60,16 @@ class TransactionService {
                     // delete cart
                     await deleteCart(cartItem.id)
                 }
-
                 // update transaction table
-                const newTrx = await createTransaction(trxId, totalPrice, user?.id!)
-                trx = { ...newTrx }
+                const newTrx = await createTransaction(trxId, totalPrice, user?.id!, (method as string).toUpperCase())
+                let snapResponse = {}
+                if ((method as string).toUpperCase() === 'AUTOMATIC') {
+                    snapResponse = { ...(await midtransSnap({ id: newTrx.id, gross_amount: newTrx.total_price! }, user!)) }
+                }
+                trx = { ...newTrx, ...snapResponse }
             }
 
-            // get cart
+            // get cart 
             const cartAfterCheckout = await findCartByIds(carts?.map((cart) => cart.id)!)
 
             // feedback from service
@@ -77,6 +81,15 @@ class TransactionService {
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "create transaction failed")
         }
 
+    }
+
+    async createMidtrans(req: Request) {
+
+        // for example
+        const requestTrx = await midtransSnap({ gross_amount: 30000, id: "diuwhdniqowdqwe" })
+
+
+        return returnServiceFeedback(200, { ...requestTrx }, statusEnum.SUCCESS, "")
 
     }
 
@@ -137,6 +150,8 @@ class TransactionService {
         }
 
     }
+
+
 }
 
 export default new TransactionService()

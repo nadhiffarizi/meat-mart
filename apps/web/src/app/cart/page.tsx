@@ -27,15 +27,7 @@ export default function CartPage() {
     } else {
       setLoading(false);
     }
-  }, [session]);
-  React.useEffect(() => {
-    dispatch(updateCheckoutProgress('CART'));
-    if (status === 'loading') {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, []);
+  }, [status]);
 
   if (isLoading === true) {
     return (

@@ -6,13 +6,21 @@ import { Dialog, DialogTrigger } from '../ui/dialog';
 import { DiscountDialogInCart } from './DiscountModalInCart.component';
 import { useAppSelector } from '@/redux/store';
 import { indexCartById } from '@/helper/cart.helper';
+import { useSession } from 'next-auth/react';
 
 export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
   const cartState = useAppSelector((state) => state.cartState);
   const [isDiscountFound, setDiscountFound] = React.useState<boolean>(false);
+  const { data: session, status } = useSession();
 
   React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
+    if (status === 'loading' || status === 'unauthenticated') {
+      return;
+    }
+    const resGetDiscount = getAvailableDiscountsAPI(
+      `discount/get/${cartId}`,
+      session?.user.access_token!,
+    );
 
     resGetDiscount
       .then((v) => v.json())
@@ -21,19 +29,7 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
           setDiscountFound(true);
         }
       });
-  }, []);
-
-  React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
-
-    resGetDiscount
-      .then((v) => v.json())
-      .then((value) => {
-        if (value['data'].length) {
-          setDiscountFound(true);
-        }
-      });
-  }, [cartState]);
+  }, [cartState, status]);
 
   // handle modal open
 

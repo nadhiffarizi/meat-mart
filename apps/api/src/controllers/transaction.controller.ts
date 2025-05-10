@@ -17,6 +17,17 @@ export class TransactionController {
         }
     }
 
+    public async createMidtrans(req: Request, res: Response, next: NextFunction) {
+        try {
+            // try create order
+            const data: serviceFeedback = await transactionService.createMidtrans(req)
+            responseHandler(res, data.message, data.status, data.data, data.code)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
     public async cancel(req: Request, res: Response, next: NextFunction) {
         try {
             // try create order

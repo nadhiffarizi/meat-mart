@@ -21,6 +21,7 @@ import { IDiscount } from '@/interface/discount.interface';
 import { callToast } from '@/helper/notify.helper';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { addDiscountToCartItem } from '@/redux/slice/cart.slice';
+import { useSession } from 'next-auth/react';
 
 interface DiscountContextType {
   selectedDiscount: IDiscount | undefined;
@@ -34,6 +35,7 @@ export const discountContext = React.createContext<
 export function DiscountDialogInCart({ cartId }: { cartId: string }) {
   const cartState = useAppSelector((state) => state.cartState);
   const dispatch = useAppDispatch();
+  const { data: session, status } = useSession();
 
   //local state
   const [availableDiscounts, setAvailableDiscounts] =
@@ -49,10 +51,14 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
       return;
     }
 
-    const resRedeemDisc = await redeemDiscountAPI('discount/redeem', {
-      cartId: cartId,
-      discountId: discount?.id!,
-    });
+    const resRedeemDisc = await redeemDiscountAPI(
+      'discount/redeem',
+      {
+        cartId: cartId,
+        discountId: discount?.id!,
+      },
+      session?.user.access_token!,
+    );
 
     if (resRedeemDisc.status !== 200) {
       callToast('Failed to redeem discount', 'ERROR', 2000);
@@ -66,8 +72,12 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
   };
 
   React.useEffect(() => {
+    if (status === 'loading' || status === 'unauthenticated') {
+      return;
+    }
     const resGetDiscount = getAvailableDiscountsAPI(
-      `/api/discount/get/${cartId}`,
+      `discount/get/${cartId}`,
+      session?.user.access_token!,
     );
 
     resGetDiscount
@@ -77,19 +87,7 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
           setAvailableDiscounts(syncDiscountDataFromAPI(value['data']));
         }
       });
-  }, []);
-
-  React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
-
-    resGetDiscount
-      .then((v) => v.json())
-      .then((value) => {
-        if (value['data'].length) {
-          setAvailableDiscounts(syncDiscountDataFromAPI(value['data']));
-        }
-      });
-  }, [cartState]);
+  }, [cartState, status]);
 
   return (
     <DialogContent className="sm:max-w-[550px]">

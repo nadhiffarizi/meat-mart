@@ -14,7 +14,7 @@ export const totalDiscountApplied = (cartState: ICart[]) => {
     }
   }
 
-  console.log(totalDefaultPrice);
+  // console.log(totalDefaultPrice);
 
   const discountPercentage = parseFloat(
     ((totalDiscountAmount / totalDefaultPrice) * 100).toFixed(2),
@@ -42,7 +42,7 @@ export const totalAfterDiscount = (cartState: ICart[]) => {
 
 export const createTransactionPayload = (
   cartState: ICart[],
-  userId?: string,
+  method: string,
 ) => {
 
   /**return payload orderinputs and userId */
@@ -55,7 +55,7 @@ export const createTransactionPayload = (
     }
   }
 
-  const payload = { orderInputs, userId: userId };
+  const payload = { orderInputs, method: method.toUpperCase() };
   // console.log(payload);
   return payload
 

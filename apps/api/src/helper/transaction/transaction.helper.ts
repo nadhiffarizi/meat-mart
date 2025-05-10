@@ -103,7 +103,7 @@ export const createTrxDetails = async (trxId: string, cartItem: ICart, loc1: ILo
     }
 }
 
-export const createTransaction = async (trxId: string, totalPrice: number, userId: string) => {
+export const createTransaction = async (trxId: string, totalPrice: number, userId: string, method: string) => {
     const now = new Date()
 
     const updatedTransaction = await prisma.transactions.update({
@@ -111,8 +111,9 @@ export const createTransaction = async (trxId: string, totalPrice: number, userI
             id: trxId,
         }, data: {
             total_price: totalPrice,
-            deadline_payment: setDeadlinePayment(new Date(now.getTime() + (24 * 60 * 60 * 1000))),
-            invoice_number: generateInvoiceNumber(trxId, userId)
+            deadline_payment: setDeadlinePayment(new Date(now.getTime() + (1 * 60 * 60 * 1000))), // 1hr deadline
+            invoice_number: generateInvoiceNumber(trxId, userId),
+            payment_method: !method ? 'MANUAL' : method.toUpperCase()
         }
     })
 

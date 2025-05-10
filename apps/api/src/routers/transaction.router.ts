@@ -15,6 +15,7 @@ export class TransactionRouter {
     // dont forget to include middleware function before SIT 
 
     this.router.post('/create', verifyToken, transactionController.create);
+    this.router.post('/create/midtrans', transactionController.createMidtrans);
     this.router.post('/cancel', verifyToken, transactionController.cancel);
     this.router.post('/admin/rejectpayment', verifyToken, transactionController.rejectPaymentProof);
     this.router.post('/admin/confirmpayment', verifyToken, transactionController.adminConfirm);

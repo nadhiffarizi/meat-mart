@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const checkoutInitialState: ICheckout = {
     cart: false,
-    address: false,
     payment: false,
     success: false
 }
@@ -19,10 +18,6 @@ const checkoutSlice = createSlice({
                 case 'CART':
                     temp = { ...checkoutInitialState }
                     temp.cart = true
-                    break;
-                case 'ADDRESS':
-                    temp = { ...checkoutInitialState }
-                    temp.address = true
                     break;
                 case 'PAYMENT':
                     temp = { ...checkoutInitialState }

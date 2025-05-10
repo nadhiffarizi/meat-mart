@@ -14,10 +14,6 @@ export default function MyCartList() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  React.useEffect(() => {
-    dispatch(updateCheckoutProgress('CART'));
-  }, []);
-
   return (
     <React.Fragment>
       <Box
@@ -35,12 +31,7 @@ export default function MyCartList() {
       >
         <div className="flex flex-col w-full gap-5">
           {cartState.map((cartItem: ICart, index: number) => {
-            return (
-              <>
-                {' '}
-                <ProductCart cartItem={cartItem} key={index} />
-              </>
-            );
+            return <ProductCart cartItem={cartItem} key={index} />;
           })}
         </div>
         <div
