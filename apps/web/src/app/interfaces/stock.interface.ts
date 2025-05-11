@@ -10,3 +10,10 @@ export interface IGetStocks {
   deleted_at?: string;
   products: IGetDashboardProducts;
 }
+
+export interface IGetAllStockSummary {
+  product_id: string;
+  name: string;
+  quantity: number;
+  final_stock: number;
+}

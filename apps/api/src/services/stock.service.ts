@@ -2,6 +2,7 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
+import dayjs from 'dayjs';
 
 class StockService {
   async getAllStocks(req: Request) {
@@ -83,6 +84,116 @@ class StockService {
       data: stock,
       status: statusEnum.SUCCESS,
       message: `Successfully fetched stock with product_id ${req.query.productId} and store_id ${req.query.storeId}.`,
+    };
+    return feedback;
+  }
+
+  async getAllStockSummary(req: Request) {
+    if (!req.query.storeId || !req.query.month || !req.query.year) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: {},
+        status: statusEnum.FAILED,
+        message: `storeId, month, and year are required to fetch stock summary.`,
+      };
+      return feedback;
+    }
+
+    const startDate = dayjs(`${req.query.year}-${req.query.month}-01`)
+      .startOf('month')
+      .toDate();
+    const endDate = dayjs(startDate).add(1, 'month').toDate();
+
+    const allStockHistories = await prisma.stockHistory.findMany({
+      where: {
+        store_id: req.query.storeId as string,
+        created_at: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      include: {
+        products: true,
+      },
+    });
+
+    const productNameMap: Record<string, string> = {};
+
+    const stockHistorySummary = allStockHistories.reduce(
+      (summary, stockHistory) => {
+        if (stockHistory.status === 'SNAPSHOT') return summary;
+
+        if (!productNameMap[stockHistory.product_id]) {
+          productNameMap[stockHistory.product_id] = stockHistory.products.name;
+        }
+
+        if (!summary[stockHistory.product_id]) {
+          summary[stockHistory.product_id] = 0;
+        }
+
+        if (stockHistory.status === 'ADD') {
+          summary[stockHistory.product_id] += stockHistory.quantity;
+        } else if (stockHistory.status === 'SUBTRACT') {
+          summary[stockHistory.product_id] -= stockHistory.quantity;
+        }
+
+        return summary;
+      },
+      {} as Record<string, number>,
+    );
+
+    const lastDateOfMonth = dayjs(startDate)
+      .endOf('month')
+      .startOf('day')
+      .toDate();
+    const nextDay = dayjs(lastDateOfMonth).add(1, 'day').toDate();
+
+    const snapshotStocks = await prisma.stockHistory.findMany({
+      where: {
+        store_id: req.query.storeId as string,
+        status: 'SNAPSHOT',
+        created_at: {
+          gte: lastDateOfMonth,
+          lte: nextDay,
+        },
+      },
+      include: {
+        products: true,
+      },
+    });
+
+    const finalStockMap: Record<string, number> = {};
+    snapshotStocks.forEach((snap) => {
+      finalStockMap[snap.product_id] = snap.quantity;
+    });
+
+    const stockHistorySummaryArray = Object.entries(stockHistorySummary).map(
+      ([product_id, quantity]) => ({
+        product_id,
+        store_id: req.query.storeId,
+        name: productNameMap[product_id],
+        quantity,
+        final_stock: finalStockMap[product_id] ?? null,
+      }),
+    );
+
+    snapshotStocks.forEach((snap) => {
+      if (!stockHistorySummary[snap.product_id]) {
+        stockHistorySummaryArray.push({
+          product_id: snap.product_id,
+          store_id: snap.store_id,
+          name: snap.products?.name,
+          quantity: 0,
+          final_stock: snap.quantity,
+        });
+      }
+    });
+
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: stockHistorySummaryArray,
+      status: statusEnum.SUCCESS,
+      message: `Successfully fetched stock summary with store_id ${req.query.storeId}.`,
     };
     return feedback;
   }

@@ -29,7 +29,7 @@ export class StoreController {
 
   async getStore(req: Request, res: Response, next: NextFunction) {
     try {
-      if (req.user?.role !== 'SUPER_ADMIN') {
+      if (req.user?.role !== 'SUPER_ADMIN' && req.user?.role !== 'ADMIN') {
         return responseHandler(
           res,
           `You have insufficient permission to access.`,

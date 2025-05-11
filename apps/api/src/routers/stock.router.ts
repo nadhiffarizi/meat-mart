@@ -14,6 +14,11 @@ export class StockRouter {
   private initializeRoutes(): void {
     this.router.get('/', verifyToken, stockController.getStock);
     this.router.get('/all', verifyToken, stockController.getAllStocks);
+    this.router.get(
+      '/summary',
+      verifyToken,
+      stockController.getAllStockSummary,
+    );
     this.router.post(
       '/',
       verifyToken,

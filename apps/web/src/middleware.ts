@@ -36,12 +36,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
-  // Restrict /dashboard/products
-  if (path === '/dashboard/inventories' && role !== 'SUPER_ADMIN') {
-    // Let layout or page fetch correct store for redirection
-    return NextResponse.redirect(new URL('/dashboard/inventories', req.url));
-  }
-
   // Restrict /dashboard/discount routes to SUPER_ADMIN only
   if (path.startsWith('/dashboard/discounts') && role !== 'ADMIN') {
     return NextResponse.redirect(new URL('/dashboard', req.url));
