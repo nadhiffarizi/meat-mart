@@ -34,7 +34,7 @@ const cartSlice = createSlice({
 
 
             state = [...tempState]
-            console.log("updated state: ", state);
+            // console.log("updated state: ", state);
 
             return state
         },

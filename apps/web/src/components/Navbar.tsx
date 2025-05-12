@@ -71,7 +71,7 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
       });
 
     setLoading(false);
-  }, [session]);
+  }, []);
 
   const handleLocationSelect = (location: string) => {
     setUserLocation(location);

@@ -33,7 +33,7 @@ export default function NumberFieldComponent({
   //refresh update local state
   React.useEffect(() => {
     setInputQtty(cartItem.quantity);
-  }, []);
+  }, [cartItem]);
 
   // add to cart handler
   const handleAddToCart = async (qtty: number) => {

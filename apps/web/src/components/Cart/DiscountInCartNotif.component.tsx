@@ -27,15 +27,17 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
       .then((value) => {
         if (value['data'].length) {
           setDiscountFound(true);
+        } else {
+          setDiscountFound(false);
         }
       });
-  }, [cartState, status]);
+  }, [cartId]);
 
   // handle modal open
 
   return (
     <div className=" h-full">
-      {isDiscountFound && (
+      {isDiscountFound && status !== 'loading' && (
         <Dialog>
           <DialogTrigger asChild>
             <Button
@@ -43,7 +45,8 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
               className="!text-xs !text-red-400 "
               startIcon={<Discount />}
             >
-              {cartState[indexCartById(cartState, cartId)].discount
+              {cartState[indexCartById(cartState, cartId)] &&
+              cartState[indexCartById(cartState, cartId)].discount
                 ? `${cartState[indexCartById(cartState, cartId)].discount?.discount_code} applied`
                 : 'Check Available Discounts'}
             </Button>

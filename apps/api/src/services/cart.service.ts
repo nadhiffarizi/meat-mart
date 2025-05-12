@@ -54,6 +54,7 @@ class CartService {
     async getCart(req: Request) {
         try {
             const user = req.user
+            const { page } = req.params
             const role = convertRoleToEnum(user?.role!)
             if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role. Needs to be customer")
 
@@ -61,6 +62,12 @@ class CartService {
                 lat: "-6.2263977",
                 lon: "106.8584389"
             }
+
+            const countCart = await prisma.carts.count({
+                where: {
+                    user_id: user?.id!
+                }
+            })
 
             const cartData = await xDistancePrisma(loc1).carts.findMany({
                 select: {
@@ -87,7 +94,9 @@ class CartService {
                     user_id: user?.id!
                 }, orderBy: {
                     id: "asc"
-                }
+                },
+                skip: Number(page) === 0 ? 0 : (Number(page) - 1) * 3,
+                take: Number(page) === 0 ? countCart : 3
             })
 
             for (let cartItem of cartData) {
@@ -180,6 +189,35 @@ class CartService {
         } catch (error) {
             // feedback from service
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "add cart failed")
+        }
+    }
+
+    async getTotalPage(req: Request) {
+
+        try {
+            const user = req.user
+            const role = convertRoleToEnum(user?.role!)
+            if (role !== E_Role.CUSTOMER) throw new Error("Unauthorized role. Needs to be customer")
+
+            const countCartTotal = await prisma.carts.count({
+                where: {
+                    user_id: user?.id!
+                },
+            })
+
+            // take only 3
+            let countPage = 0
+            if (countCartTotal % 3 === 0) {
+                countPage = countCartTotal / 3
+            } else {
+                countPage = Math.ceil(countCartTotal / 3)
+            }
+
+            return returnServiceFeedback(200, { "totalPage": countPage }, statusEnum.SUCCESS, "Count total page success")
+
+
+        } catch (error) {
+            return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "Count total page failed")
         }
     }
 }

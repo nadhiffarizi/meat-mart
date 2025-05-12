@@ -23,7 +23,14 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
+  const cartState = useAppSelector((state) => state.cartState);
+  const [cartData, setCartData] = React.useState<ICart>();
 
+  React.useEffect(() => {
+    setCartData(mapToCartState());
+  }, [cartItem]);
+
+  // handlers
   // delete cart item
   const handleSubstractToCart = async (qtty: number) => {
     // call api first
@@ -58,6 +65,11 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
 
   const cancelDiscount = (cartId: string) => {
     dispatch(removeDiscountFromCart({ cartId: cartId }));
+  };
+
+  const mapToCartState = () => {
+    const indexCartState = indexCartById(cartState, cartItem.id!);
+    return cartState[indexCartState];
   };
 
   return (
@@ -97,12 +109,10 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             </div>
             <div className="w-full h-1/3 flex items-center justify-start gap-3">
               <DiscountInCartNotif cartId={cartItem.id!} />
-              {cartItem.discount ? (
+              {cartData && cartData.discount && (
                 <IconButton onClick={() => cancelDiscount(cartItem.id!)}>
                   <Cancel />
                 </IconButton>
-              ) : (
-                <></>
               )}
             </div>
           </Box>
@@ -120,7 +130,9 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             }}
           >
             <NumberFieldComponent cartItem={cartItem} />
-            {cartItem.discount?.promotion_type === 'BOGO' ? (
+            {cartData &&
+            cartData.discount &&
+            cartData.discount?.promotion_type === 'BOGO' ? (
               <p className="text-sm text-secondaryGreen">
                 You get extra {cartItem.quantity} pcs!
               </p>

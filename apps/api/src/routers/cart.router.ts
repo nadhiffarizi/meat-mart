@@ -17,8 +17,10 @@ export class CartRouter {
 
     this.router.post('/add', verifyToken, cartController.add);
     this.router.post('/subtract', verifyToken, cartController.subtract);
-    this.router.get("/get", verifyToken, cartController.getCart);
+    this.router.get("/get/:page", verifyToken, cartController.getCart);
     this.router.put("/update", verifyToken, cartController.updateCartQuantity);
+    this.router.get("/totalpage", verifyToken, cartController.getTotalPage);
+
     // .... continue api
   }
 

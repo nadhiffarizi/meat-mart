@@ -51,6 +51,19 @@ export class CartController {
         }
     }
 
+    public async getTotalPage(req: Request, res: Response, next: NextFunction) {
+        try {
+            // try update cart quantity
+            const data: serviceFeedback = await cartService.getTotalPage(req)
+            responseHandler(res, data.message, data.status, data.data, data.code)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
+
 }
 
 export default new CartController()

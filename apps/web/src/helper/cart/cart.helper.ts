@@ -20,8 +20,14 @@ export const updateCartQuantity = async (apiRouter: string, payload: payloadCart
     return response
 }
 
-export const getCartDataAPI = async (apiRoute: string, token: string) => {
-    const response = await apiRequest(apiRoute, 'GET', undefined, { "Content-Type": "application/json", "Authorization": `Bearer ${token}` })
+export const getCartDataAPI = async (apiRoute: string, token: string, page?: number) => {
+    let fullRoute = ''
+    if (page) {
+        fullRoute = `${apiRoute}/${page}`
+    } else {
+        fullRoute = `${apiRoute}/0`
+    }
+    const response = await apiRequest(fullRoute, 'GET', undefined, { "Content-Type": "application/json", "Authorization": `Bearer ${token}` })
     return response
 }
 
