@@ -224,7 +224,6 @@ class AdminService {
     const { city } = req.query;
 
     try {
-      // Count admins with addresses in the specified city
       const countAdmin = await prisma.users.count({
         where: {
           role: 'ADMIN',
@@ -244,7 +243,6 @@ class AdminService {
           message: 'There is no admin in this city',
         };
       } else {
-        // Get all admins with addresses in the specified city
         const listAdminByCity = await prisma.users.findMany({
           where: {
             role: 'ADMIN',
