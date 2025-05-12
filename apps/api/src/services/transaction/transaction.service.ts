@@ -182,6 +182,10 @@ class TransactionService {
                     transaction_status: E_TransactionStatus.PENDING_ADMIN
                 }
             })
+
+            // update transaction details (orders)
+            const updatedOrders = await updateOrderStatusByTrxId(updatedTrx.id, E_OrderStatus.ON_PROCESS)
+
             return returnServiceFeedback(200, updatedTrx, statusEnum.SUCCESS, "upload transaction proof success")
         } catch (error) {
             return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "upload transaction proof failed")
