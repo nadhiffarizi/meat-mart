@@ -13,19 +13,20 @@ import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export function ReportTypeCard({
-  store_id,
-  reportType,
+  title,
+  link,
   description,
 }: {
-  store_id: string;
-  reportType: string;
+  title: string;
+  link: string;
   description: string;
 }) {
   return (
-    <Link href={`/dashboard/reports/store/${store_id}/${reportType}`}>
+    // /dashboard/reports/store/${store_id}/${reportType}
+    <Link href={link}>
       <Card className="flex flex-col justify-between w-[200px] md:w-[350px] break-words ">
         <CardHeader>
-          <CardTitle>{reportType.toUpperCase()}</CardTitle>
+          <CardTitle>{title.toUpperCase()}</CardTitle>
           <CardDescription className="whitespace-nowrap truncate">
             {description}
           </CardDescription>

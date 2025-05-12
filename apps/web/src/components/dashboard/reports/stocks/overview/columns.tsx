@@ -69,7 +69,7 @@ export const columns: ColumnDef<StockSummary>[] = [
       return (
         <div
           className="truncate max-w-[200px] whitespace-nowrap overflow-hidden sm:whitespace-normal sm:overflow-visible sm:max-w-none flex items-center"
-          title={status}
+          title={quantity}
         >
           {Number(quantity) > 0 && <ChevronUp className="text-[#1ed760]" />}
           {Number(quantity) < 0 && <ChevronDown className="text-[#cd1a2b]" />}

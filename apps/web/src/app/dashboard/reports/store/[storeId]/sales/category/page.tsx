@@ -1,0 +1,27 @@
+import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
+import ViewUsers from '@/components/dashboard/admin/ViewUsers';
+import Dropdown from '@/components/dashboard/DropDown';
+import ViewSaleSummaryReportByCategory from '@/components/dashboard/reports/sales/category/ViewSaleSummaryReportByCategory';
+import ViewSaleSummaryReport from '@/components/dashboard/reports/sales/category/ViewSaleSummaryReportByCategory';
+import ViewStockHistoryReport from '@/components/dashboard/reports/stocks/history/ViewStockHistoryReport';
+import ViewStockSummaryReport from '@/components/dashboard/reports/stocks/overview/ViewStockSummaryReport';
+import React from 'react';
+
+type Props = {
+  params: {
+    storeId: string;
+  };
+};
+
+function page({ params: { storeId } }: Props) {
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="text-primaryText text-3xl font-semibold">
+        View Sale Report
+      </div>
+      <ViewSaleSummaryReportByCategory storeId={storeId} />
+    </div>
+  );
+}
+
+export default page;

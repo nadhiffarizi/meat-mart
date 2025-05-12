@@ -31,15 +31,15 @@ function Page({ params: { storeId } }: Props) {
       <Input />
       <div className="flex gap-4 flex-wrap">
         <ReportTypeCard
-          title="sales"
-          link={`/dashboard/reports/store/${storeId}/sales`}
+          title="By Categories"
+          link={`/dashboard/reports/store/${storeId}/sales/category`}
           description="View your monthly revenue."
         />
       </div>
       <div className="flex gap-4 flex-wrap">
         <ReportTypeCard
-          title="stocks"
-          link={`/dashboard/reports/store/${storeId}/stocks`}
+          title="By Products"
+          link={`/dashboard/reports/store/${storeId}/sales/product`}
           description="Track your stock changes."
         />
       </div>
