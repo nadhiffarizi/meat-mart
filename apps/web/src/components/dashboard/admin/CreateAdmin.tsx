@@ -12,16 +12,6 @@ import {
 
 function CreateAdmin() {
   return (
-    // <Dropdown buttonLabel="Add a New Employee">
-    //   <div className="flex justify-center items-center w-full">
-    //     <div className="w-full max-w-screen-md flex flex-col gap-2">
-    //       <p className="mt-1 text-secondaryOrange font-semibold">{`Their Details`}</p>
-
-    //       <CreateAdminForm />
-    //     </div>
-    //   </div>
-    // </Dropdown>
-
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
         <AccordionTrigger className="bg-red-200">

@@ -52,6 +52,20 @@ export class StoreController {
       next(error);
     }
   }
+
+  public async getStoreByProvince(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const data = await storeService.getListStoreByProvince(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
 
 export default new StoreController();

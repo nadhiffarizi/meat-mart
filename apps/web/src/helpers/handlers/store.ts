@@ -26,32 +26,24 @@ export async function updateStore(
 }
 
 export const getListStore = async (email: string) => {
-  const response = await api(
-    `store/get?email=${encodeURIComponent(email)}`,
-    'GET',
-    {
-      contentType: 'application/json',
-    },
-  );
+  const response = await api(`store/get?email=${email}`, 'GET', {
+    contentType: 'application/json',
+  });
 
   return response.data;
 };
 
 export const getStoreAdmin = async (email: string) => {
-  const response = await api(
-    `admin/get?email=${encodeURIComponent(email)}`,
-    'GET',
-    {
-      contentType: 'application/json',
-    },
-  );
+  const response = await api(`admin/get?email=${email}`, 'GET', {
+    contentType: 'application/json',
+  });
 
   return response.data;
 };
 
 export const deleteStore = async (email: string, id: string) => {
   console.log('IN HANDLERS STORE FOR DELETE');
-  const response = await api(`store/${id}`, 'PATCH', {
+  const response = await api(`store/delete/${id}`, 'PATCH', {
     body: { email, id },
     contentType: 'application/json',
   });

@@ -43,6 +43,21 @@ export default function AddressForm({
   onInputChange,
   onLocationChange,
 }: AddressDialogProps) {
+  const getCurrentLocationName = (type: 'province' | 'city' | 'district') => {
+    const code =
+      type === 'province'
+        ? currentAddress.province_id
+        : type === 'city'
+          ? currentAddress.city_id
+          : currentAddress.district_id;
+
+    const collection =
+      type === 'province' ? provinces : type === 'city' ? cities : districts;
+
+    const found = collection.find((item) => item.code === code);
+    return found ? found.name : '';
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <h2 className="mt-6 ml-6 font-semibold text-xl">
@@ -54,7 +69,7 @@ export default function AddressForm({
             fullWidth
             label="Nama Penerima"
             name="recipient_name"
-            value={currentAddress.recipient_name}
+            value={currentAddress.recipient_name || ''}
             onChange={onInputChange}
             size="small"
           />
@@ -62,7 +77,7 @@ export default function AddressForm({
             fullWidth
             label="Nomor Telepon"
             name="recipient_phone_number"
-            value={currentAddress.recipient_phone_number}
+            value={currentAddress.recipient_phone_number || ''}
             onChange={onInputChange}
             size="small"
           />
@@ -70,7 +85,7 @@ export default function AddressForm({
             fullWidth
             label="Alamat Lengkap"
             name="address"
-            value={currentAddress.address}
+            value={currentAddress.address || ''}
             onChange={onInputChange}
             multiline
             rows={3}
@@ -87,7 +102,14 @@ export default function AddressForm({
                 onChange={(e) => onLocationChange(e, 'province')}
                 sx={{ fontFamily: 'Inter, sans-serif' }}
                 size="small"
+                renderValue={(selected) => {
+                  if (!selected) return <em>Pilih Provinsi</em>;
+                  return getCurrentLocationName('province') || selected;
+                }}
               >
+                <MenuItem value="" disabled>
+                  <em>Pilih Provinsi</em>
+                </MenuItem>
                 {provinces.map((province) => (
                   <MenuItem
                     key={province.code}
@@ -108,7 +130,14 @@ export default function AddressForm({
                 label="Kota/Kabupaten"
                 onChange={(e) => onLocationChange(e, 'city')}
                 sx={{ fontFamily: 'Inter, sans-serif' }}
+                renderValue={(selected) => {
+                  if (!selected) return <em>Pilih Kota/Kabupaten</em>;
+                  return getCurrentLocationName('city') || selected;
+                }}
               >
+                <MenuItem value="" disabled>
+                  <em>Pilih Kota/Kabupaten</em>
+                </MenuItem>
                 {cities.map((city) => (
                   <MenuItem
                     key={city.code}
@@ -132,7 +161,14 @@ export default function AddressForm({
                 onChange={(e) => onLocationChange(e, 'district')}
                 sx={{ fontFamily: 'Inter,sans-serif' }}
                 size="small"
+                renderValue={(selected) => {
+                  if (!selected) return <em>Pilih Kecamatan</em>;
+                  return getCurrentLocationName('district') || selected;
+                }}
               >
+                <MenuItem value="" disabled>
+                  <em>Pilih Kecamatan</em>
+                </MenuItem>
                 {districts.map((district) => (
                   <MenuItem
                     key={district.code}
@@ -148,7 +184,7 @@ export default function AddressForm({
               fullWidth
               label="Kode Pos"
               name="postal_code"
-              value={currentAddress.postal_code}
+              value={currentAddress.postal_code || ''}
               onChange={onInputChange}
               sx={{ fontSize: '85%' }}
               size="small"

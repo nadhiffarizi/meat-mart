@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ICard } from '../interfaces/card.interface';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Snackbar, Alert, Button } from '@mui/material';
+import { Snackbar, Alert } from '@mui/material';
 import { Plus } from 'lucide-react';
 
 export function Card(props: ICard) {

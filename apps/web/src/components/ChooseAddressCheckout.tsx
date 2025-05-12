@@ -1,10 +1,12 @@
 'use client';
-import { Box, ThemeProvider } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { Box } from '@mui/material';
+import { useEffect, useState } from 'react';
 import AddressListModal from './AddressListModal';
 import { useSession } from 'next-auth/react';
 import { getUserAddresses } from '@/helpers/handlers/auth';
 import AddAddressModal from './AddAddressModal';
+import CheckoutShipping from './CheckoutShippingCost';
+import { MapPin } from 'lucide-react';
 
 interface Address {
   id: string;
@@ -22,33 +24,44 @@ export default function ChooseAddressCheckout() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showListModal, setShowListModal] = useState(false);
-  const [selectedCoorLat, setSelectedCoorLat] = useState<string>('');
-  const [selectedCoorLong, setSelectedCoorLong] = useState<string>('');
+  const [selectedCoordinates, setSelectedCoordinates] = useState<{
+    lat: string;
+    lng: string;
+  } | null>(null);
 
   const selectedAddress =
     addresses.find((addr) => addr.is_selected) || addresses[0];
 
   useEffect(() => {
-    if (selectedAddress?.latitude && selectedAddress?.longitude) {
-      setSelectedCoorLat(selectedAddress.latitude);
-      setSelectedCoorLong(selectedAddress.longitude);
-      console.log(
-        'Selected latitude updated:',
-        selectedCoorLat,
-        selectedCoorLong,
-      );
+    console.log('Selected address changed:', selectedAddress);
+    if (selectedAddress) {
+      setSelectedCoordinates({
+        lat: selectedAddress.latitude,
+        lng: selectedAddress.longitude,
+      });
+    } else {
+      setSelectedCoordinates(null);
     }
-  }, [selectedAddress?.latitude]);
+  }, [selectedAddress]);
 
   useEffect(() => {
     const fetchAddresses = async () => {
-      if (session) {
-        const data = await getUserAddresses(session.user.email);
-        console.log('APAKAH KEPANGGGIL', data);
+      if (session?.user?.email) {
+        try {
+          const data = await getUserAddresses(session.user.email);
+          setAddresses(data);
 
-        setAddresses(data);
-        setSelectedCoorLat('');
-        console.log('ADDRESSFETCH', addresses);
+          if (data.length > 0) {
+            const defaultSelected =
+              data.find((addr) => addr.is_selected) || data[0];
+            setSelectedCoordinates({
+              lat: defaultSelected.latitude,
+              lng: defaultSelected.longitude,
+            });
+          }
+        } catch (error) {
+          console.error('Failed to fetch addresses:', error);
+        }
       }
     };
     fetchAddresses();
@@ -66,10 +79,12 @@ export default function ChooseAddressCheckout() {
     }));
     setAddresses(updatedAddresses);
 
-    // Find the newly selected address
     const newSelected = updatedAddresses.find((addr) => addr.id === addressId);
-    if (newSelected?.latitude) {
-      setSelectedCoorLat(newSelected.latitude);
+    if (newSelected) {
+      setSelectedCoordinates({
+        lat: newSelected.latitude,
+        lng: newSelected.longitude,
+      });
     }
 
     setShowListModal(false);
@@ -81,7 +96,7 @@ export default function ChooseAddressCheckout() {
         <h1 className="text-xl text-black font-semibold">Delivery Address</h1>
       </div>
 
-      <div className="h-2/3 min-h-[60px] w-full grid grid-cols-2 gap-2 rounded-sm border border-orangeAccent py-3 px-3">
+      <div className="h-2/3 min-h-[60px] w-full grid grid-cols-2 gap-2 rounded-lg border border-gray-300 py-3 px-3 hover:border-primaryGreen">
         <Box
           sx={{
             width: '100%',
@@ -89,15 +104,19 @@ export default function ChooseAddressCheckout() {
             overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
+            gap: '8px',
           }}
         >
           {selectedAddress ? (
-            <div className="truncate">
-              <p className="font-medium">{selectedAddress.recipient_name}</p>
-              <p className="text-sm text-gray-600">
-                {selectedAddress.address}, {selectedAddress.city}{' '}
-                {selectedAddress.postal_code}
-              </p>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-orange-500" />{' '}
+              <div className="truncate">
+                <p className="font-medium">{selectedAddress.recipient_name}</p>
+                <p className="text-sm text-gray-600">
+                  {selectedAddress.address}, {selectedAddress.city}{' '}
+                  {selectedAddress.postal_code}
+                </p>
+              </div>
             </div>
           ) : (
             <div className="text-primaryText text-sm">No address selected</div>
@@ -133,8 +152,6 @@ export default function ChooseAddressCheckout() {
         user={session?.user.email}
       />
 
-      {/* Address List Modal */}
-
       <AddressListModal
         open={showListModal}
         onClose={() => setShowListModal(false)}
@@ -145,6 +162,13 @@ export default function ChooseAddressCheckout() {
           setShowAddModal(true);
         }}
       />
+
+      {selectedCoordinates && (
+        <CheckoutShipping
+          destination_latitude={selectedCoordinates.lat}
+          destination_longitude={selectedCoordinates.lng}
+        />
+      )}
     </div>
   );
 }

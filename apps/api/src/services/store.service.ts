@@ -21,29 +21,28 @@ class StoreService {
           status: statusEnum.SUCCESS,
           message: 'There is no store yet!',
         };
-      } else {
-        const stores = await prisma.stores.findMany({
-          where: { deleted_at: null },
-          include: {
-            storeadmin: {
-              select: {
-                id: true,
-                email: true,
-                first_name: true,
-                last_name: true,
-              },
+      }
+      const stores = await prisma.stores.findMany({
+        where: { deleted_at: null },
+        include: {
+          storeadmin: {
+            select: {
+              id: true,
+              email: true,
+              first_name: true,
+              last_name: true,
             },
           },
-          orderBy: { created_at: 'desc' },
-        });
+        },
+        orderBy: { created_at: 'desc' },
+      });
 
-        return {
-          code: 200,
-          data: stores,
-          status: statusEnum.SUCCESS,
-          message: 'Successfully fetched all stores',
-        };
-      }
+      return {
+        code: 200,
+        data: stores,
+        status: statusEnum.SUCCESS,
+        message: 'Successfully fetched all stores',
+      };
     } catch (error) {
       console.error('Fetching stores error:', error);
       throw new Error('Error during fetching stores');
@@ -61,11 +60,21 @@ class StoreService {
       }
 
       const fullAddress = `${store.address}, ${store.district}, ${store.city}, ${store.province}, ${store.postal_code}, Indonesia`;
-      const coordinates = await getCoordinates(fullAddress);
 
+      console.log(
+        'ADDRESSS TOKO======================================',
+        fullAddress,
+      );
+      const coordinates = await getCoordinates(fullAddress);
+      console.log(
+        'CORDINATE TOKO======================================',
+        coordinates,
+      );
       if (!coordinates) {
         throw new Error('Could not geocode the provided address');
       }
+
+      const adminId = store.adminId || superAdmin.id;
 
       const newStore = await prisma.stores.create({
         data: {
@@ -76,11 +85,11 @@ class StoreService {
           district: store.district,
           postal_code: store.postal_code,
           status: store.status,
-          latitude: coordinates.lat.toString(),
-          longitude: coordinates.lng.toString(),
+          latitude: coordinates?.lat.toString() || '',
+          longitude: coordinates?.lng.toString() || '',
           storeadmin: {
             connect: {
-              id: '01e96061-0f7a-4820-93d0-af4597f8a137',
+              id: adminId,
             },
           },
         },
@@ -178,28 +187,59 @@ class StoreService {
       where: { id },
       data: { deleted_at: new Date() },
     });
-    console.log('YANG KEHAPUS', deletedstore);
 
-    const remainingStores = await prisma.stores.findMany({
-      where: { deleted_at: null },
-      include: {
-        storeadmin: {
-          select: {
-            id: true,
-            email: true,
-            first_name: true,
-            last_name: true,
-          },
-        },
-      },
-      orderBy: { created_at: 'desc' },
-    });
     return {
       code: 200,
-      data: remainingStores,
+      data: null,
       status: statusEnum.SUCCESS,
       message: 'successfull delete store',
     };
+  }
+
+  async getListStoreByProvince(req: Request) {
+    const { email, store } = req.body;
+
+    try {
+      const superAdmin = await getSuperAdminByEmail(email as string);
+      if (!superAdmin) {
+        throw new Error('Super Admin not found');
+      }
+      const countStore = await prisma.stores.count({
+        where: { province: store.province, deleted_at: null },
+      });
+      if (countStore === 0) {
+        return {
+          code: 200,
+          data: countStore,
+          status: statusEnum.SUCCESS,
+          message: 'There is no store yet!',
+        };
+      }
+      const stores = await prisma.stores.findMany({
+        where: { province: store.province, deleted_at: null },
+        include: {
+          storeadmin: {
+            select: {
+              id: true,
+              email: true,
+              first_name: true,
+              last_name: true,
+            },
+          },
+        },
+        orderBy: { created_at: 'desc' },
+      });
+
+      return {
+        code: 200,
+        data: stores,
+        status: statusEnum.SUCCESS,
+        message: 'Successfully fetched all stores by province',
+      };
+    } catch (error) {
+      console.error('Fetching stores error:', error);
+      throw new Error('Error during fetching stores');
+    }
   }
 }
 

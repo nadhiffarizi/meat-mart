@@ -5,7 +5,7 @@ export async function getCoordinates(
 ): Promise<{ lat: number; lng: number } | null> {
   try {
     const response = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${opencage_apikey}&countrycode=id`,
+      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${opencage_apikey}&countrycode=id&no_cache=1&limit=5`,
     );
 
     if (!response.ok) {
@@ -13,12 +13,25 @@ export async function getCoordinates(
     }
 
     const data = await response.json();
-    console.log('HELPERS GEOCODE', data.results[0].geometry);
+    console.log('Full API response:', data);
 
     if (data.results?.length > 0) {
+      data.results.forEach((result: any, index: number) => {
+        console.log(
+          `Result ${index}:`,
+          result.formatted,
+          result.geometry,
+          result.confidence,
+        );
+      });
+
+      const bestResult = data.results.reduce((prev: any, current: any) =>
+        prev.confidence > current.confidence ? prev : current,
+      );
+
       return {
-        lat: data.results[0].geometry.lat,
-        lng: data.results[0].geometry.lng,
+        lat: bestResult.geometry.lat,
+        lng: bestResult.geometry.lng,
       };
     }
     return null;

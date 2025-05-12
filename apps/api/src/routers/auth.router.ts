@@ -23,13 +23,9 @@ export class AuthRouter {
     this.router.post('/login', authController.login);
     this.router.post('/token', verifyRefreshToken, authController.refreshToken);
     this.router.post('/profile', authController.getUserByEmail);
-    this.router.post(
-      '/profile/image',
-      verifyToken,
-      authController.updateImageProfile,
-    );
+    this.router.post('/profile/image', authController.updateImageProfile);
     this.router.get('/users', authController.getUsers);
-    this.router.patch('/', verifyToken, authController.updateUser);
+    this.router.patch('/', authController.updateUser);
     // this.router.post("/mail", authController.sendVerificationEmail);
   }
 

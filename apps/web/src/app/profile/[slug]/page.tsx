@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { Avatar } from '@mui/material';
 import { CameraAltRounded } from '@mui/icons-material';
 import Image from 'next/image';
-import { Cloudinary } from '@cloudinary/url-gen';
 import { usePathname, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/ProfileForm';
 import { cloudName, uploadPreset } from '@/helpers/config';

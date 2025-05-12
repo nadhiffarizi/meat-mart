@@ -1,12 +1,13 @@
 'use client';
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import * as Yup from 'yup';
-import { E_StoreStatus } from '@prisma/client';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { E_StoreStatus } from '@prisma/client';
 import { createStore, updateStore } from '@/helpers/handlers/store';
 import { StoreWithAdmin } from '@/app/interfaces/store.interface';
 import { X } from 'lucide-react';
+import { StoreFormSchema } from '@/models/auth.model';
+import { useLocations } from '@/hooks/useLocations';
 
 interface StoreFormProps {
   open: boolean;
@@ -17,21 +18,6 @@ interface StoreFormProps {
   email: string;
 }
 
-const StoreFormSchema = Yup.object().shape({
-  name: Yup.string().required('Store name is required'),
-  status: Yup.mixed<E_StoreStatus>()
-    .oneOf(Object.values(E_StoreStatus))
-    .required('Store type is required'),
-  address: Yup.string().required('Address is required'),
-  province: Yup.string().required('Province is required'),
-  city: Yup.string().required('City is required'),
-  district: Yup.string().required('District is required'),
-  postal_code: Yup.string().required('Postal code is required'),
-  latitude: Yup.string().optional(),
-  longitude: Yup.string().optional(),
-  storeadmin_id: Yup.string().required('Store admin is required'),
-});
-
 export default function StoreForm({
   open,
   onOpenChange,
@@ -41,16 +27,63 @@ export default function StoreForm({
   email,
 }: StoreFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    provinces,
+    cities,
+    districts,
+    loadingTime,
+    selectedProvince,
+    selectedCity,
+    setSelectedProvince,
+    setSelectedCity,
+  } = useLocations();
+
   const initialValues: Partial<StoreWithAdmin> = {
     name: storeData?.name || '',
     status: storeData?.status || E_StoreStatus.BRANCH,
     address: storeData?.address || '',
     province: storeData?.province || '',
+    province_id: storeData?.province_id || '',
     city: storeData?.city || '',
+    city_id: storeData?.city_id || '',
     district: storeData?.district || '',
+    district_id: storeData?.district_id || '',
     postal_code: storeData?.postal_code || '',
-
     storeadmin_id: storeData?.storeadmin_id || '',
+  };
+
+  const handleLocationChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    type: 'province' | 'city' | 'district',
+    setFieldValue: (field: string, value: any) => void,
+  ) => {
+    const { value } = e.target;
+
+    if (type === 'province') {
+      const selectedProvince = provinces.find((p) => p.code === value);
+      setFieldValue('province', selectedProvince?.name || '');
+      setFieldValue('province_id', value);
+      setFieldValue('city', '');
+      setFieldValue('city_id', '');
+      setFieldValue('district', '');
+      setFieldValue('district_id', '');
+      setSelectedProvince(value);
+      setSelectedCity('');
+      console.log('PROVINSI', selectedProvince);
+    } else if (type === 'city') {
+      const selectedCity = cities.find((c) => c.code === value);
+      setFieldValue('city', selectedCity?.name || '');
+      setFieldValue('city_id', value);
+      setFieldValue('district', '');
+      setFieldValue('district_id', '');
+      setSelectedCity(value);
+      console.log('CITY', selectedCity);
+    } else if (type === 'district') {
+      const selectedDistrict = districts.find((d) => d.code === value);
+      setFieldValue('district', selectedDistrict?.name || '');
+      setFieldValue('district_id', value);
+      console.log('KAB', setFieldValue);
+    }
   };
 
   const handleSubmit = async (
@@ -173,19 +206,41 @@ export default function StoreForm({
 
               {/* Location Details */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Province */}
                 <div>
                   <label
-                    htmlFor="province"
+                    htmlFor="province_id"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Provinsi*
                   </label>
-                  <Field
-                    name="province"
-                    id="province"
-                    type="text"
+                  <select
+                    name="province_id"
+                    id="province_id"
+                    value={values.province_id}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const selectedProvince = provinces.find(
+                        (p) => p.code === value,
+                      );
+                      setFieldValue('province_id', value);
+                      setFieldValue('province', selectedProvince?.name || '');
+                      setFieldValue('city_id', '');
+                      setFieldValue('city', '');
+                      setFieldValue('district_id', '');
+                      setFieldValue('district', '');
+                      setSelectedProvince(value);
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
-                  />
+                  >
+                    <option value="">Pilih Provinsi</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Field type="hidden" name="province" />
                   <ErrorMessage
                     name="province"
                     component="div"
@@ -193,19 +248,42 @@ export default function StoreForm({
                   />
                 </div>
 
+                {/* City */}
                 <div>
                   <label
-                    htmlFor="city"
+                    htmlFor="city_id"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Kabupaten/ Kota*
+                    Kabupaten/Kota*
                   </label>
-                  <Field
-                    name="city"
-                    id="city"
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
-                  />
+                  <select
+                    name="city_id"
+                    id="city_id"
+                    value={values.city_id}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const selectedCity = cities.find((c) => c.code === value);
+                      setFieldValue('city_id', value);
+                      setFieldValue('city', selectedCity?.name || '');
+                      setFieldValue('district_id', '');
+                      setFieldValue('district', '');
+                      setSelectedCity(value);
+                    }}
+                    disabled={!values.province_id}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 disabled:opacity-50"
+                  >
+                    <option value="">Pilih Kabupaten/Kota</option>
+                    {cities
+                      .filter(
+                        (city) => city.province_code === values.province_id,
+                      )
+                      .map((city) => (
+                        <option key={city.code} value={city.code}>
+                          {city.name}
+                        </option>
+                      ))}
+                  </select>
+                  <Field type="hidden" name="city" />
                   <ErrorMessage
                     name="city"
                     component="div"
@@ -213,19 +291,41 @@ export default function StoreForm({
                   />
                 </div>
 
+                {/* District */}
                 <div>
                   <label
-                    htmlFor="district"
+                    htmlFor="district_id"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Kecamatan*
                   </label>
-                  <Field
-                    name="district"
-                    id="district"
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
-                  />
+                  <select
+                    name="district_id"
+                    id="district_id"
+                    value={values.district_id}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const selectedDistrict = districts.find(
+                        (d) => d.code === value,
+                      );
+                      setFieldValue('district_id', value);
+                      setFieldValue('district', selectedDistrict?.name || '');
+                    }}
+                    disabled={!values.city_id}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 disabled:opacity-50"
+                  >
+                    <option value="">Pilih Kecamatan</option>
+                    {districts
+                      .filter(
+                        (district) => district.city_code === values.city_id,
+                      )
+                      .map((district) => (
+                        <option key={district.code} value={district.code}>
+                          {district.name}
+                        </option>
+                      ))}
+                  </select>
+                  <Field type="hidden" name="district" />
                   <ErrorMessage
                     name="district"
                     component="div"
@@ -254,36 +354,6 @@ export default function StoreForm({
                     className="text-red-500 text-xs mt-1"
                   />
                 </div>
-
-                {/* <div>
-                  <label
-                    htmlFor="latitude"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Latitude
-                  </label>
-                  <Field
-                    name="latitude"
-                    id="latitude"
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="longitude"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Longitude
-                  </label>
-                  <Field
-                    name="longitude"
-                    id="longitude"
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
-                  />
-                </div> */}
               </div>
 
               {/* Store Admin */}

@@ -62,7 +62,7 @@ export default function ProfileForm({
       ) {
         throw new Error('Password baru tidak cocok');
       }
-
+      console.log('INI Profil', formData);
       const emailChanged = formData.email !== profile.email;
 
       if (emailChanged) {

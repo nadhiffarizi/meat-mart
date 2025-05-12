@@ -1,11 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { meatCategories } from '@/data/categories';
-// import ProductCard from '@/components/ProductCard';
 import Link from 'next/link';
-
 import { Card } from './Card';
-import { ICard } from '@/interfaces/card.interface';
 
 interface CategoryProductsProps {
   categorySlug: string;

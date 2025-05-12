@@ -5,7 +5,6 @@ import {
   Modal,
   Box,
   TextField,
-  Button,
   Typography,
   SelectChangeEvent,
   FormControl,
@@ -14,8 +13,6 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useState } from 'react';
-import AddressForm from './AddressForm';
-import { X } from 'lucide-react';
 
 interface AddAddressModalProps {
   open: boolean;
@@ -245,13 +242,13 @@ export default function AddAddressModal({
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={onClose}
-            className="text-xs tracking-wider bg-primaryBackground text-primaryText  py-2 px-4 rounded-full hover:bg-gray-400"
+            className="text-sm tracking-wider bg-primaryBackground text-primaryText  py-2 px-4 rounded-full hover:bg-gray-400"
           >
             Batal
           </button>
           <button
             onClick={handleSubmit}
-            className="text-xs tracking-wider bg-orangeAccent text-white py-2 px-4 rounded-full hover:opacity-55"
+            className="text-sm tracking-wider bg-orangeAccent text-white py-2 px-4 rounded-full hover:opacity-55"
           >
             Simpan
           </button>

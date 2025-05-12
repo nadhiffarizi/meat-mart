@@ -1,4 +1,3 @@
-// hooks/useLocations.ts
 import { useState, useEffect } from 'react';
 import { getProvinces, getCities, getDistricts } from '@/helpers/location';
 import { ErrorMessage } from 'formik';

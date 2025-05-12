@@ -93,6 +93,15 @@ export class AdminController {
       next(error);
     }
   }
+
+  async getAdminByCity(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await adminService.getListAdminByCity(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AdminController();

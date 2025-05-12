@@ -12,9 +12,10 @@ export class StoreRouter {
   private initializeRoutes(): void {
     this.router.get('/get', storeController.getStoreList);
     this.router.post('/', storeController.createStore);
+    this.router.post('/get-list/', storeController.getStoreByProvince);
     this.router.post('/:id', storeController.getStoreById);
     this.router.patch('/:id', storeController.updateStore);
-    this.router.patch('/:id', storeController.daleteStore);
+    this.router.patch('/delete/:id', storeController.daleteStore);
   }
 
   getRouter(): Router {

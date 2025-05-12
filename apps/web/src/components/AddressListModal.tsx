@@ -1,14 +1,5 @@
-import {
-  Modal,
-  Box,
-  Button,
-  Typography,
-  List,
-  ListItemButton,
-  ListItemText,
-  Divider,
-} from '@mui/material';
-import { Inter } from 'next/font/google';
+import { Dialog } from '@headlessui/react';
+import { ListItemButton } from '@mui/material';
 
 interface Address {
   id: string;
@@ -35,44 +26,66 @@ export default function AddressListModal({
   onAddNew,
 }: AddressListModalProps) {
   return (
-    <Modal open={open} onClose={onClose} className={`Inter`}>
-      <div className="w-[70%] md:w-[50%] lg:w-[30%] inset-0  px-8 pt-8 pb-4 translate-y-[50%] translate-x-[25%] md:translate-x-[50%] lg:translate-x-[100%] bg-primaryIcon">
-        <h2 className="font-semibold text-xl">Select Delivery Address</h2>
+    <Dialog open={open} onClose={onClose} className="relative z-50">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
-        <div className="flex flex-col items-start mb-2 w-full ">
-          {addresses.map((address) => (
-            <div key={address.id} className="w-full mt-2">
-              <ListItemButton
-                onClick={() => onSelect(address.id)}
-                selected={address.is_selected}
-              >
-                <div className="text-sm text-primaryText text-left">
-                  <p className="font-semibold ">{address.recipient_name}</p>
-                  <p>
-                    {`${address.address}, ${address.city} ${address.postal_code}`}
-                  </p>
+      {/* Modal container */}
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className="w-full max-w-md rounded-lg bg-primaryIcon shadow-xl">
+          <div className="px-8 pt-8 pb-4">
+            <h2 className="font-semibold text-xl">Select Delivery Address</h2>
+            <div className="flex flex-col items-start mb-2 w-full mt-4 max-h-[60vh] overflow-y-auto gap-2">
+              {addresses.map((address) => (
+                <div
+                  key={address.id}
+                  className={`w-full rounded-md border ${
+                    address.is_selected ? ' bg-green-100' : 'border-gray-200'
+                  } transition-colors duration-200`}
+                >
+                  <ListItemButton
+                    onClick={() => onSelect(address.id)}
+                    selected={address.is_selected}
+                    className="w-full bg-transparent"
+                    sx={{
+                      borderRadius: '6px',
+                      '&.Mui-selected': {
+                        backgroundColor: 'transparent',
+                      },
+                      '&.Mui-selected:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                    }}
+                  >
+                    <div className="text-sm text-primaryText text-left p-2">
+                      <p className="font-semibold text-[16px]">
+                        {address.recipient_name}
+                      </p>
+                      <p>
+                        {`${address.address}, ${address.city} ${address.postal_code}`}
+                      </p>
+                    </div>
+                  </ListItemButton>
                 </div>
-              </ListItemButton>
-              <Divider />
+              ))}
             </div>
-          ))}
-        </div>
-
-        <div className="flex justify-end gap-3 my-4">
-          <button
-            onClick={onClose}
-            className="text-xs tracking-wider  bg-primaryBackground text-primaryText  py-2 px-4 rounded-full hover:bg-gray-400"
-          >
-            Tutup
-          </button>
-          <button
-            onClick={onAddNew}
-            className="text-xs tracking-wider bg-orangeAccent text-white py-2 px-4 rounded-full hover:opacity-55"
-          >
-            Tambah Alamat
-          </button>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={onClose}
+                className="text-sm tracking-wider bg-primaryBackground text-primaryText py-2 px-4 rounded-full hover:bg-gray-400 transition-colors"
+              >
+                Tutup
+              </button>
+              <button
+                onClick={onAddNew}
+                className="text-sm tracking-wider bg-orangeAccent text-white py-2 px-4 rounded-full hover:opacity-55 transition-opacity"
+              >
+                Tambah Alamat
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </Modal>
+    </Dialog>
   );
 }

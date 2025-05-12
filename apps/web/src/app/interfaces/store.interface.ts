@@ -17,4 +17,7 @@ export interface StoreWithAdmin {
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
+  province_id: string;
+  city_id: string;
+  district_id: string;
 }

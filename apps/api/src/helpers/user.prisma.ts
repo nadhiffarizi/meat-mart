@@ -27,11 +27,11 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     subject: 'Verify Your Email Address',
     html: `
         <div style="font-fam, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">MeatMart Email Verification</h2>
+          <h2 style="color:  #013028 ;">MeatMart Email Verification</h2>
           <p>Please click the button below to verify your email address and input your password:</p>
 
           <a href="${verificationUrl}" 
-             style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; 
+             style="display: inline-block; padding: 12px 24px; background:  #013028 ; color: white; 
                     text-decoration: none; border-radius: 4px; font-weight: bold; margin: 20px 0;">
              Set Password and Verify Email
           </a>
@@ -55,11 +55,11 @@ export const sendResetEmail = async (email: string, token: string) => {
     subject: 'Reset Your Password Account',
     html: `
         <div style="font-fam, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">MeatMart Reset Password Account</h2>
+          <h2 style="color: #013028 ;">MeatMart Reset Password Account</h2>
           <p>Please click the button below to reset your your password:</p>
 
           <a href="${verificationUrl}" 
-             style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; 
+             style="display: inline-block; padding: 12px 24px; background: #013028 ; color: white; 
                     text-decoration: none; border-radius: 4px; font-weight: bold; margin: 20px 0;">
              Reset Password
           </a>

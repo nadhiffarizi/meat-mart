@@ -220,6 +220,61 @@ class AdminService {
       throw new Error('Error during fetching admin');
     }
   }
+  async getListAdminByCity(req: Request) {
+    const { city } = req.query;
+
+    try {
+      // Count admins with addresses in the specified city
+      const countAdmin = await prisma.users.count({
+        where: {
+          role: 'ADMIN',
+          UserAddresses: {
+            some: {
+              city: city as string,
+            },
+          },
+        },
+      });
+
+      if (countAdmin == 0) {
+        return {
+          code: 200,
+          data: null,
+          status: statusEnum.SUCCESS,
+          message: 'There is no admin in this city',
+        };
+      } else {
+        // Get all admins with addresses in the specified city
+        const listAdminByCity = await prisma.users.findMany({
+          where: {
+            role: 'ADMIN',
+            UserAddresses: {
+              some: {
+                city: city as string,
+              },
+            },
+          },
+          include: {
+            UserAddresses: {
+              where: {
+                city: city as string,
+              },
+            },
+          },
+        });
+
+        return {
+          code: 200,
+          data: listAdminByCity,
+          status: statusEnum.SUCCESS,
+          message: 'Successfully fetched admins by city',
+        };
+      }
+    } catch (error) {
+      console.error('Fetching admin error:', error);
+      throw new Error('Error during fetching admin');
+    }
+  }
 }
 
 export default new AdminService();

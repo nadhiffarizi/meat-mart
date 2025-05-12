@@ -14,23 +14,26 @@ CREATE TYPE "E_TransactionStatus" AS ENUM ('CANCELED', 'AWAITING_PAYMENT', 'PEND
 CREATE TYPE "E_OrderStatus" AS ENUM ('CANCELED', 'AWAITING_PAYMENT', 'PENDING_ADMIN', 'ON_PROCESS', 'ON_DELIVERY', 'CONFIRMED');
 
 -- CreateEnum
-CREATE TYPE "E_StockStatus" AS ENUM ('ADD', 'SUBSTRACT', 'SNAPSHOT');
+CREATE TYPE "E_StockStatus" AS ENUM ('ADD', 'SUBTRACT', 'SNAPSHOT');
 
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "first_name" TEXT NOT NULL,
+    "first_name" TEXT,
     "last_name" TEXT,
     "email" TEXT NOT NULL,
     "password" TEXT,
     "image_url" TEXT,
-    "role" "E_Role" NOT NULL,
+    "role" "E_Role" NOT NULL DEFAULT 'CUSTOMER',
     "phone_number" TEXT,
-    "is_verified" BOOLEAN NOT NULL,
-    "verification_link" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "is_verified" BOOLEAN NOT NULL DEFAULT false,
+    "verification_link" TEXT,
+    "verification_expiry" TIMESTAMP(3),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
+    "provider" TEXT DEFAULT 'credentials',
+    "provider_id" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -39,8 +42,9 @@ CREATE TABLE "users" (
 CREATE TABLE "addresses" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "recipent_name" TEXT NOT NULL,
+    "recipient_name" TEXT NOT NULL,
     "recipient_phone_number" TEXT NOT NULL,
+    "is_selected" BOOLEAN NOT NULL,
     "address" TEXT NOT NULL,
     "province" TEXT NOT NULL,
     "city" TEXT NOT NULL,
@@ -48,9 +52,8 @@ CREATE TABLE "addresses" (
     "postal_code" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
     "longitude" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "addresses_pkey" PRIMARY KEY ("id")
 );
@@ -62,7 +65,7 @@ CREATE TABLE "products" (
     "slug" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "weight" DOUBLE PRECISION NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -74,7 +77,7 @@ CREATE TABLE "categories" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "product_id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -87,7 +90,7 @@ CREATE TABLE "productpictures" (
     "product_id" TEXT NOT NULL,
     "link" TEXT NOT NULL,
     "thumbnail_status" BOOLEAN NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -100,7 +103,7 @@ CREATE TABLE "stocks" (
     "product_id" TEXT NOT NULL,
     "store_id" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -120,7 +123,7 @@ CREATE TABLE "stores" (
     "postal_code" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
     "longitude" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -140,8 +143,8 @@ CREATE TABLE "discounts" (
     "discount_amount" DOUBLE PRECISION,
     "maximum_discount_amount" DOUBLE PRECISION,
     "minimum_purchase" DOUBLE PRECISION,
-    "is_valied" BOOLEAN NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "is_valid" BOOLEAN NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -154,7 +157,7 @@ CREATE TABLE "carts" (
     "user_id" TEXT NOT NULL,
     "stock_id" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -166,12 +169,12 @@ CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
     "total_price" DOUBLE PRECISION NOT NULL,
     "minimum_buy" BOOLEAN,
-    "amount_discount" INTEGER,
+    "amount_discount" DOUBLE PRECISION,
     "deadline_payment" TIMESTAMP(3) NOT NULL,
     "transaction_status" "E_TransactionStatus" NOT NULL,
     "payment_proof" TEXT,
     "users_id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -192,7 +195,7 @@ CREATE TABLE "transactiondetails" (
     "product_id" TEXT NOT NULL,
     "discounted" BOOLEAN NOT NULL,
     "discount_code" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -204,7 +207,7 @@ CREATE TABLE "orderstatushistory" (
     "id" TEXT NOT NULL,
     "transaction_detail_id" TEXT NOT NULL,
     "status" "E_OrderStatus" NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -218,7 +221,7 @@ CREATE TABLE "stockhistory" (
     "store_id" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "status" "E_StockStatus" NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -227,6 +230,12 @@ CREATE TABLE "stockhistory" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_verification_link_key" ON "users"("verification_link");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_provider_id_key" ON "users"("provider_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");

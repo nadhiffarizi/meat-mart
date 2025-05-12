@@ -45,6 +45,7 @@ class AddressService {
 
       const fullAddress = `${address.address}, ${address.district}, ${address.city}, ${address.province}, ${address.postal_code}, Indonesia`;
       const coordinates = await getCoordinates(fullAddress);
+      console.log('KOORDINAT DI CREATE ADDRESS', coordinates);
 
       if (!coordinates) {
         throw new Error('Could not geocode the provided address');
@@ -88,8 +89,19 @@ class AddressService {
 
     try {
       const updatedAddress = await prisma.userAddresses.update({
-        where: { id: address.id as string, user_id: address.user_id },
-        data: address,
+        where: { id: address.id as string, users: { email: email } },
+        data: {
+          recipient_name: address.recipient_name,
+          recipient_phone_number: address.recipient_phone_number,
+          is_selected: address.is_selected,
+          address: address.address,
+          province: address.province,
+          city: address.city,
+          district: address.district,
+          postal_code: address.postal_code,
+          latitude: address.latitude,
+          longitude: address.longitude,
+        },
       });
 
       return {

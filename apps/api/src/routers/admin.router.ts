@@ -17,6 +17,7 @@ export class AdminRouter {
   private initializeRoutes(): void {
     this.router.get('/users', verifyToken, adminController.readUsers);
     this.router.get('/get', adminController.getAdmin);
+    this.router.get('/get-list', adminController.getAdminByCity);
     this.router.post(
       '/users',
       verifyToken,
