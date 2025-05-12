@@ -13,8 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { IGetStocks } from '@/app/interfaces/stock.interface';
-import { IGetDashboardProducts } from '@/app/interfaces/product.dashboard.interface';
+import { IGetStocks } from '@/interface/stocks.interface';
+import { IGetDashboardProducts } from '@/interface/product.interface';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.

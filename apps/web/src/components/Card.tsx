@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ICard } from '../interfaces/card.interface';
+import { ICard } from '../interface/card.interface';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { Snackbar, Alert, Button } from '@mui/material';

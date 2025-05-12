@@ -6,14 +6,14 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
-import { IGetDashboardProducts } from '../../../../app/interfaces/product.dashboard.interface';
+import { api } from '@/helper/handlers/api';
+import { IGetDashboardProducts } from '@/interface/product.interface';
 import EditProductFormDeleteAlert from './alerts/EditProductFormDeleteAlert';
 import EditProductFormAlert from './alerts/EditProductFormAlert';
-import { IGetCategories } from '@/app/interfaces/category.interface';
+import { IGetCategories } from '@/interface/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
-import IGetProductCategory from '@/app/interfaces/productCategory.interface';
+import IGetProductCategory from '@/interface/productCategory.interface';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for this product.'),

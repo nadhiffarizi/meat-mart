@@ -6,8 +6,8 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
-import { IGetUsers } from '@/app/interfaces/user.interface';
+import { api } from '@/helper/handlers/api';
+import { IGetUsers } from '@/interface/user.interface';
 import FormAlert from './Alerts/EditAdminFormAlert';
 import EditAdminFormDeleteAlert from './Alerts/EditAdminFormDeleteAlert';
 

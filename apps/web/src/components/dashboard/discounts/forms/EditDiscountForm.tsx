@@ -6,12 +6,12 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
-import { IGetCategories } from '../../../../app/interfaces/category.interface';
+import { api } from '@/helper/handlers/api';
+import { IGetCategories } from '../../../../interface/category.interface';
 import EditDiscountFormDeleteAlert from './alerts/EditDiscountFormDeleteAlert';
 import EditDiscountFormAlert from './alerts/EditDiscountFormAlert';
-import { IGetDiscounts } from '@/app/interfaces/discount.interface';
-import { IGetDashboardProducts } from '@/app/interfaces/product.dashboard.interface';
+import { IGetDiscounts } from '@/interface/discount.interface';
+import { IGetDashboardProducts } from '@/interface/product.interface';
 import { ProductDropDown } from './ProductsDropDown';
 
 const validationSchema = Yup.object({

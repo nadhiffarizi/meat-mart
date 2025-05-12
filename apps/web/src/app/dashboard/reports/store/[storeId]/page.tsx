@@ -1,5 +1,5 @@
 'use client';
-import { IGetStores } from '@/app/interfaces/store.interface';
+import { IGetStores } from '@/interface/store.interface';
 import { LocationCard } from '@/components/dashboard/inventories/LocationCard';
 import { ReportTypeCard } from '@/components/dashboard/reports/ReportTypeCard';
 import {

@@ -6,10 +6,10 @@ import {
   login,
   refreshToken,
   registerSocialUser,
-} from './helpers/handlers/auth';
+} from './helper/handlers/auth';
 import Google from 'next-auth/providers/google';
 import { jwtDecode } from 'jwt-decode';
-import { InvalidAuthError } from './interfaces/auth.error';
+import { InvalidAuthError } from './interface/auth.error';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {

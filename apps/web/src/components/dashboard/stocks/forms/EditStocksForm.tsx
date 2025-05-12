@@ -6,14 +6,14 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
-import { IGetDashboardProducts } from '../../../../app/interfaces/product.dashboard.interface';
+import { api } from '@/helper/handlers/api';
+import { IGetDashboardProducts } from '@/interface/product.interface';
 import EditStockFormAlert from './alerts/EditStockFormAlert';
-import { IGetCategories } from '@/app/interfaces/category.interface';
+import { IGetCategories } from '@/interface/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
-import IGetProductCategory from '@/app/interfaces/productCategory.interface';
-import { IGetStocks } from '@/app/interfaces/stock.interface';
+import IGetProductCategory from '@/interface/productCategory.interface';
+import { IGetStocks } from '@/interface/stocks.interface';
 
 const validationSchema = Yup.object({
   currQuantity: Yup.number().required(),

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { api } from '@/helpers/api';
+import { api } from '@/helper/handlers/api';
 import { DataTable } from './DataTable';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';
@@ -9,9 +9,9 @@ import { StockSummary } from './columns';
 import {
   IGetStockHistory,
   IGetStockHistoryRange,
-} from '@/app/interfaces/stockHistory.interface';
+} from '@/interface/stockHistory.interface';
 import dayjs from 'dayjs';
-import { IGetStores } from '@/app/interfaces/store.interface';
+import { IGetStores } from '@/interface/store.interface';
 
 interface IDropDownOptions {
   value: Date;

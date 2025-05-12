@@ -6,12 +6,12 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helpers/api';
+import { api } from '@/helper/handlers/api';
 import Link from 'next/link';
 import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
 import AddAdminFormAlert from '../../admin/forms/Alerts/AddAdminFormAlert';
-import { IGetCategories } from '@/app/interfaces/category.interface';
+import { IGetCategories } from '@/interface/category.interface';
 import ReactivateCategoryFormAlert from './alerts/ReactivateCategoryFormAlert';
 import AddCategoryFormAlert from './alerts/AddCategoryFormAlert';
 

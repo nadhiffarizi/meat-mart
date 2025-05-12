@@ -1,5 +1,5 @@
 'use client';
-import { IGetStores } from '@/app/interfaces/store.interface';
+import { IGetStores } from '@/interface/store.interface';
 import { LocationCard } from '@/components/dashboard/inventories/LocationCard';
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { api } from '@/helpers/api';
+import { api } from '@/helper/handlers/api';
 import { ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';

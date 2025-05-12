@@ -1,4 +1,4 @@
-import { IGetDashboardProducts } from './product.dashboard.interface';
+import { IGetDashboardProducts } from './product.interface';
 
 export interface IGetStockHistory {
   id: string;

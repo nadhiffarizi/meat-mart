@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from './Card';
-import { ICard } from '@/interfaces/card.interface';
+import { ICard } from '@/interface/card.interface';
 
 export const ProductList = () => {
   const productList: ICard[] = [

@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from './auth';
 import { useEffect, useState } from 'react';
-import { IGetStores } from './app/interfaces/store.interface';
+import { IGetStores } from './interface/store.interface';
 import { api } from './helpers/api';
 
 export async function middleware(req: NextRequest) {
