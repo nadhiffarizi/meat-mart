@@ -14,13 +14,9 @@ export const totalDiscountApplied = (cartState: ICart[]) => {
     }
   }
 
-  // console.log("cart state calculate: ", cartState);
-
   const discountPercentage = parseFloat(
     ((totalDiscountAmount / totalDefaultPrice) * 100).toFixed(2),
   );
-  // console.log(`total discount calculate: ${discountPercentage} ${totalDiscountAmount}`);
-
 
   return { discountPercentage, totalDiscountAmount };
 };

@@ -87,7 +87,7 @@ export function DiscountDialogInCart({ cartId }: { cartId: string }) {
           setAvailableDiscounts(syncDiscountDataFromAPI(value['data']));
         }
       });
-  }, [cartState, status]);
+  }, []);
 
   return (
     <DialogContent className="sm:max-w-[550px]">
