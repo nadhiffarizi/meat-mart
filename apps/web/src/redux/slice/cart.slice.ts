@@ -14,8 +14,27 @@ const cartSlice = createSlice({
     reducers: {
         updateCartState: (state: ICart[], action: PayloadAction<ICart[]>) => {
             // sync cart from database to local global state
-            state = [...action.payload]
-            console.log(state);
+            // if discount not deleted, then maintain discount data
+            const tempState = [...action.payload]
+            const currState = [...state]
+
+            for (let i = 0; i < tempState.length; i++) {
+                const incomingId = tempState[i].id
+                // find index in current state id
+                const currIndexId = currState.findIndex((state) => state.id === incomingId)
+                // assume exist
+                if (currState[currIndexId] !== undefined && currState[currIndexId].discount) {
+                    // discount available
+                    tempState[i].discount = { ...currState[currIndexId].discount }
+                    tempState[i].subtotalPrice = currState[currIndexId].subtotalPrice
+                    tempState[i].pricePerProduct = currState[currIndexId].pricePerProduct
+                    tempState[i].quantityAfterDisc = currState[currIndexId].quantityAfterDisc
+                }
+            }
+
+
+            state = [...tempState]
+            console.log("updated state: ", state);
 
             return state
         },
