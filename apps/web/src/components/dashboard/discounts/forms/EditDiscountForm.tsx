@@ -279,7 +279,7 @@ function EditDiscountForm({
           placeholder="xxxx-xxxx-xxxx"
           value={formik.values.discount_code}
           onChange={handleDiscountCodeChange}
-          disabled={disabled}
+          disabled={true}
         />
         {formik.touched.discount_code && formik.errors.discount_code && (
           <div className="text-red-500 text-sm">
