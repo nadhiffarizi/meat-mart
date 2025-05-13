@@ -24,6 +24,7 @@ import { Button } from '../../ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,6 +53,7 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const { data: session, update } = useSession();
   return (
     <div className="overflow-x-auto">
       <div className="flex items-center py-4 w-full justify-between gap-2">
@@ -65,13 +67,15 @@ export function DataTable<TData, TValue>({
         />
         <Link href={'/dashboard/categories/new'}>
           {' '}
-          <Button
-            variant="default"
-            className={' bg-orangeAccent text-base'}
-            onClick={() => {}}
-          >
-            Add a New Category
-          </Button>
+          {session?.user.role === 'SUPER_ADMIN' && (
+            <Button
+              variant="default"
+              className={' bg-orangeAccent text-base'}
+              onClick={() => {}}
+            >
+              Add a New Category
+            </Button>
+          )}
         </Link>
       </div>
       <div className="rounded-md border">

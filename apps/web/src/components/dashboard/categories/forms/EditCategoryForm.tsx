@@ -24,6 +24,10 @@ function EditCategoryForm({ id }: { id: string }) {
   const [categoryDetails, setCategoryDetails] = useState<IGetCategories>();
 
   useEffect(() => {
+    if (session?.user.role === 'ADMIN') setDisabled(true);
+  }, [session]);
+
+  useEffect(() => {
     async function getCategoryData() {
       try {
         const response = await api(
@@ -107,7 +111,7 @@ function EditCategoryForm({ id }: { id: string }) {
         disabled={disabled}
         type="submit"
       >
-        {disabled ? 'Saving Changes' : 'Save Changes'}
+        Save Changes
       </Button>
 
       <EditCategoryFormDeleteAlert

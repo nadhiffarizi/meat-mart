@@ -63,9 +63,11 @@ export const columns: ColumnDef<Category>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem>
-              <Link href={`/dashboard/categories/${row.original.id}/edit`}>
-                Edit category details
-              </Link>
+              {
+                <Link href={`/dashboard/categories/${row.original.id}/edit`}>
+                  Edit category details
+                </Link>
+              }
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

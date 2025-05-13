@@ -101,7 +101,7 @@ export function AppSidebar() {
           </nav>
         </div>
         <button
-          className="bg-slate-500 py-2 px-4 rounded-2xl"
+          className="bg-[#F5F5F5] hover:bg-white py-2 px-4 rounded-2xl"
           onClick={() => {
             signOut({
               redirectTo: '/',

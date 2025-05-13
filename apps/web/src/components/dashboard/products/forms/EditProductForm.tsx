@@ -51,6 +51,10 @@ function EditProductForm({ id }: { id: string }) {
   };
 
   useEffect(() => {
+    if (session?.user.role === 'ADMIN') setDisabled(true);
+  }, [session]);
+
+  useEffect(() => {
     try {
       async function getAllCategories() {
         const allCategories = await api(
