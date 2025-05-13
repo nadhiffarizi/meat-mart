@@ -28,11 +28,10 @@ function ViewStockHistoryReport({
   const [dropDownOptions, setDropDownOptions] = useState<IDropDownOptions[]>(
     [],
   );
-  const [month, setMonth] = useState(dayjs().format('MM')); // e.g. "05"
-  const [year, setYear] = useState(dayjs().format('YYYY')); // e.g. "2025"
+  const [month, setMonth] = useState(dayjs().format('MM'));
+  const [year, setYear] = useState(dayjs().format('YYYY'));
   const { data: session } = useSession();
 
-  // Generate dropdown options from earliest record to current month
   useEffect(() => {
     async function getStockHistoryRange() {
       try {
@@ -67,7 +66,6 @@ function ViewStockHistoryReport({
     getStockHistoryRange();
   }, [session?.user.access_token, productId, storeId]);
 
-  // Fetch stock history for selected month/year
   useEffect(() => {
     async function getStockHistory() {
       try {
@@ -92,9 +90,10 @@ function ViewStockHistoryReport({
         value={dayjs(`${year}-${month}-01`).toISOString()}
         onChange={(e) => {
           const selectedDate = dayjs(e.target.value);
-          setMonth(selectedDate.format('MM')); // "05"
-          setYear(selectedDate.format('YYYY')); // "2025"
+          setMonth(selectedDate.format('MM'));
+          setYear(selectedDate.format('YYYY'));
         }}
+        className="w-full max-w-xs px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 text-sm bg-white text-gray-900"
       >
         {dropDownOptions.map((dropDownOption) => (
           <option
