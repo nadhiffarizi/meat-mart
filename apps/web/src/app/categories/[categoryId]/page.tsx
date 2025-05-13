@@ -87,7 +87,7 @@ export default function CategoryPage({
             <div>
               {allProducts.map((product) => {
                 return allProducts.map((card, key) => (
-                  <Card {...card} stock={0} key={key} />
+                  <Card {...card} stock={0} key={card.id} />
                 ));
               })}
             </div>

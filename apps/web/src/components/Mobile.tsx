@@ -1,14 +1,17 @@
+'use client';
 import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Search } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
 interface MobileProps {
   isSticky: boolean;
 }
 
 const Mobile = ({ isSticky }: MobileProps) => {
+  const router = useRouter();
   return (
     <div
       className={`md:hidden ${isSticky ? 'fixed top-0 left-0 right-0 z-50 h-20 bg-primaryBackground shadow-md transition-all ' : ''}`}
@@ -33,11 +36,25 @@ const Mobile = ({ isSticky }: MobileProps) => {
         className={`px-4 ${isSticky ? 'pt-3 flex items-center justify-between' : 'pt-2 pb-4'}`}
       >
         <div className={`relative ${isSticky ? 'w-[80%]' : ''} `}>
-          <input
-            type="text"
-            placeholder="Cari produk daging, kategori..."
-            className="w-full rounded-full border border-gray-300 py-2 px-4 pl-10 focus:outline-none "
-          />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const input = (
+                e.currentTarget.elements.namedItem('search') as HTMLInputElement
+              ).value;
+              router.push(`/products?q=${input}`);
+            }}
+            className="hidden md:flex flex-1 max-w-md md:max-w-full"
+          >
+            {' '}
+            <input
+              type="text"
+              name="search"
+              placeholder="Cari produk daging, kategori..."
+              className="w-full text-sm rounded-full h-[48px] text-primaryText bg-white border border-gray-200 py-2 px-4 pl-10 focus:outline-none "
+            />
+          </form>
+
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search />
           </div>

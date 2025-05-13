@@ -24,6 +24,16 @@ export class ProductController {
     }
   }
 
+  public async getProductById(req: Request, res: Response, next: NextFunction) {
+    try {
+      // try registering
+      const data: serviceFeedback = await productService.getProductById(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
       // try registering
@@ -43,6 +53,21 @@ export class ProductController {
       // try registering
       const data: serviceFeedback =
         await productService.getAllProductsByCategoryId(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getPicturesByProductId(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try registering
+      const data: serviceFeedback =
+        await productService.getPicturesByProductId(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);

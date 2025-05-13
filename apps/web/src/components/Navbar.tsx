@@ -14,6 +14,7 @@ import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
 import { ShoppingBagIcon } from '@heroicons/react/16/solid';
 import NavbarDropDown from './Navbar/NavbarDropdown.component';
+import { useRouter } from 'next/navigation';
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   // global state cart
@@ -31,6 +32,7 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   const [cartDropdownEl, setCartDropdownEl] =
     React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const router = useRouter();
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('userLocation');
@@ -109,11 +111,27 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
 
           <div className="hidden md:flex flex-1 max-w-md md:max-w-full">
             <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Cari produk daging, kategori..."
-                className="w-full text-sm rounded-full h-[48px] text-primaryText bg-white border border-gray-200 py-2 px-4 pl-10 focus:outline-none "
-              />
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const input = (
+                    e.currentTarget.elements.namedItem(
+                      'search',
+                    ) as HTMLInputElement
+                  ).value;
+                  router.push(`/products?q=${input}`);
+                }}
+                className="hidden md:flex flex-1 max-w-md md:max-w-full"
+              >
+                {' '}
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Cari produk daging, kategori..."
+                  className="w-full text-sm rounded-full h-[48px] text-primaryText bg-white border border-gray-200 py-2 px-4 pl-10 focus:outline-none "
+                />
+              </form>
+
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search />
               </div>

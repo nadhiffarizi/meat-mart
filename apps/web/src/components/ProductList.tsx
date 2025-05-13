@@ -2,12 +2,16 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
 import { ICard } from '@/interface/product/card.interface';
-import { IGetDashboardProducts } from '@/interface/product/product.interface';
+import {
+  IGetDashboardProducts,
+  IProduct,
+} from '@/interface/product/product.interface';
 import { api } from '@/helper/api';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 export const ProductList = () => {
-  const [allProducts, setAllProducts] = useState<IGetDashboardProducts[]>([]);
+  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   useEffect(() => {
     async function getAllProducts() {
       try {
@@ -26,7 +30,7 @@ export const ProductList = () => {
         <h3 className="text-xl md:text-3xl font-bold">Daging Yang Kamu Mau!</h3>
         <div className="m-auto my-5 grid grid-cols-2 md:text-sm md:grid-cols-3  lg:grid-cols-5  gap-4 md:ml-10 lg:ml-0">
           {allProducts.map((card, key) => (
-            <Card {...card} stock={0} key={key} />
+            <Card {...card} stock={0} key={card.id} />
           ))}
         </div>
       </div>

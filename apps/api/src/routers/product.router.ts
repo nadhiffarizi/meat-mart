@@ -20,6 +20,11 @@ export class ProductRouter {
       '/category/:categoryId',
       productController.getAllProductsByCategoryId,
     );
+    this.router.get('/:id', productController.getProductById);
+    this.router.get(
+      '/picture/:productId',
+      productController.getPicturesByProductId,
+    );
     this.router.post('/', productController.createProduct);
     // .... continue api
   }

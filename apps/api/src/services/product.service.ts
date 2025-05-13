@@ -67,19 +67,23 @@ class ProductService {
     const includeDeleted = req.query.includeDeleted === 'true';
     const rawLimit = Number(req.query.limit);
     const limit = Number.isNaN(rawLimit) ? undefined : rawLimit;
+    const query = typeof req.query.q === 'string' ? req.query.q : undefined;
 
     const allProducts = await prisma.products.findMany({
-      include: {
-        ProductCategories: true,
-        ProductPictures: true,
-        Stocks: true,
-      },
       where: includeDeleted
         ? undefined
         : {
             deleted_at: null,
           },
       ...(limit !== undefined ? { take: limit } : {}),
+      ...(query
+        ? {
+            where: {
+              ...(includeDeleted ? {} : { deleted_at: null }),
+              name: { contains: query, mode: 'insensitive' },
+            },
+          }
+        : {}),
     });
 
     const feedback: serviceFeedback = {
@@ -110,6 +114,35 @@ class ProductService {
       data: allProducts,
       status: statusEnum.SUCCESS,
       message: `Successfully fetched all products with category_ID ${categoryId}.`,
+    };
+    return feedback;
+  }
+
+  async getProductById(req: Request) {
+    const product = await prisma.products.findUnique({
+      where: {
+        id: req.params.id,
+        deleted_at: null,
+      },
+    });
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: product,
+      status: statusEnum.SUCCESS,
+      message: `Successfully fetched product with id ${req.params.id}.`,
+    };
+    return feedback;
+  }
+
+  async getPicturesByProductId(req: Request) {
+    const productPictures = await prisma.productPictures.findMany({
+      where: { product_id: req.params.productId, deleted_at: null },
+    });
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: productPictures,
+      status: statusEnum.SUCCESS,
+      message: `Successfully fetched all pictures with product_ID ${req.params.productId}.`,
     };
     return feedback;
   }

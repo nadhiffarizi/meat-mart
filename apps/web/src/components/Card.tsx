@@ -3,12 +3,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ICard } from '../interface/product/card.interface';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Snackbar, Alert, Button } from '@mui/material';
+import { IGetProductPictures } from '@/interface/product/productPictures.interface';
+import { api } from '@/helper/api';
 
 export function Card(props: ICard) {
   const { data: session } = useSession();
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [productPictures, setProductPictures] =
+    useState<IGetProductPictures[]>();
+
+  useEffect(() => {
+    async function getProductPictures() {
+      try {
+        const response = await api(`products/picture/${props.id}`, 'GET', {});
+        setProductPictures(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getProductPictures();
+  }, [props.id]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,7 +58,7 @@ export function Card(props: ICard) {
         </Alert>
       </Snackbar>
 
-      <Link href={'/'} passHref>
+      <Link href={`/products/${props.id}`} passHref>
         <div className="w-full max-w-[230px] bg-primaryIcon rounded-lg shadow-xl relative">
           <div className="w-full">
             <div className="w-full px-2 py-2 rounded-xl">
@@ -51,7 +67,11 @@ export function Card(props: ICard) {
                   width={216}
                   height={100}
                   className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"
-                  src={'/templateproduct.png'}
+                  src={
+                    productPictures?.length
+                      ? String(productPictures[0].link)
+                      : '/templateproduct.png'
+                  }
                   alt="product-image"
                 />
                 <Image
