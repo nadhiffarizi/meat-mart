@@ -56,7 +56,7 @@ export function DataTable<TData, TValue>({
   const { data: session, update } = useSession();
   return (
     <div className="overflow-x-auto">
-      <div className="flex items-center py-4 w-full justify-between gap-2">
+      <div className="flex flex-col sm:flex-row items-center py-4 w-full justify-between gap-2">
         <Input
           placeholder="Filter categories..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
