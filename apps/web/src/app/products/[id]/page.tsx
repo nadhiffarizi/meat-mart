@@ -15,6 +15,7 @@ import { IGetProductPictures } from '@/interface/product/productPictures.interfa
 import Image from 'next/image';
 import meatMartDefault from '@/media/image/meat-mart-dashboard.png';
 import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
 
 type Props = {
   params: {
@@ -27,6 +28,7 @@ export default function CarouselDemo({ params: { id } }: Props) {
     IGetProductPictures[]
   >([]);
   const [product, setProduct] = React.useState<IProduct>();
+  const { data: session, update } = useSession();
 
   React.useEffect(() => {
     async function getProductPictures() {
@@ -114,6 +116,7 @@ export default function CarouselDemo({ params: { id } }: Props) {
       <Button
         variant={'default'}
         className={' bg-orangeAccent text-base max-w-screen-lg w-full'}
+        disabled={!session?.user}
       >
         Add to Cart
       </Button>
