@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react';
 import { googleLogin, login } from '@/app/action/auth';
 import { useRouter } from 'next/navigation';
 import { Alert, Button, CircularProgress, Snackbar } from '@mui/material';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 
 export default function Page() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function Page() {
     google: false,
     regular: false,
   });
+  const { data: session } = useSession();
 
   const formik = useFormik({
     initialValues: {
@@ -50,7 +51,7 @@ export default function Page() {
 
       const result = await signIn('google', {
         redirect: true,
-        callbackUrl: '/',
+        callbackUrl: session?.user?.role === 'CUSTOMER' ? '/' : '/dashboard',
       });
 
       if (result?.error) {

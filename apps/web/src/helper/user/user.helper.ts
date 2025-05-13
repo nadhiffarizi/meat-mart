@@ -6,11 +6,11 @@ export const getCustomer = async (apiRoute: string) => {
 };
 
 export const profileSideMenu = [
-  { id: '1', name: 'Profil', slug: './profile' },
-  { id: '2', name: 'Alamat', slug: 'address' },
+  { id: '1', name: 'Profil', slug: './profile/profile' },
+  { id: '2', name: 'Alamat', slug: './profile/address' },
   //   { id: '3', name: 'Pesanan Saya', slug: 'order-list' },
   //   { id: '4', name: 'Transaksi', slug: 'transaction-list' },
   { id: '3', name: 'Pesanan Saya', slug: 'order-list' },
   { id: '4', name: 'Transaksi', slug: 'transaction-list' },
-  { id: '5', name: 'Voucher Saya', slug: 'specialty-items' },
+  { id: '5', name: 'Voucher Saya', slug: '/profile/profile' },
 ];

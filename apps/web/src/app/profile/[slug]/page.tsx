@@ -236,7 +236,7 @@ export default function ProfilePage({ params }: profileSlug) {
                 {subcategories.map((subcat) => (
                   <li key={subcat.id}>
                     <Link
-                      href={`/profile/${subcat.slug}`}
+                      href={`/${subcat.slug}`}
                       className="block px-3 py-2 rounded hover:bg-gray-100 transition"
                     >
                       {subcat.name}

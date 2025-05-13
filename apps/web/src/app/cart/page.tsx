@@ -1,8 +1,8 @@
 'use client';
 import MyCartList from '@/components/Cart/MyCartList.component';
 import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
-import ChooseAddressCheckout from '@/components/Checkout/ChooseAddressCheckout.component';
 import PaymentSummaryCart from '@/components/Checkout/PaymentSummaryCart.component';
+import ChooseAddressCheckout from '@/components/ChooseAddressCheckout';
 import { cartTotalPageAPI } from '@/helper/pagination/pagination.helper';
 import { PageContext, RefreshContext } from '@/interface/pagination.interface';
 import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
@@ -25,6 +25,7 @@ export default function CartPage() {
   // set first page
   const params = new URLSearchParams();
   React.useEffect(() => {
+    dispatch(updateCheckoutProgress('CART'));
     if (status === 'loading' || status === 'unauthenticated') {
       setLoading(true);
       return;
