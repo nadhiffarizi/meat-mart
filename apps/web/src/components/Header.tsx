@@ -1,4 +1,5 @@
 'use client';
+import { usePathname } from 'next/navigation';
 import Mobile from './Mobile';
 import Navbar from './Navbar';
 import { useState, useEffect } from 'react';
@@ -15,11 +16,18 @@ export const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const pathname = usePathname();
+  const [isDashboard, setIsDashboard] = useState(false);
+
+  useEffect(() => {
+    setIsDashboard(pathname.startsWith('/dashboard'));
+  }, [pathname]);
+
   return (
     <div className="lg:mb-0 md:mb-24 ">
-      <Navbar isFixed={true} />
+      {!isDashboard && <Navbar isFixed={false} />}
 
-      <Mobile isSticky={isScrolled} />
+      {!isDashboard && <Mobile isSticky={isScrolled} />}
       {isScrolled && <div className="h-[0px] bg-red-700"></div>}
     </div>
   );

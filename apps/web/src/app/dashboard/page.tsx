@@ -8,7 +8,8 @@ function Page() {
   return (
     <div className="flex flex-col gap-8">
       <div className="text-primaryText text-3xl font-semibold">
-        Hello {session?.user.email}, what would you like to do?
+        Hello <span className="break-all">{session?.user.email}</span>, what
+        would you like to do?
       </div>
       <div className="flex gap-4 flex-wrap">
         {session?.user.role === 'SUPER_ADMIN' && (

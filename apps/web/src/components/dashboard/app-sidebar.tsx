@@ -63,13 +63,15 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent className="flex flex-col justify-between py-4 px-5">
         <div className="flex flex-col gap-2">
-          <Image
-            src={meatMartDashboard}
-            width={500}
-            height={500}
-            className="object-cover"
-            alt="Meat Mart Logo"
-          ></Image>
+          <Link href={'/dashboard'}>
+            <Image
+              src={meatMartDashboard}
+              width={500}
+              height={500}
+              className="object-cover"
+              alt="Meat Mart Logo"
+            ></Image>
+          </Link>
 
           <nav className="space-y-4">
             {items.map((item) => {
