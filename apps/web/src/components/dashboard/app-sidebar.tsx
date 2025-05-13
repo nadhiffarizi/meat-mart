@@ -24,7 +24,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import Image from 'next/image';
-import meatMart from '@/media/image/meat-mart-large.jpeg';
+import meatMartDashboard from '@/media/image/meat-mart-dashboard.png';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
@@ -64,7 +64,7 @@ export function AppSidebar() {
       <SidebarContent className="flex flex-col justify-between py-4 px-5">
         <div className="flex flex-col gap-2">
           <Image
-            src={meatMart}
+            src={meatMartDashboard}
             width={500}
             height={500}
             className="object-cover"
