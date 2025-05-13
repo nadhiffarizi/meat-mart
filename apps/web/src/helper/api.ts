@@ -1,8 +1,8 @@
 /** @format */
 
-import { api_url } from '../config';
+import { api_url } from './config';
 import { jwtDecode } from 'jwt-decode';
-import { refreshToken } from './auth';
+import { refreshToken } from './auth/auth';
 
 export const api = async (
   path: string,

@@ -3,8 +3,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from './auth';
 import { useEffect, useState } from 'react';
-import { IGetStores } from './interface/store.interface';
-import { api } from './helpers/api';
+import { IGetStores } from './interface/store/store.interface';
+import { api } from './helper/api';
 
 export async function middleware(req: NextRequest) {
   const session = await auth();

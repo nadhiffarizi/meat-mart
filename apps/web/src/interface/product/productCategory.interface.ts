@@ -1,4 +1,4 @@
-export default interface IGetProductCategory {
+export interface IGetProductCategory {
   id: string;
   product_id: string;
   category_id: string;

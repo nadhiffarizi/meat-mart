@@ -3,9 +3,12 @@ import OrderListCard from '@/components/Order/OrderListCard.component';
 import SearchBarOrderList from '@/components/Order/SearchBarOrderList.component';
 import { setQueryParams } from '@/helper/filter/orderFilter.helper';
 import { callToast } from '@/helper/notify.helper';
-import { getDataOrderAPI, syncOrderDataFromAPI } from '@/helper/order.helper';
-import { IFilterOrder } from '@/interface/filter.interface';
-import { IOrder } from '@/interface/order.interface';
+import {
+  getDataOrderAPI,
+  syncOrderDataFromAPI,
+} from '@/helper/transaction/order.helper';
+import { IFilterOrder } from '@/interface/dashboard/filter.interface';
+import { IOrder } from '@/interface/transaction/order.interface';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 

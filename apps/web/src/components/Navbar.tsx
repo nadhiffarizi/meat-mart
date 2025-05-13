@@ -7,7 +7,7 @@ import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
 import { useAppSelector } from '@/redux/store';
-import { countTotalInCart } from '@/helper/cart.helper';
+import { countTotalInCart } from '@/helper/cart/cart.helper';
 import { Button, IconButton } from '@mui/material';
 import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';

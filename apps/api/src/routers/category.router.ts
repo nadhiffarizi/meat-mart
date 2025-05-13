@@ -12,21 +12,9 @@ export class CategoryRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/all', verifyToken, categoryController.getAllCategories);
-    this.router.get('/', verifyToken, categoryController.getCategory);
-    this.router.post(
-      '/',
-      verifyToken,
-      validateCategoryCreateAndUpdateBody,
-      categoryController.createCategory,
-    );
-    this.router.patch(
-      '/:id',
-      verifyToken,
-      validateCategoryCreateAndUpdateBody,
-      categoryController.updateCategory,
-    );
-    this.router.delete('/:id', verifyToken, categoryController.deleteCategory);
+    this.router.get('/all', categoryController.getAllCategories);
+    this.router.get('/', categoryController.getCategory);
+
     // .... continue api
   }
 

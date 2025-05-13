@@ -1,6 +1,6 @@
-import IStock from './stocks.interface';
+import { IStock } from '../stock/stocks.interface';
 
-export default interface IProduct {
+export interface IProduct {
   id: string;
   name: string;
   slug: string;
@@ -9,9 +9,9 @@ export default interface IProduct {
   availableStocks: IStock[];
 }
 
-import IGetProductCategory from './productCategory.interface';
+import { IGetProductCategory } from './productCategory.interface';
 import { IGetProductPictures } from './productPictures.interface';
-import { IGetStocks } from './stocks.interface';
+import { IGetStocks } from '../stock/stocks.interface';
 
 export interface IGetDashboardProducts {
   id: string;

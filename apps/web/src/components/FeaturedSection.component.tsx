@@ -2,8 +2,8 @@
 import { apiRequest } from '@/helper/api.helper';
 import * as React from 'react';
 import ProductCard from './ProductCard.component';
-import IProduct from '@/interface/product.interface';
-import { getProducts } from '@/helper/product.helper';
+import { IProduct } from '@/interface/product/product.interface';
+import { getProducts } from '@/helper/product/product.helper';
 import { useEffect, useState } from 'react';
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>();

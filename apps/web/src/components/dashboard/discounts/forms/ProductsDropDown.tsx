@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { IGetDashboardProducts } from '@/interface/product.interface';
+import { IGetDashboardProducts } from '@/interface/product/product.interface';
 import Link from 'next/link';
 
 export function ProductDropDown({

@@ -1,4 +1,4 @@
-export default interface IStock {
+export interface IStock {
   id: string;
   quantity: number;
   stores: {
@@ -8,7 +8,7 @@ export default interface IStock {
   };
 }
 
-import { IGetDashboardProducts } from './product.interface';
+import { IGetDashboardProducts } from '../product/product.interface';
 
 export interface IGetStocks {
   id: string;

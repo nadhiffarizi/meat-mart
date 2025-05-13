@@ -1,6 +1,6 @@
 /** @format */
 'use client';
-import { register } from '@/helper/handlers/auth';
+import { register } from '@/helper/auth/auth';
 import { registerInit } from '@/helper/formik.init';
 import { registerValidator } from '@/models/auth.model';
 import { Alert, Snackbar, Divider, Button } from '@mui/material';

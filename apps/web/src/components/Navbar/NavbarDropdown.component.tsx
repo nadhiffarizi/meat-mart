@@ -1,4 +1,4 @@
-import { currencyFormatter } from '@/helper/product.helper';
+import { currencyFormatter } from '@/helper/product/product.helper';
 import { useAppSelector } from '@/redux/store';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';

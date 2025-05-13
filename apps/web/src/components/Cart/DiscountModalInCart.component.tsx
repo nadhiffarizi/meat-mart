@@ -16,8 +16,8 @@ import {
   getAvailableDiscountsAPI,
   redeemDiscountAPI,
   syncDiscountDataFromAPI,
-} from '@/helper/discount.helper';
-import { IDiscount } from '@/interface/discount.interface';
+} from '@/helper/discount/discount.helper';
+import { IDiscount } from '@/interface/discount/discount.interface';
 import { callToast } from '@/helper/notify.helper';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { addDiscountToCartItem } from '@/redux/slice/cart.slice';

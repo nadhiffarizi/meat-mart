@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { api } from '@/helper/handlers/api';
+import { api } from '@/helper/api';
 import { DataTable } from './DataTable';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';

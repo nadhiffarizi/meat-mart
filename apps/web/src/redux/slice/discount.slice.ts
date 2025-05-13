@@ -1,18 +1,20 @@
-import { IDiscount } from "@/interface/discount.interface"
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { IDiscount } from '@/interface/discount/discount.interface';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const discountInitialState: IDiscount = {}
-
+const discountInitialState: IDiscount = {};
 
 const discountSlice = createSlice({
-    name: "checkoutState",
-    initialState: discountInitialState,
-    reducers: {
-        selectDiscount: (state: IDiscount, action: PayloadAction<{ discount: IDiscount }>) => {
-            return state
-        }
-    }
-})
+  name: 'checkoutState',
+  initialState: discountInitialState,
+  reducers: {
+    selectDiscount: (
+      state: IDiscount,
+      action: PayloadAction<{ discount: IDiscount }>,
+    ) => {
+      return state;
+    },
+  },
+});
 
 export const { selectDiscount } = discountSlice.actions;
-export default discountSlice.reducer
+export default discountSlice.reducer;

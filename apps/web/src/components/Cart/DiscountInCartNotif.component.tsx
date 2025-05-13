@@ -1,11 +1,11 @@
-import { getAvailableDiscountsAPI } from '@/helper/discount.helper';
+import { getAvailableDiscountsAPI } from '@/helper/discount/discount.helper';
 import { Cancel, Discount, LocalActivity } from '@mui/icons-material';
 import { Button, IconButton, Modal } from '@mui/material';
 import * as React from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { DiscountDialogInCart } from './DiscountModalInCart.component';
 import { useAppSelector } from '@/redux/store';
-import { indexCartById } from '@/helper/cart.helper';
+import { indexCartById } from '@/helper/cart/cart.helper';
 
 export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
   const cartState = useAppSelector((state) => state.cartState);

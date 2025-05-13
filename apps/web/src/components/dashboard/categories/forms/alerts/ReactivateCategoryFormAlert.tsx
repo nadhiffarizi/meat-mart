@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Toaster, toast } from 'sonner';
-import { api } from '@/helper/handlers/api';
+import { api } from '@/helper/api';
 import { useSession } from 'next-auth/react';
 
 async function reactivateCategory(
@@ -27,7 +27,7 @@ async function reactivateCategory(
 ) {
   try {
     const response = await api(
-      `category?restore=true`,
+      `dashboard/category?restore=true`,
       'POST',
       {
         body: {

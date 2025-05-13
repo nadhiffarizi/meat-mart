@@ -1,6 +1,6 @@
-import { ICart } from '@/interface/cart.interface';
-import { IOrderInput } from '@/interface/checkout.interface';
-import { apiRequest } from './api.helper';
+import { ICart } from '@/interface/cart/cart.interface';
+import { IOrderInput } from '@/interface/checkout/checkout.interface';
+import { apiRequest } from '../api.helper';
 
 export const totalDiscountApplied = (cartState: ICart[]) => {
   let totalDefaultPrice = 0;
@@ -66,8 +66,7 @@ export const createTransactionPayload = (
 
   const payload = { orderInputs, userId: userId };
   // console.log(payload);
-  return payload
-
+  return payload;
 };
 
 export const createTransactionAPI = async (apiRoute: string, payload: any) => {

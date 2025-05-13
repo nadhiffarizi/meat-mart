@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/16/solid';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { useEffect, useState, useRef } from 'react';
-import { countTotalInCart } from '@/helper/cart.helper';
+import { countTotalInCart } from '@/helper/cart/cart.helper';
 import NavbarDropDown from './NavbarDropdown.component';
 
 export default function NavBar() {

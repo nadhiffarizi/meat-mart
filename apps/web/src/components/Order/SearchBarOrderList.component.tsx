@@ -9,7 +9,7 @@ import {
   IFilterStatus,
   IFilterStatusOrder,
   IFilterTransactions,
-} from '@/interface/filter.interface';
+} from '@/interface/dashboard/filter.interface';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
 import {

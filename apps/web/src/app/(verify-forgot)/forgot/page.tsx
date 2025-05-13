@@ -1,11 +1,11 @@
 'use client';
-import { resendVerificationEmail, resetEmail } from '@/helper/handlers/auth';
+import { resendVerificationEmail, resetEmail } from '@/helper/auth/auth';
 import { useFormik } from 'formik';
 import React, { useState } from 'react';
 
 type Props = {};
 
-export default function page({}: Props) {
+export default function Page({}: Props) {
   const [success, setSuccess] = useState<boolean>(false);
 
   const formik = useFormik({
@@ -48,7 +48,7 @@ export default function page({}: Props) {
 
           {success && (
             <div className="mt-4 mb-2 p-2 bg-green-100 text-green-700 rounded">
-              We've sent you a reset email
+              <span>We have sent you an email</span>
             </div>
           )}
           <button

@@ -1,14 +1,13 @@
-import { statusEnum } from "@/enums/statusEnum.enums";
-import { xDistancePrisma } from "@/helper/location/distance.helper";
-import ILocation from "@/interface/location.interface";
-import { Request } from "express";
-import { findStocksByProduct } from "@/helper/stock/stock.helper";
-import { returnServiceFeedback } from "@/helper/responseHandler.helper";
+import { statusEnum } from '@/enums/statusEnum.enums';
+import { xDistancePrisma } from '@/helper/location/distance.helper';
+import ILocation from '@/interface/location.interface';
+import { Request } from 'express';
+import { findStocksByProduct } from '@/helper/stock/stock.helper';
+import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
 
 class ProductService {
-
   async create(req: Request) {
     const { name, weight, price } = req.body;
     const productAdded = await prisma.products.create({
@@ -25,9 +24,9 @@ class ProductService {
   async getProducts(req: Request) {
     try {
       const loc1: ILocation = {
-        lat: "-6.2263977",
-        lon: "106.8584389"
-      }
+        lat: '-6.2263977',
+        lon: '106.8584389',
+      };
       const products = await xDistancePrisma(loc1).products.findMany({
         select: {
           id: true,
@@ -38,34 +37,81 @@ class ProductService {
           created_at: true,
           updated_at: true,
           deleted_at: true,
-        }
-      })
-      const data: any[] = []
+        },
+      });
+      const data: any[] = [];
 
       for (let product of products) {
-        const availableStocks = await findStocksByProduct(product.id, loc1)
-        const temp = { ...product, ...{ "availableStocks": availableStocks } }
-        data.push({ ...temp })
+        const availableStocks = await findStocksByProduct(product.id, loc1);
+        const temp = { ...product, ...{ availableStocks: availableStocks } };
+        data.push({ ...temp });
       }
 
-      return returnServiceFeedback(200, data, statusEnum.SUCCESS, "get product success")
+      return returnServiceFeedback(
+        200,
+        data,
+        statusEnum.SUCCESS,
+        'get product success',
+      );
     } catch (error) {
-      return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get product failed")
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'get product failed',
+      );
     }
   }
 
   async getAllProducts(req: Request) {
-    const getProductList = await prisma.products.findMany({});
-    let feedback: serviceFeedback;
-    feedback = {
+    const includeDeleted = req.query.includeDeleted === 'true';
+    const rawLimit = Number(req.query.limit);
+    const limit = Number.isNaN(rawLimit) ? undefined : rawLimit;
+
+    const allProducts = await prisma.products.findMany({
+      include: {
+        ProductCategories: true,
+        ProductPictures: true,
+        Stocks: true,
+      },
+      where: includeDeleted
+        ? undefined
+        : {
+            deleted_at: null,
+          },
+      ...(limit !== undefined ? { take: limit } : {}),
+    });
+
+    const feedback: serviceFeedback = {
       code: 200,
-      data: getProductList,
+      data: allProducts,
       status: statusEnum.SUCCESS,
-      message: `Fetching all products`,
+      message: `Successfully fetched all products.`,
     };
     return feedback;
   }
 
+  async getAllProductsByCategoryId(req: Request) {
+    const categoryId = req.params.categoryId;
 
+    const allProducts = await prisma.products.findMany({
+      where: {
+        ProductCategories: {
+          some: {
+            category_id: categoryId,
+          },
+        },
+        deleted_at: null,
+      },
+    });
+
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: allProducts,
+      status: statusEnum.SUCCESS,
+      message: `Successfully fetched all products with category_ID ${categoryId}.`,
+    };
+    return feedback;
+  }
 }
-export default new ProductService()
+export default new ProductService();

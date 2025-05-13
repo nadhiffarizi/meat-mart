@@ -6,8 +6,8 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helper/handlers/api';
-import { IGetCategories } from '../../../../interface/category.interface';
+import { api } from '@/helper/api';
+import { IGetCategories } from '../../../../interface/product/category.interface';
 import EditCategoryFormDeleteAlert from './alerts/EditCategoryFormDeleteAlert';
 import EditCategoryFormAlert from './alerts/EditCategoryFormAlert';
 
@@ -27,7 +27,7 @@ function EditCategoryForm({ id }: { id: string }) {
     async function getCategoryData() {
       try {
         const response = await api(
-          `category?id=${id}`,
+          `dashboard/category?id=${id}`,
           'GET',
           {},
           session?.user.access_token,
@@ -50,7 +50,7 @@ function EditCategoryForm({ id }: { id: string }) {
       try {
         setDisabled(true);
         const response = await api(
-          `category/${id}`,
+          `dashboard/category/${id}`,
           'PATCH',
           {
             body: {

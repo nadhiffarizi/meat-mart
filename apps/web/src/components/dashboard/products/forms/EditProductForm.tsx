@@ -6,14 +6,14 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helper/handlers/api';
-import { IGetDashboardProducts } from '@/interface/product.interface';
+import { api } from '@/helper/api';
+import { IGetDashboardProducts } from '@/interface/product/product.interface';
 import EditProductFormDeleteAlert from './alerts/EditProductFormDeleteAlert';
 import EditProductFormAlert from './alerts/EditProductFormAlert';
-import { IGetCategories } from '@/interface/category.interface';
+import { IGetCategories } from '@/interface/product/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
-import IGetProductCategory from '@/interface/productCategory.interface';
+import { IGetProductCategory } from '@/interface/product/productCategory.interface';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for this product.'),
@@ -54,7 +54,7 @@ function EditProductForm({ id }: { id: string }) {
     try {
       async function getAllCategories() {
         const allCategories = await api(
-          `category/all`,
+          `dashboard/category/all`,
           'GET',
           {},
           session?.user.access_token,

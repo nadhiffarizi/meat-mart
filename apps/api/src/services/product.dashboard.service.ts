@@ -11,27 +11,19 @@ import { createSlug } from '@/helper/slug.helper';
 
 class ProductService {
   async getAllProducts(req: Request) {
-    let allProducts;
-    if (req.query.includeDeleted === 'true') {
-      allProducts = await prisma.products.findMany({
-        include: {
-          ProductCategories: true,
-          ProductPictures: true,
-          Stocks: true,
-        },
-      });
-    } else {
-      allProducts = await prisma.products.findMany({
-        where: {
-          deleted_at: null,
-        },
-        include: {
-          ProductCategories: true,
-          ProductPictures: true,
-          Stocks: true,
-        },
-      });
-    }
+    const includeDeleted = req.query.includeDeleted === 'true';
+    const allProducts = await prisma.products.findMany({
+      include: {
+        ProductCategories: true,
+        ProductPictures: true,
+        Stocks: true,
+      },
+      where: includeDeleted
+        ? undefined
+        : {
+            deleted_at: null,
+          },
+    });
 
     const feedback: serviceFeedback = {
       code: 200,

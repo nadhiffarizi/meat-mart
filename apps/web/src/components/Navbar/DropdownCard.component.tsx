@@ -1,6 +1,6 @@
-import { subtractCartAPI } from '@/helper/cart.helper';
-import { currencyFormatter } from '@/helper/product.helper';
-import { ICart } from '@/interface/cart.interface';
+import { subtractCartAPI } from '@/helper/cart/cart.helper';
+import { currencyFormatter } from '@/helper/product/product.helper';
+import { ICart } from '@/interface/cart/cart.interface';
 import { subtractCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { XIcon } from 'lucide-react';
@@ -37,7 +37,8 @@ export default function Dropdowncard({ cartItem }: { cartItem: ICart }) {
           </div>
           <div className="w-full h-1/2 ">
             <small>
-              {cartItem.quantity} x {currencyFormatter(cartItem.product.price!)}{' '}
+              {cartItem.quantity} x{' '}
+              {currencyFormatter(cartItem.product.price!)}{' '}
             </small>
           </div>
         </div>

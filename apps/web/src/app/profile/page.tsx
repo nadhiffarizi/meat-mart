@@ -1,5 +1,5 @@
 import ProfileForm from '@/components/ProfileForm';
-import { IProfile } from '@/interface/card.interface';
+import { IProfile } from '@/interface/product/card.interface';
 import { Camera, CameraAltRounded } from '@mui/icons-material';
 import { Avatar } from '@mui/material';
 import Link from 'next/link';

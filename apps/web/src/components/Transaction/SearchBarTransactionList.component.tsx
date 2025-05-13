@@ -7,7 +7,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import {
   IFilterStatus,
   IFilterTransactions,
-} from '@/interface/filter.interface';
+} from '@/interface/dashboard/filter.interface';
 import {
   statusFilterToArray,
   statusFilterUpdate,

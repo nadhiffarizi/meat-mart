@@ -6,13 +6,13 @@ import { useFormik } from 'formik';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { api } from '@/helper/handlers/api';
+import { api } from '@/helper/api';
 import Link from 'next/link';
 import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
 import AddAdminFormAlert from './Alerts/AddAdminFormAlert';
 import ReactivateAccountAdminFormAlert from './Alerts/RectivateAccountAdminFormAlert';
-import { IGetUsers } from '@/interface/user.interface';
+import { IGetUsers } from '@/interface/user/user.interface';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),

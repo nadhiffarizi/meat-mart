@@ -2,14 +2,10 @@
 
 import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import {
-  login,
-  refreshToken,
-  registerSocialUser,
-} from './helper/handlers/auth';
+import { login, refreshToken, registerSocialUser } from './helper/auth/auth';
 import Google from 'next-auth/providers/google';
 import { jwtDecode } from 'jwt-decode';
-import { InvalidAuthError } from './interface/auth.error';
+import { InvalidAuthError } from './interface/user/auth.error';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {

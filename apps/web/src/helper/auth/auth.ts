@@ -1,6 +1,6 @@
 /** @format */
 'use server';
-import { api } from './api';
+import { api } from '../api';
 import { cookies } from 'next/headers';
 import { decode } from 'next-auth/jwt';
 import { auth_secret } from '../config';

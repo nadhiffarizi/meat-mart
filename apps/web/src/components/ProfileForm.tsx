@@ -4,7 +4,7 @@ import { Users } from '@prisma/client';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { IProfile } from '@/interface/card.interface';
+import { IProfile } from '@/interface/product/card.interface';
 import { profile } from 'console';
 
 interface ProfileFormProps {

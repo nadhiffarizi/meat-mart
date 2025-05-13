@@ -1,7 +1,7 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { resendVerificationEmail } from '@/helper/handlers/auth';
+import { resendVerificationEmail } from '@/helper/auth/auth';
 import { useState } from 'react';
 
 export default function VerificationSentPage() {
@@ -46,7 +46,7 @@ export default function VerificationSentPage() {
       <div className="bg-gray-100 p-4 rounded-lg mb-6">
         <p className="">{email}</p>
       </div>
-      <p>We've sent a verification link to your email address.</p>
+      <p>We have ve sent a verification link to your email address.</p>
 
       {success && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
@@ -61,7 +61,7 @@ export default function VerificationSentPage() {
 
       <div className="mt-6 space-y-4">
         <p className="text-sm text-gray-600">
-          Didn't receive the email?{' '}
+          Did not receive the email?{' '}
           <button
             className={`text-blue-500 underline ${isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleResend}

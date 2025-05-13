@@ -1,9 +1,9 @@
-import { countCartTotalPrice } from '@/helper/cart.helper';
+import { countCartTotalPrice } from '@/helper/cart/cart.helper';
 import {
   totalAfterDiscount,
   totalDiscountApplied,
-} from '@/helper/checkout.helper';
-import { currencyFormatter } from '@/helper/product.helper';
+} from '@/helper/checkout/checkout.helper';
+import { currencyFormatter } from '@/helper/product/product.helper';
 import { useAppSelector } from '@/redux/store';
 import { Box, Button } from '@mui/material';
 import { useRouter } from 'next/navigation';

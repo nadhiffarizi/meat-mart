@@ -1,10 +1,10 @@
-import { currencyFormatter } from '@/helper/product.helper';
-import { ICart } from '@/interface/cart.interface';
+import { currencyFormatter } from '@/helper/product/product.helper';
+import { ICart } from '@/interface/cart/cart.interface';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { Close } from '@mui/icons-material';
 import { IconButton, MenuItem } from '@mui/material';
 import { subtractCartState } from '@/redux/slice/cart.slice';
-import { subtractCartAPI } from '@/helper/cart.helper';
+import { subtractCartAPI } from '@/helper/cart/cart.helper';
 import * as React from 'react';
 
 export default function CartCard({ cartItem }: { cartItem: ICart }) {

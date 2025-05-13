@@ -5,7 +5,6 @@ import authService from '@/services/auth.service';
 import orderService from '@/services/transaction.service';
 import productService from '@/services/product.service';
 
-
 export class ProductController {
   public async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
@@ -18,11 +17,35 @@ export class ProductController {
   public async getProducts(req: Request, res: Response, next: NextFunction) {
     try {
       // try registering
-      const data: serviceFeedback = await productService.getProducts(req)
-      responseHandler(res, data.message, data.status, data.data, data.code)
-
+      const data: serviceFeedback = await productService.getProducts(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
-      next(error)
+      next(error);
+    }
+  }
+
+  public async getAllProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+      // try registering
+      const data: serviceFeedback = await productService.getAllProducts(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAllProductsByCategoryId(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try registering
+      const data: serviceFeedback =
+        await productService.getAllProductsByCategoryId(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -43,7 +66,6 @@ export class ProductController {
   //     next(error);
   //   }
   // }
-
 }
 
-export default new ProductController()
+export default new ProductController();
