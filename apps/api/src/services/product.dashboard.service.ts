@@ -168,9 +168,26 @@ class ProductService {
         data: { deleted_at: null },
       });
 
+      const activeStores = await prisma.stores.findMany({
+        where: { deleted_at: null },
+      });
+
       await prisma.stocks.updateMany({
-        where: { product_id: existingProduct.id },
+        where: {
+          product_id: existingProduct.id,
+          store_id: { in: activeStores.map((store) => store.id) },
+        },
         data: { deleted_at: null },
+      });
+
+      await prisma.discounts.updateMany({
+        where: {
+          product_id: existingProduct.id,
+          store_id: { in: activeStores.map((store) => store.id) },
+        },
+        data: {
+          deleted_at: null,
+        },
       });
 
       const feedback: serviceFeedback = {
