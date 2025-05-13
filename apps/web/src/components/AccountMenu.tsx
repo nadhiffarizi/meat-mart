@@ -1,5 +1,5 @@
 import { signOut, useSession } from 'next-auth/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -10,11 +10,13 @@ import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
-import { Button } from '@mui/material';
+import { Button, ListItem, ListItemButton } from '@mui/material';
 import Link from 'next/link';
-import { getProfile } from '@/helpers/handlers/auth';
-import { IProfile } from '@/interfaces/card.interface';
+import { getProfile } from '@/helper/auth/auth';
+import { IProfile } from '@/interface/user/user.interface';
 import { useRouter } from 'next/navigation';
+import { ListIcon, ListOrdered, ShoppingBag } from 'lucide-react';
+import { ShoppingBagOutlined } from '@mui/icons-material';
 
 export default function AccountMenu() {
   const { data: session, status } = useSession();
@@ -127,16 +129,18 @@ export default function AccountMenu() {
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar src={profile?.image_url || undefined} /> Profile
+          <Avatar src={profile?.image_url || undefined} /> Akun Saya
         </MenuItem>
         <MenuItem
           onClick={handleClose}
+          component={Link}
+          href="/profile/order-list"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar src={profile?.image_url || undefined} /> My account
+          <ShoppingBagOutlined className="text-primaryText mr-2" /> Pesanan Saya
         </MenuItem>
         <Divider />
         {/* <MenuItem onClick={handleClose}>

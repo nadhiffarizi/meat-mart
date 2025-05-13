@@ -2,18 +2,19 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
 import { Request } from 'express';
-import { hashedPassword } from '../helpers/bcrypt';
 import { compare } from 'bcrypt';
 import {
   getUserByEmail,
   sendResetEmail,
   sendVerificationEmail,
-} from '@/helpers/user.prisma';
+} from '@/helper/user.prisma';
 import { IUser } from '@/interface/User.interface';
-import { generateAuthToken } from '@/helpers/token';
+import { generateAuthToken } from '@/helper/token';
 import { v4 as uuidv4 } from 'uuid';
 import { isAfter } from 'date-fns';
-import { registerSocialUser } from '@/helpers/handlers/auth';
+import { registerSocialUser } from '@/helper/auth';
+import { hashedPassword } from '@/helper/bcrypt';
+import { ErrorHandler } from '@/helper/responseHandler.helper';
 
 class AuthService {
   async register(req: Request) {
@@ -120,10 +121,11 @@ class AuthService {
         message: `The email that you've entered is not verified. Please, check your email`,
       };
     }
+    console.log(await compare(password, existingUser.password!));
 
     if (
       !existingUser.password ||
-      !(await compare(password, existingUser.password))
+      !(await compare(password as string, existingUser.password))
     ) {
       return {
         code: 401,
@@ -163,7 +165,9 @@ class AuthService {
   }
 
   async refreshToken(req: Request) {
-    if (!req.user?.email) throw new Error('invalid token');
+    if (!req.user || !req.user.email) {
+      throw new ErrorHandler('Invalid token', 401);
+    }
     const refreshToken = await generateAuthToken(undefined, req.user?.email);
 
     let feedback: serviceFeedback;
@@ -213,6 +217,7 @@ class AuthService {
       user.verification_expiry &&
       isAfter(new Date(), user.verification_expiry)
     ) {
+      console.log('into verification link has expired');
       return {
         code: 400,
         data: null,

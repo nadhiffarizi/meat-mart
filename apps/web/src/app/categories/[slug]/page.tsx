@@ -14,6 +14,5 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     return notFound();
   }
 
-  // This will automatically redirect to the default subcategory
   return null;
 }

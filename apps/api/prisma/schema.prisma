@@ -101,7 +101,7 @@ model UserAddresses {
 
 model Products {
   id                 String               @id @default(uuid())
-  name               String
+  name               String               @unique
   slug               String               @unique
   price              Float
   weight             Float
@@ -110,22 +110,22 @@ model Products {
   deleted_at         DateTime?
   ProductPictures    ProductPictures[]
   Stocks             Stocks[]
-  Categories         Categories[]
   Discounts          Discounts[]
   TransactionDetails TransactionDetails[]
   StockHistory       StockHistory[]
+  ProductCategories  ProductCategories[]
 
   @@map("products")
 }
 
 model Categories {
   id         String    @id @default(uuid())
-  name       String
-  product_id String
-  products   Products  @relation(fields: [product_id], references: [id])
+  name       String    @unique
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt()
   deleted_at DateTime?
+
+  ProductCategories ProductCategories[]
 
   @@map("categories")
 }
@@ -185,8 +185,8 @@ model Stores {
 
 model Discounts {
   id                      String          @id @default(uuid())
-  product_id              String
-  products                Products        @relation(fields: [product_id], references: [id])
+  product_id              String?
+  products                Products?       @relation(fields: [product_id], references: [id])
   store_id                String
   stores                  Stores          @relation(fields: [store_id], references: [id])
   start_date              DateTime
@@ -221,16 +221,16 @@ model Carts {
 
 model Transactions {
   id                 String               @id @default(uuid())
-  total_price        Float
-  minimum_buy        Boolean?
-  amount_discount    Float?
-  deadline_payment   DateTime
+  total_price        Float?
+  deadline_payment   DateTime?
   transaction_status E_TransactionStatus
   payment_proof      String?
   users_id           String
   users              Users                @relation(fields: [users_id], references: [id])
+  invoice_number     String?
+  payment_method     String
   created_at         DateTime             @default(now())
-  updated_at         DateTime             @updatedAt()
+  updated_at         DateTime             @updatedAt
   deleted_at         DateTime?
   TransactionDetails TransactionDetails[]
 
@@ -255,8 +255,9 @@ model TransactionDetails {
   products          Products             @relation(fields: [product_id], references: [id])
   discounted        Boolean
   discount_code     String?
-  created_at        DateTime             @default(now())
-  updated_at        DateTime             @updatedAt()
+  status            E_OrderStatus
+  created_at        DateTime
+  updated_at        DateTime
   deleted_at        DateTime?
   OrderStatus       OrderStatusHistory[]
 
@@ -288,4 +289,17 @@ model StockHistory {
   deleted_at DateTime?
 
   @@map("stockhistory")
+}
+
+model ProductCategories {
+  id          String     @id @default(uuid())
+  product_id  String
+  product     Products   @relation(fields: [product_id], references: [id])
+  category_id String
+  category    Categories @relation(fields: [category_id], references: [id])
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt()
+  deleted_at  DateTime?
+
+  @@map("product_categories")
 }

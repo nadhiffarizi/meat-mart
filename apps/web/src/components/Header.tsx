@@ -16,11 +16,11 @@ export const Header = () => {
   }, []);
 
   return (
-    <div className="md:mb-24">
-      <Navbar />
+    <div className="lg:mb-0 md:mb-24 ">
+      <Navbar isFixed={true} />
 
       <Mobile isSticky={isScrolled} />
-      {/* {isScrolled && <div className="h-[0px] bg-red-700"></div>} */}
+      {isScrolled && <div className="h-[0px] bg-red-700"></div>}
     </div>
   );
 };

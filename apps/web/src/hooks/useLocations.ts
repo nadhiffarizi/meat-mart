@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProvinces, getCities, getDistricts } from '@/helpers/location';
+import { getProvinces, getCities, getDistricts } from '@/helper/location';
 import { ErrorMessage } from 'formik';
 
 export function useLocations() {

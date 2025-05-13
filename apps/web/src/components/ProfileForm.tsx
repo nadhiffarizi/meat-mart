@@ -1,7 +1,7 @@
 'use client';
+
 import { useState } from 'react';
-import { IProfile } from '@/interfaces/card.interface';
-import { Alert, Snackbar } from '@mui/material';
+import { IProfile } from '@/interface/user/user.interface';
 
 interface ProfileFormProps {
   profile: IProfile;

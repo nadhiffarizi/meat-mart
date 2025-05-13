@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { meatCategories } from '@/data/categories';
 
-export default function SlidingCategories() {
+export default function Categories() {
   const router = useRouter();
   const pathname = usePathname();
   const swiperRef = useRef<SwiperCore>();
@@ -27,7 +27,7 @@ export default function SlidingCategories() {
   };
 
   return (
-    <div className="relative px-4 pb-6 bg-primaryBackground">
+    <div className="relative px-4 pb-6 bg-primaryBackground ">
       <div className="max-w-7xl mx-auto">
         <div className="relative">
           <Swiper

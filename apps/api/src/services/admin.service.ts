@@ -2,42 +2,22 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
-import { getUserByEmail } from '@/helpers/user.prisma';
+import { getUserByEmail, getUserById } from '@/helper/user.prisma';
+import { hashedPassword } from '@/helper/bcrypt';
 
 class AdminService {
   async getAllUsers(req: Request) {
-    if (
-      req.query.role &&
-      !['SUPER_ADMIN', 'ADMIN', 'CUSTOMER'].includes(
-        String(req.query.role).toUpperCase(),
-      )
-    ) {
-      const feedback: serviceFeedback = {
-        code: 400,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `${req.query.role} is not a valid role.`,
-      };
-      return feedback;
-    }
-
-    if (req.query.role) {
-      const newRole = String(req.query.role).toUpperCase();
-      const allUsers = await prisma.users.findMany({
+    let allUsers;
+    if (req.query.includeDeleted === 'true') {
+      allUsers = await prisma.users.findMany();
+    } else {
+      allUsers = await prisma.users.findMany({
         where: {
-          role: newRole as 'SUPER_ADMIN' | 'ADMIN' | 'CUSTOMER',
+          deleted_at: null,
         },
       });
-      const feedback: serviceFeedback = {
-        code: 200,
-        data: allUsers,
-        status: statusEnum.SUCCESS,
-        message: `Successfully fetched all users with role ${req.query.role}.`,
-      };
-      return feedback;
     }
 
-    const allUsers = await prisma.users.findMany();
     const feedback: serviceFeedback = {
       code: 200,
       data: allUsers,
@@ -47,8 +27,73 @@ class AdminService {
     return feedback;
   }
 
+  async getUser(req: Request) {
+    if (!req.query.email && !req.query.id) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `Email or ID is required to fetch a user.`,
+      };
+      return feedback;
+    }
+
+    let user;
+
+    if (req.query.email) {
+      user = await getUserByEmail(req.query.email as string);
+    }
+
+    if (req.query.id) {
+      user = await getUserById(req.query.id as string);
+    }
+
+    if (
+      (user && user.deleted_at && req.query.includeDeleted !== 'true') ||
+      !user
+    ) {
+      const feedback: serviceFeedback = {
+        code: 404,
+        data: null,
+        status: statusEnum.FAILED,
+        message: req.query.email
+          ? `User with email ${req.params.email} does not exist.`
+          : `User with ID ${req.params.id} does not exist.`,
+      };
+      return feedback;
+    }
+
+    const feedback: serviceFeedback = {
+      code: 200,
+      data: user,
+      status: statusEnum.SUCCESS,
+      message: req.query.email
+        ? `Successfully fetched user with email ${req.params.email}.`
+        : `Successfully fetched user with ID ${req.params.id}.`,
+    };
+    return feedback;
+  }
+
   async createAdmin(req: Request) {
     const existingUser = await getUserByEmail(String(req.body.email));
+
+    if (
+      req.query.restore === 'true' &&
+      existingUser &&
+      existingUser.deleted_at
+    ) {
+      const restoredCategory = await prisma.users.update({
+        where: { email: req.body.email },
+        data: { deleted_at: null },
+      });
+      const feedback: serviceFeedback = {
+        code: 200,
+        data: restoredCategory,
+        status: statusEnum.SUCCESS,
+        message: `User with email ${req.body.email} has been restored.`,
+      };
+      return feedback;
+    }
 
     if (existingUser) {
       const feedback: serviceFeedback = {
@@ -61,7 +106,12 @@ class AdminService {
     }
 
     const newAdmin = await prisma.users.create({
-      data: req.body,
+      data: {
+        ...req.body,
+        password: await hashedPassword(req.body.password),
+        role: 'ADMIN',
+        is_verified: true,
+      },
     });
     const feedback: serviceFeedback = {
       code: 201,
@@ -73,24 +123,24 @@ class AdminService {
   }
 
   async updateAdmin(req: Request) {
-    if (!req.params.email) {
+    if (!req.params.id) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `Email is required to update admin.`,
+        message: `ID is required to update admin.`,
       };
       return feedback;
     }
 
-    const existingUser = await getUserByEmail(String(req.params.email));
+    const existingUser = await getUserById(String(req.params.id));
 
-    if (!existingUser) {
+    if (!existingUser || existingUser.deleted_at) {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
-        message: `User with email ${req.params.email} does not exist.`,
+        message: `User with ID ${req.params.id} does not exist.`,
       };
       return feedback;
     }
@@ -100,59 +150,45 @@ class AdminService {
         code: 403,
         data: null,
         status: statusEnum.FAILED,
-        message: `User with email ${req.params.email} is not a store admin.`,
+        message: `User with ID ${req.params.id} is not a store admin.`,
       };
       return feedback;
     }
 
-    if (req.body.email) {
-      const otherExistingUser = await getUserByEmail(String(req.body.email));
-
-      // if (otherExistingUser && otherExistingUser.email !== req.params.email) {
-      //   const feedback: serviceFeedback = {
-      //     code: 400,
-      //     data: null,
-      //     status: statusEnum.FAILED,
-      //     message: `Another user with email ${req.body.email} already exists.`,
-      //   };
-      //   return feedback;
-      // }
-    }
-
     const updatedAdmin = await prisma.users.update({
-      data: req.body,
+      data: { ...req.body, password: await hashedPassword(req.body.password) },
       where: {
-        email: req.params.email,
+        id: req.params.id,
       },
     });
     const feedback: serviceFeedback = {
       code: 200,
       data: updatedAdmin,
       status: statusEnum.SUCCESS,
-      message: `Admin with email ${req.body.email} successfully updated.`,
+      message: `Admin with ID ${req.params.id} successfully updated.`,
     };
     return feedback;
   }
 
   async deleteAdmin(req: Request) {
-    if (!req.params.email) {
+    if (!req.params.id) {
       const feedback: serviceFeedback = {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `Email is required to delete admin.`,
+        message: `ID is required to delete admin.`,
       };
       return feedback;
     }
 
-    const existingUser = await getUserByEmail(String(req.params.email));
+    const existingUser = await getUserById(String(req.params.id));
 
-    if (!existingUser) {
+    if (!existingUser || existingUser.deleted_at) {
       const feedback: serviceFeedback = {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
-        message: `User with email ${req.params.email} does not exist.`,
+        message: `User with ID ${req.params.id} does not exist.`,
       };
       return feedback;
     }
@@ -162,21 +198,24 @@ class AdminService {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: `User with email ${req.params.email} is not a store admin.`,
+        message: `User with ID ${req.params.id} is not a store admin.`,
       };
       return feedback;
     }
 
-    const deletedAdmin = await prisma.users.delete({
+    const deletedAdmin = await prisma.users.update({
       where: {
-        email: req.params.email,
+        id: req.params.id,
+      },
+      data: {
+        deleted_at: new Date(),
       },
     });
     const feedback: serviceFeedback = {
       code: 200,
       data: deletedAdmin,
       status: statusEnum.SUCCESS,
-      message: `Admin with email ${req.params.email} successfully deleted.`,
+      message: `Admin with ID ${req.params.id} successfully deleted.`,
     };
     return feedback;
   }

@@ -8,13 +8,13 @@ import {
   updateUserAddress,
   deleteUserAddress,
   setPrimaryAddress,
-} from '@/helpers/handlers/auth';
+} from '@/helper/auth/auth';
 import { Alert, SelectChangeEvent, Snackbar } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Address } from '@/interfaces/card.interface';
+import { Address } from '@/interface/user/address.interface';
 import { useLocations } from '@/hooks/useLocations';
 import AddressForm from './AddressForm';
 import { DeleteConfirmationDialog } from './DeleteConfirm';

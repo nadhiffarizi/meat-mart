@@ -1,8 +1,5 @@
-import authController, { AuthController } from '@/controllers/auth.controller';
-import {
-  verifyRefreshToken,
-  verifyToken,
-} from '@/middleware/authorize.middleware';
+import authController from '@/controllers/auth.controller';
+import { verifyRefreshToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class AuthRouter {

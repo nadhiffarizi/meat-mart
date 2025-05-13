@@ -1,16 +1,9 @@
-/** @format */
-
 import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import {
-  login,
-  refreshToken,
-  registerSocialUser,
-} from './helpers/handlers/auth';
+import { login, refreshToken, registerSocialUser } from './helper/auth/auth';
 import Google from 'next-auth/providers/google';
 import { jwtDecode } from 'jwt-decode';
-import { InvalidAuthError } from './interfaces/auth.error';
-import { E_Role } from '@prisma/client';
+import { InvalidAuthError } from './interface/user/auth.error';
 
 export interface ISocialUserData {
   email: string;
@@ -71,16 +64,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ account, profile }) {
       if (account?.provider === 'google') {
         try {
-          // Register or get existing user from your database
-          const userData: Partial<ISocialUserData> = {
-            email: profile?.email as string,
-            fullName: profile?.name as string,
-            image: profile?.picture as string,
-            provider: account.provider,
-            provider_id: profile?.sub as string,
-            role: 'SUPER_ADMIN' || 'ADMIN' || 'CUSTOMER',
-          };
-
           const socialUser = await registerSocialUser({
             email: profile?.email as string,
             fullName: profile?.name as string,
@@ -88,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             provider: account.provider,
             provider_id: profile?.sub as string,
           });
-          // Ensure the user object is properly returned
+          console.log('SOCIAL USER PROP', socialUser);
           if (!socialUser) {
             return false;
           }
@@ -103,7 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async jwt({ token, user }) {
-      console.log('JWT callback - user role:', user?.role);
+      console.log('JWT callback - user role:', user?.role, user);
       if (user) {
         token.access_token = user.access_token;
         token.refresh_token = user.refresh_token;
@@ -117,14 +100,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       console.log('Session callback - token role:', token.role);
       if (token.access_token) {
         const user = jwtDecode(token.access_token!) as User;
-        // session.user.id = user.id as string;
-        // session.user.email = user.email as string;
-        // session.user.image_url = user.image_url as string;
-        // session.user.first_name = user.first_name as string;
-        // session.user.last_name = user.last_name as string;
-        // session.user.role = user.role as string;
-        // session.user.access_token = token.access_token as string;
-        // session.user.is_verified = user.is_verified;
+
         session.user = {
           ...session.user,
           id: user.id as string,
@@ -143,6 +119,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 });
-
-//access_token = untuk mengakses service di dalam api
-//refresh_token = untuk mengupdate access_token yang baru

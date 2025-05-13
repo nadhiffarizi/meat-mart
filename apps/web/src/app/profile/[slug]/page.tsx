@@ -1,20 +1,17 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { IProfile } from '@/interfaces/card.interface';
-import {
-  getProfile,
-  updateProfileImage,
-  updateUser,
-} from '@/helpers/handlers/auth';
+import { IProfile } from '@/interface/user/user.interface';
+import { getProfile, updateProfileImage, updateUser } from '@/helper/auth/auth';
 import Link from 'next/link';
 import { Avatar } from '@mui/material';
 import { CameraAltRounded } from '@mui/icons-material';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/ProfileForm';
-import { cloudName, uploadPreset } from '@/helpers/config';
+import { cloudName, uploadPreset } from '@/helper/config';
 import AddressManager from '@/components/AddressManager';
+import { profileSideMenu } from '@/helper/user/user.helper';
 
 interface profileSlug {
   params: {
@@ -22,10 +19,7 @@ interface profileSlug {
   };
 }
 
-const subcategories = [
-  { id: '1', name: 'Profil', slug: 'profil' },
-  { id: '2', name: 'Alamat', slug: 'alamat' },
-];
+const subcategories = profileSideMenu;
 
 export default function ProfilePage({ params }: profileSlug) {
   const { push } = useRouter();
@@ -249,7 +243,7 @@ export default function ProfilePage({ params }: profileSlug) {
         <main className="flex-1">
           <div className="max-w-3xl mx-auto">
             <div className="bg-white shadow rounded-lg overflow-hidden">
-              {currentSlug == 'profil' ? (
+              {currentSlug == 'profil' && (
                 <>
                   {' '}
                   <div className="px-6 py-8 sm:p-10">
@@ -294,11 +288,27 @@ export default function ProfilePage({ params }: profileSlug) {
                     </div>
                   </div>
                 </>
-              ) : (
+              )}
+              {currentSlug == 'address' && (
                 <>
                   <div className="px-6 py-8 sm:p-10">
                     <AddressManager />
                   </div>
+                </>
+              )}
+              {currentSlug == 'order-list' && (
+                <>
+                  <div>heloo {currentSlug}</div>
+                </>
+              )}
+              {currentSlug == 'transaction-list' && (
+                <>
+                  <div>heloo {currentSlug}</div>
+                </>
+              )}
+              {currentSlug == 'specialty-items' && (
+                <>
+                  <div>heloo {currentSlug}</div>
                 </>
               )}
             </div>

@@ -1,5 +1,5 @@
 import { statusEnum } from '@/enums/statusEnum.enums';
-import { getCoordinates } from '@/helpers/geocode';
+import { getCoordinates } from '@/helper/geocode';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
 import { Request } from 'express';

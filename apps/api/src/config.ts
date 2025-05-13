@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
@@ -16,8 +17,17 @@ export const PORT = process.env.PORT || 8000;
 export const DATABASE_URL = process.env.DATABASE_URL || '';
 export const jwtAccessSecret = process.env.ACCESS_SECRET || '';
 export const jwtRefreshSecret = process.env.REFRESH_SECRET || '';
+export const cloudinary_config = process.env.CLOUDINARY_URL || '';
 export const node_account = {
   user: process.env.NODEMAILER_USER || '',
   pass: process.env.NODEMAILER_PASS || '',
 };
 export const opencage_apikey = process.env.OPENCAGE_API_KEY;
+export const supabase = createClient(
+  process.env.SUPABASE_PROJECT!,
+  process.env.SUPABASE_ANONKEY!,
+);
+export const midtransServerKey = process.env.MIDTRANS_SERVER_KEY || '';
+export const midtransClientKey = process.env.MIDTRANS_CLIENT_KEY || '';
+export const midtransEnpoint = process.env.MIDTRANS_ENDPOINT || '';
+export const xenditSecretKey = process.env.XENDIT_SECRET_KEY || '';

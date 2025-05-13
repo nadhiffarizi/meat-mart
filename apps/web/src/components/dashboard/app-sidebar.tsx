@@ -2,9 +2,12 @@
 import {
   Calendar,
   CircleUser,
+  CreditCard,
   FileChartColumn,
+  Forklift,
   Home,
   Inbox,
+  Package,
   PackageSearch,
   Search,
   Settings,
@@ -27,6 +30,7 @@ import Image from 'next/image';
 import meatMart from '@/media/image/meat-mart-large.jpeg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 // Menu items.
 const items = [
@@ -38,11 +42,22 @@ const items = [
     icon: PackageSearch,
   },
   {
+    title: 'Inventory',
+    url: '/dashboard/inventories',
+    icon: Forklift,
+  },
+  {
     title: 'Discounts',
     url: '/dashboard/discounts',
     icon: TicketPercent,
   },
   { title: 'Report', url: '/dashboard/reports', icon: FileChartColumn },
+  {
+    title: 'Transactions',
+    url: '/dashboard/transaction-list',
+    icon: CreditCard,
+  },
+  { title: 'Orders', url: '/dashboard/order-list', icon: Package },
   { title: 'My Profile', url: '/dashboard/profile', icon: CircleUser },
 ];
 
@@ -83,7 +98,16 @@ export function AppSidebar() {
             })}
           </nav>
         </div>
-        <button className="bg-slate-500 py-2 px-4 rounded-2xl">Log Out</button>
+        <button
+          className="bg-slate-500 py-2 px-4 rounded-2xl"
+          onClick={() => {
+            signOut({
+              redirectTo: '/',
+            });
+          }}
+        >
+          Log Out
+        </button>
       </SidebarContent>
     </Sidebar>
   );

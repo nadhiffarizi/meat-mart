@@ -1,10 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { openCageApiKey } from '@/helpers/config';
-import { Email, Search, SearchOffSharp } from '@mui/icons-material';
-import { addUserAddress } from '@/helpers/handlers/auth';
-import { Address } from '@/interfaces/card.interface';
+import { openCageApiKey } from '@/helper/config';
+import { Search } from '@mui/icons-material';
+import { Address } from '@/interface/user/address.interface';
 
 interface LocationModalProps {
   open: boolean;

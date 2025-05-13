@@ -1,3 +1,4 @@
+import { IUser } from '@/interface/user/user.interface';
 import { E_Role } from '@prisma/client';
 
 declare module 'next-auth' {
@@ -55,5 +56,13 @@ declare global {
         },
       ) => void;
     };
+  }
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: IUser;
+    }
   }
 }

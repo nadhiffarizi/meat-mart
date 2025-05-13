@@ -15,7 +15,8 @@ export class AdminRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/users', verifyToken, adminController.readUsers);
+    this.router.get('/users/all', verifyToken, adminController.getAllUsers);
+    this.router.get('/users', verifyToken, adminController.getUser);
     this.router.get('/get', adminController.getAdmin);
     this.router.get('/get-list', adminController.getAdminByCity);
     this.router.post(
@@ -25,16 +26,12 @@ export class AdminRouter {
       adminController.createUsers,
     );
     this.router.patch(
-      '/users/:email',
+      '/users/:id',
       verifyToken,
       validateAdminUpdateBody,
       adminController.updateUsers,
     );
-    this.router.delete(
-      '/users/:email',
-      verifyToken,
-      adminController.deleteUsers,
-    );
+    this.router.delete('/users/:id', verifyToken, adminController.deleteUsers);
     // .... continue api
   }
 

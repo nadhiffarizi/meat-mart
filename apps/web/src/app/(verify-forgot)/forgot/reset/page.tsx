@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { resetPassword, verifyEmail } from '@/helpers/handlers/auth';
+import { resetPassword, verifyEmail } from '@/helper/auth/auth';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { PasswordSchema } from '@/models/auth.model';

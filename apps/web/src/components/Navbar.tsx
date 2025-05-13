@@ -4,20 +4,25 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { getCartDataAPI, syncCartDataFromAPI } from '@/helper/cart/cart.helper';
+import { Backdrop, Button, CircularProgress } from '@mui/material';
+import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
+import { updateCartState } from '@/redux/slice/cart.slice';
 
-const Navbar = () => {
+const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
+  // global state cart
+  const cartState = useAppSelector((state: any) => state.cartState);
+  const dispatch = useAppDispatch();
   const { data: session, status } = useSession();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState('');
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [isLoading, setLoading] = useState<boolean>();
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('userLocation');
@@ -37,17 +42,42 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
+    setLoading(true);
+    const resCart = getCartDataAPI('cart/get', session?.user.access_token!);
+    resCart
+      .then((v) => v.json())
+      .then((values) => {
+        dispatch(updateCartState(syncCartDataFromAPI(values['data'])));
+      });
+
+    setLoading(false);
+  }, []);
+
   const handleLocationSelect = (location: string) => {
     setUserLocation(location);
   };
 
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
   return (
     <div
-      className={`fixed w-full z-40 transition-all duration-300 ${
+      className={`md:-mt-20 lg:mt-0 w-full z-40 transition-all duration-300 ${
         isScrolled ? 'bg-primaryBackground shadow-md' : 'bg-primaryBackground'
-      }`}
+      } ${isFixed ? `fixed` : `relative`}`}
     >
-      <div className="w-7xl px-4 md:px-6 lg:px-8">
+      <div className="w-7xl px-4 md:px-0 lg:px-8">
         <div className="flex justify-between gap-2 h-20  items-center">
           <div className="flex items-center justify-between md:gap-6 lg:gap-14">
             <div className="flex-shrink-0 pb-1">
@@ -95,24 +125,12 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center justify-end ml-4">
-            {status === 'authenticated' && (
+            {session?.user?.id ? (
               <>
-                {' '}
-                <Link
-                  href={'/cart'}
-                  className="flex items-center gap-2 bg-primaryBackground py-3 px-4 rounded-full hover:bg-slate-300"
-                >
-                  <ShoppingCartIcon
-                    width={8}
-                    height={8}
-                    className=" text-orangeAccent cursor-pointer "
-                  ></ShoppingCartIcon>
-                  <div className="text-sm text-primaryText">0</div>
-                </Link>
+                <CartButtonNavbar />
                 <AccountMenu />
               </>
-            )}
-            {status === 'unauthenticated' && (
+            ) : (
               <>
                 <Link
                   href="/login"

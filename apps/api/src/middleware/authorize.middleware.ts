@@ -1,7 +1,7 @@
-import e, { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { jwtAccessSecret, jwtRefreshSecret } from '../config';
-import { ErrorHandler } from '../helpers/responseHandler.helper';
+import { ErrorHandler } from '../helper/responseHandler.helper';
 import { IUser } from '@/interface/User.interface';
 
 export const verifyToken = (
@@ -13,12 +13,11 @@ export const verifyToken = (
     const { authorization } = req.headers;
     const token = String(authorization || '').split('Bearer ')[1];
     const verifiedUser = verify(token, jwtAccessSecret);
+    console.log('VERIFIED USER', verifiedUser);
     if (!verifiedUser) throw new ErrorHandler('unauthorized', 401);
     req.user = verifiedUser as IUser;
-
     next();
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };

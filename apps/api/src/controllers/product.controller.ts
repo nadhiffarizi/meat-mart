@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
-import { responseHandler } from '@/helpers/responseHandler.helper';
+import { responseHandler } from '@/helper/responseHandler.helper';
+import authService from '@/services/auth.service';
+import orderService from '@/services/transaction/transaction.service';
 import productService from '@/services/product.service';
 
 export class ProductController {
@@ -14,21 +16,13 @@ export class ProductController {
   }
   public async getProducts(req: Request, res: Response, next: NextFunction) {
     try {
-      const data: serviceFeedback = await productService.getAllProducts(req);
+      // try registering
+      const data: serviceFeedback = await productService.getProducts(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);
     }
   }
-
-  // public async refreshToken(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const data = await authService.refreshToken(req);
-  //     responseHandler(res, 'refresh token success', data.);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
 }
 
 export default new ProductController();

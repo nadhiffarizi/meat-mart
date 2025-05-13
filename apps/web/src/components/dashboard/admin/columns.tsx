@@ -24,10 +24,6 @@ export type User = {
 
 export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: 'id',
-    header: 'ID',
-  },
-  {
     accessorKey: 'email',
     header: ({ column }) => {
       return (
@@ -40,10 +36,24 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const email = row.getValue('email') as string;
+      return (
+        <div
+          className="truncate max-w-[200px] whitespace-nowrap overflow-hidden sm:whitespace-normal sm:overflow-visible sm:max-w-none"
+          title={email}
+        >
+          {email}
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'role',
-    header: 'Role',
+    header: ({ column }) => <div className="hidden sm:table-cell">Role</div>,
+    cell: ({ row }) => (
+      <div className="hidden sm:table-cell">{row.getValue('role')}</div>
+    ),
   },
   {
     id: 'actions',
@@ -61,16 +71,22 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(payment.email)}
             >
-              Copy user ID
+              Copy user Email
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={'/dashboard'}>View user details</Link>
+              <Link href={`/dashboard/users/${row.original.id}`}>
+                View user details
+              </Link>
             </DropdownMenuItem>
             {payment.role === 'ADMIN' && (
-              <DropdownMenuItem>Edit user details</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={`/dashboard/users/${row.original.id}/edit`}>
+                  Edit user details
+                </Link>
+              </DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>

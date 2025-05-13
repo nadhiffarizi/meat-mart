@@ -9,7 +9,6 @@ function page() {
       <div className="text-primaryText text-3xl font-semibold">
         Manage Employees
       </div>
-      <CreateAdmin />
       <ViewUsers />
     </div>
   );
