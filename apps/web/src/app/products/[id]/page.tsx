@@ -78,7 +78,7 @@ export default function CarouselDemo({ params: { id } }: Props) {
             ) : (
               <div className="relative w-full h-48 sm:h-56 md:h-64">
                 <Image
-                  src={meatMartDefault}
+                  src={'/templateproduct.png'}
                   alt={`Meat Mart Default Picture`}
                   fill
                   className="object-cover"
