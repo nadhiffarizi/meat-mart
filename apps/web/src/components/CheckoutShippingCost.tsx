@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { getShippingCost } from '@/helpers/handlers/biteship';
-import { Dialog } from '@headlessui/react';
+import { getShippingCost } from '@/helper/auth/biteship';
+import { Dialog } from '@mui/material';
 
 interface ShippingOption {
   courier_name: string;
@@ -135,6 +135,10 @@ export default function CheckoutShipping({
             open={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             className="relative z-50"
+            sx={{
+              // fontSize: '14px',
+              fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
+            }}
           >
             <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">

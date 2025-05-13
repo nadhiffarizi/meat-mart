@@ -4,16 +4,17 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { E_Role } from '@prisma/client';
 import { toast, Toaster } from 'sonner';
-import { StoreWithAdmin } from '@/app/interfaces/store.interface';
+
 import StoreForm from '@/components/dashboard/store/store-form';
 import {
   deleteStore,
   getListStore,
   getStoreAdmin,
-} from '@/helpers/handlers/store';
+} from '@/helper/store/store.helper';
 import { Plus } from 'lucide-react';
 import Edit from '@mui/icons-material/Edit';
 import Delete from '@mui/icons-material/Delete';
+import { StoreWithAdmin } from '@/interface/store/store.interface';
 
 export default function StorePage() {
   const { data: session } = useSession();

@@ -1,6 +1,6 @@
-import { addUserAddress, setPrimaryAddress } from '@/helpers/handlers/auth';
+import { addUserAddress, setPrimaryAddress } from '@/helper/auth/auth';
 import { useLocations } from '@/hooks/useLocations';
-import { Address } from '@/interfaces/card.interface';
+import { Address } from '@/interface/user/address.interface';
 import {
   Modal,
   Box,
@@ -149,6 +149,8 @@ export default function AddAddressModal({
           bgcolor: 'background.paper',
           boxShadow: 24,
           p: 4,
+
+          fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
         }}
       >
         <h2 className="mt-2 ml-2 font-semibold text-xl">Add New Address</h2>
@@ -163,7 +165,7 @@ export default function AddAddressModal({
           value={formData.recipient_name}
           onChange={handleChange}
           margin="normal"
-          sx={{ fontFamily: 'Roboto' }}
+          sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
         />
         <TextField
           fullWidth
@@ -172,7 +174,7 @@ export default function AddAddressModal({
           value={formData.recipient_phone_number}
           onChange={handleChange}
           margin="normal"
-          sx={{ fontFamily: 'Roboto' }}
+          sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
         />
 
         <TextField
@@ -184,31 +186,50 @@ export default function AddAddressModal({
           margin="normal"
           multiline
           rows={3}
+          sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
         />
         <div className="grid grid-cols-2 gap-4 mt-3">
           <FormControl fullWidth>
-            <InputLabel>Provinsi</InputLabel>
+            <InputLabel
+              sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
+            >
+              Provinsi
+            </InputLabel>
             <Select
               value={formData.province_id || ''}
               label="Provinsi"
               onChange={(e) => handleLocationChange(e, 'province')}
+              sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
             >
               {provinces.map((province) => (
-                <MenuItem key={province.code} value={province.code}>
+                <MenuItem
+                  key={province.code}
+                  value={province.code}
+                  sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
+                >
                   {province.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>{' '}
           <FormControl fullWidth>
-            <InputLabel>Kabupaten/Kota</InputLabel>
+            <InputLabel
+              sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
+            >
+              Kabupaten/Kota
+            </InputLabel>
             <Select
               value={formData.city_id || ''}
               label="Provinsi"
               onChange={(e) => handleLocationChange(e, 'city')}
+              sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
             >
               {cities.map((city) => (
-                <MenuItem key={city.code} value={city.code}>
+                <MenuItem
+                  key={city.code}
+                  value={city.code}
+                  sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
+                >
                   {city.name}
                 </MenuItem>
               ))}
@@ -217,14 +238,23 @@ export default function AddAddressModal({
         </div>
         <div className="grid grid-cols-2 gap-4 mt-3">
           <FormControl fullWidth>
-            <InputLabel>Kecamatan</InputLabel>
+            <InputLabel
+              sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
+            >
+              Kecamatan
+            </InputLabel>
             <Select
               value={formData.district_id || ''}
               label="Provinsi"
               onChange={(e) => handleLocationChange(e, 'district')}
+              sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
             >
               {districts.map((district) => (
-                <MenuItem key={district.code} value={district.code}>
+                <MenuItem
+                  key={district.code}
+                  value={district.code}
+                  sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
+                >
                   {district.name}
                 </MenuItem>
               ))}
@@ -236,6 +266,7 @@ export default function AddAddressModal({
             name="postal_code"
             value={formData.postal_code}
             onChange={handleChange}
+            sx={{ fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78' }}
           />
         </div>
 

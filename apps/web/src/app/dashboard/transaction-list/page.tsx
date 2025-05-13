@@ -2,7 +2,6 @@
 import SearchBarTransactionList from '@/components/Transaction/SearchBarTransactionList.component';
 import TransactionListCard from '@/components/Transaction/TransactionListCard.component';
 import { setQueryParams } from '@/helper/filter/transactionFilter.helper';
-import { IFilterTransactions } from '@/interface/filter.interface';
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getDataTransactionAPI } from '@/helper/transaction/transaction.helper';
@@ -12,6 +11,7 @@ import SearchBarTransactionListAdmin from '@/components/dashboard/transaction-li
 import { useSession } from 'next-auth/react';
 import TransactionListCardAdmin from '@/components/dashboard/transaction-list/TransactionListCard.component';
 import TransactionAdminTable from '@/components/dashboard/transaction-list/TransactionListAdminTable.component';
+import { IFilterTransactions } from '@/interface/dashboard/filter.interface';
 
 // filter context type
 export interface TransactionFilterContextType {

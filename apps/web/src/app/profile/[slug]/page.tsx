@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Avatar } from '@mui/material';
 import { CameraAltRounded } from '@mui/icons-material';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { redirect, usePathname, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/ProfileForm';
 import { cloudName, uploadPreset } from '@/helper/config';
 import AddressManager from '@/components/AddressManager';
@@ -151,6 +151,14 @@ export default function ProfilePage({ params }: profileSlug) {
     }
   };
 
+  if (params.slug === 'transaction-list') {
+    redirect('/transaction-list');
+  }
+
+  if (params.slug === 'order-list') {
+    redirect('/order-list');
+  }
+
   if (loading) {
     return (
       <div className="h-screen animate-pulse">
@@ -243,7 +251,7 @@ export default function ProfilePage({ params }: profileSlug) {
         <main className="flex-1">
           <div className="max-w-3xl mx-auto">
             <div className="bg-white shadow rounded-lg overflow-hidden">
-              {currentSlug == 'profil' && (
+              {currentSlug == 'profile' && (
                 <>
                   {' '}
                   <div className="px-6 py-8 sm:p-10">
@@ -296,16 +304,7 @@ export default function ProfilePage({ params }: profileSlug) {
                   </div>
                 </>
               )}
-              {currentSlug == 'order-list' && (
-                <>
-                  <div>heloo {currentSlug}</div>
-                </>
-              )}
-              {currentSlug == 'transaction-list' && (
-                <>
-                  <div>heloo {currentSlug}</div>
-                </>
-              )}
+
               {currentSlug == 'specialty-items' && (
                 <>
                   <div>heloo {currentSlug}</div>

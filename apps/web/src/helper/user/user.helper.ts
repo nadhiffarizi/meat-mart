@@ -10,7 +10,7 @@ export const profileSideMenu = [
   { id: '2', name: 'Alamat', slug: 'address' },
   //   { id: '3', name: 'Pesanan Saya', slug: 'order-list' },
   //   { id: '4', name: 'Transaksi', slug: 'transaction-list' },
-  { id: '3', name: 'Pesanan Saya', slug: './order-list' },
-  { id: '4', name: 'Transaksi', slug: './transaction-list' },
+  { id: '3', name: 'Pesanan Saya', slug: 'order-list' },
+  { id: '4', name: 'Transaksi', slug: 'transaction-list' },
   { id: '5', name: 'Voucher Saya', slug: 'specialty-items' },
 ];

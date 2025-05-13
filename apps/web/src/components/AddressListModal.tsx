@@ -1,5 +1,4 @@
-import { Dialog } from '@headlessui/react';
-import { ListItemButton } from '@mui/material';
+import { Dialog, ListItemButton } from '@mui/material';
 
 interface Address {
   id: string;
@@ -26,7 +25,15 @@ export default function AddressListModal({
   onAddNew,
 }: AddressListModalProps) {
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-50">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      className="relative z-50"
+      sx={{
+        // fontSize: '14px',
+        fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
+      }}
+    >
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 

@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import AddressListModal from './AddressListModal';
 import { useSession } from 'next-auth/react';
-import { getUserAddresses } from '@/helpers/handlers/auth';
+import { getUserAddresses } from '@/helper/auth/auth';
 import AddAddressModal from './AddAddressModal';
 import CheckoutShipping from './CheckoutShippingCost';
 import { MapPin } from 'lucide-react';

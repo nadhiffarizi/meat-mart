@@ -123,7 +123,7 @@ export default function AccountMenu() {
         <MenuItem
           onClick={handleClose}
           component={Link}
-          href="/profile/profil"
+          href="/profile/profile"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
@@ -143,12 +143,7 @@ export default function AccountMenu() {
           <ShoppingBagOutlined className="text-primaryText mr-2" /> Pesanan Saya
         </MenuItem>
         <Divider />
-        {/* <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem> */}
+
         <MenuItem
           onClick={handleClose}
           sx={{
