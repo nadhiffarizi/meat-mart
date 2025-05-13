@@ -70,8 +70,11 @@ const validationSchema = Yup.object({
   }),
   discount_percentage: Yup.number()
     .min(0, 'Discount percentage must be at least 0%')
-    .max(100, 'Discount percentage cannot exceed 100%'),
-  discount_amount: Yup.number().min(0, 'Discount amount must be at least 0'),
+    .max(100, 'Discount percentage cannot exceed 100%')
+    .notRequired(),
+  discount_amount: Yup.number()
+    .min(0, 'Discount amount must be at least 0')
+    .notRequired(),
 }).test(
   'discount-exclusive',
   'You must provide either a discount percentage or amount (not both)',
@@ -186,8 +189,8 @@ function EditDiscountForm({
     const sanitizedValues = { ...values };
 
     Object.keys(sanitizedValues).forEach((key) => {
-      if (sanitizedValues[key] === '') {
-        sanitizedValues[key] = undefined; // Replace empty string with undefined
+      if (sanitizedValues[key] === '' || sanitizedValues[key] === null) {
+        sanitizedValues[key] = undefined;
       }
     });
 
