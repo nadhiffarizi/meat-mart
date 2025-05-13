@@ -18,7 +18,7 @@ function Page() {
               <div className="text-lg font-semibold">Read Only</div>
               <div className="text-sm">
                 Click{' '}
-                <Link href={'/dashboard/products'} className="underline">
+                <Link href={'/dashboard'} className="underline">
                   here to return to dashboard.
                 </Link>
               </div>

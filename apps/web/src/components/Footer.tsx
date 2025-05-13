@@ -1,10 +1,24 @@
 // components/Footer.tsx
+'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 export const Footer = () => {
+  const pathname = usePathname();
+  const [isDashboard, setIsDashboard] = useState(false);
+
+  useEffect(() => {
+    setIsDashboard(pathname.startsWith('/dashboard'));
+  }, [pathname]);
+
   return (
-    <footer className="bg-primaryGreen text-white pt-12 pb-6">
+    <footer
+      className={
+        isDashboard ? 'hidden' : 'bg-primaryGreen text-white pt-12 pb-6'
+      }
+    >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="mb-6">
