@@ -24,6 +24,7 @@ import { Button } from '../../ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,6 +37,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { data: session, update } = useSession();
 
   const table = useReactTable({
     data,
@@ -63,16 +65,18 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Link href={'/dashboard/users/new'}>
-          {' '}
-          <Button
-            variant="default"
-            className={' bg-orangeAccent text-base'}
-            onClick={() => {}}
-          >
-            Add a New User
-          </Button>
-        </Link>
+        {session?.user.role === 'SUPER_ADMIN' && (
+          <Link href={'/dashboard/users/new'}>
+            {' '}
+            <Button
+              variant="default"
+              className={' bg-orangeAccent text-base'}
+              onClick={() => {}}
+            >
+              Add a New User
+            </Button>
+          </Link>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>

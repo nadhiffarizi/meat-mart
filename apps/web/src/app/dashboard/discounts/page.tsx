@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { api } from '@/helper/handlers/api';
+import { api } from '@/helper/api';
 import { ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -51,7 +51,6 @@ function Page() {
       <div className="text-primaryText text-3xl font-semibold">
         Select Store
       </div>
-      <Input />
       <div className="flex gap-4 flex-wrap">
         {allStores?.length ? (
           allStores.map((store) => {

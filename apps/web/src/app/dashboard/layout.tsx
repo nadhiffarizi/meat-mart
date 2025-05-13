@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex justify-center w-full bg-gray-500 min-h-screen">
+        <div className="flex justify-center w-full min-h-screen">
           <div className="flex w-full max-w-[1440px] min-w-[320px]">
             {/* <Sidebar />
             <main className="flex-1 py-8 px-10 bg-white">{children}</main> */}

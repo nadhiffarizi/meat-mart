@@ -51,7 +51,7 @@ function Page() {
       <div className="text-primaryText text-3xl font-semibold">
         Select Store
       </div>
-      <Input />
+
       <div className="flex gap-4 flex-wrap">
         {allStores?.length ? (
           allStores.map((store) => {

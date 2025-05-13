@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { api } from '@/helpers/api';
+import { api } from '@/helper/api';
 import { ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -28,7 +28,6 @@ function Page({ params: { storeId } }: Props) {
       <div className="text-primaryText text-3xl font-semibold">
         Select Report
       </div>
-      <Input />
       <div className="flex gap-4 flex-wrap">
         <ReportTypeCard
           title="sales"

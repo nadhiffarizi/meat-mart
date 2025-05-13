@@ -54,7 +54,6 @@ const items = [
     hideTo: 'SUPER_ADMIN',
   },
   { title: 'Report', url: '/dashboard/reports', icon: FileChartColumn },
-  { title: 'My Profile', url: '/dashboard/profile', icon: CircleUser },
 ];
 
 export function AppSidebar() {
@@ -85,12 +84,12 @@ export function AppSidebar() {
                     item.hideTo
                       ? item.hideTo === session?.user.role
                         ? `hidden`
-                        : `bg-blue-200 flex items-center gap-2 w-full py-2 px-4 rounded-2xl`
-                      : `bg-blue-200 flex items-center gap-2 w-full py-2 px-4 rounded-2xl`
+                        : `bg-[#F5F5F5] hover:bg-white flex items-center gap-2 w-full py-2 px-4 rounded-2xl`
+                      : `bg-[#F5F5F5] hover:bg-white flex items-center gap-2 w-full py-2 px-4 rounded-2xl`
                   }
                 >
                   <span
-                    className={`flex items-center justify-center w-5 h-5 ${isActive ? 'text-white' : 'text-gray-200'}`}
+                    className={`flex items-center justify-center w-5 h-5 ${isActive ? 'text-primaryGreen' : 'text-secondaryText'}`}
                   >
                     {<item.icon />}
                   </span>

@@ -35,7 +35,6 @@ const navItems = [
     icon: <TicketPercent />,
   },
   { name: 'Report', href: '/dashboard/reports', icon: <FileChartColumn /> },
-  { name: 'My Profile', href: '/dashboard/profile', icon: <CircleUser /> },
 ];
 
 function Sidebar() {
