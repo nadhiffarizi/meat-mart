@@ -11,9 +11,9 @@ import Link from 'next/link';
 import { CircleCheckBig } from 'lucide-react';
 import { Alert } from '@/components/ui/alert';
 import AddAdminFormAlert from '../../admin/forms/Alerts/AddAdminFormAlert';
-import { IGetCategories } from '@/interface/product/category.interface';
 import ReactivateCategoryFormAlert from './alerts/ReactivateCategoryFormAlert';
 import AddCategoryFormAlert from './alerts/AddCategoryFormAlert';
+import { IGetCategories } from '@/interface/product/category.interface';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for your category.'),

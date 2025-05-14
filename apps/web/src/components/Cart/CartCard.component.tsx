@@ -6,12 +6,13 @@ import { IconButton, MenuItem } from '@mui/material';
 import { subtractCartState } from '@/redux/slice/cart.slice';
 import { subtractCartAPI } from '@/helper/cart/cart.helper';
 import * as React from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function CartCard({ cartItem }: { cartItem: ICart }) {
   // get global state
   const cartState = useAppSelector((state) => state.cartState);
-  const userState = useAppSelector((state) => state.userState);
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
 
   // handler
   const removeProduct = (
@@ -28,11 +29,14 @@ export default function CartCard({ cartItem }: { cartItem: ICart }) {
     );
 
     // call cart service to update cart
-    subtractCartAPI('cart/subtract', {
-      productId: cartItem.product.id,
-      quantity: cartItem.quantity,
-      userId: userState.id,
-    });
+    subtractCartAPI(
+      'cart/subtract',
+      {
+        productId: cartItem.product.id,
+        quantity: cartItem.quantity,
+      },
+      session?.user.access_token!,
+    );
   };
 
   return (
@@ -46,7 +50,13 @@ export default function CartCard({ cartItem }: { cartItem: ICart }) {
         }}
       >
         <div className="w-1/4 h-full bg-blue-200 flex items-center ring-1 rounded-md ">
-          picture
+          <img
+            width={216}
+            height={100}
+            className="h-full rounded-lg object-cover"
+            src={cartItem.product.image || '/templateproduct.png'}
+            alt="product-image"
+          />
         </div>
         <div className="w-1/2 h-full ">
           <div className="w-full h-1/2 overflow-hidden">

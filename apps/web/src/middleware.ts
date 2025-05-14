@@ -2,55 +2,74 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from './auth';
-import { useEffect, useState } from 'react';
-import { IGetStores } from './interface/store/store.interface';
-import { api } from './helper/api';
 
-export async function middleware(req: NextRequest) {
-  const session = await auth();
-  const url = req.nextUrl;
+export async function middleware(request: NextRequest) {
+  const session = await auth(); // get user session
+  const url = request.nextUrl;
   const path = url.pathname;
   const role = session?.user?.role;
-
-  if (session?.user && (path === '/register' || path === '/login')) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  if (!session?.user && path.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  if (role === 'CUSTOMER' && path.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  if ((role === 'ADMIN' || role === 'SUPER_ADMIN') && path === '/') {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
-  }
-
-  if (path.startsWith('/dashboard/users') && role !== 'SUPER_ADMIN') {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
-  }
-
-  if (path.startsWith('/dashboard/discounts') && role !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
-  }
-
+  const { pathname } = request.nextUrl;
   if (
-    path !== '/dashboard/products' &&
-    path.startsWith('/dashboard/products') &&
-    role !== 'SUPER_ADMIN'
+    (pathname.startsWith("/login") || pathname.startsWith("/register")) &&
+    session != null
   ) {
-    // Let layout or page fetch correct store for redirection
-    return NextResponse.redirect(new URL('/dashboard/products', req.url));
+    return NextResponse.redirect(new URL("/", request.nextUrl));
+  }
+  if (session?.user) {
+    if (pathname.startsWith("/dashboard") && session?.user.role === "CUSTOMER") {
+      return NextResponse.redirect(new URL("/", request.nextUrl));
+    }
+    if (!pathname.startsWith("/dashboard") && (session?.user.role !== "CUSTOMER")) {
+      return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+    }
+    if (pathname === "/dashboard" && session?.user.role === "CUSTOMER") {
+      return NextResponse.redirect(new URL("/", request.nextUrl));
+    }
+    if (role === 'CUSTOMER' && path.startsWith('/dashboard')) {
+      return NextResponse.redirect(new URL('/', request.nextUrl));
+    }
+
+    if ((role === 'ADMIN' || role === 'SUPER_ADMIN') && path === '/') {
+      return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+    }
+
+    if (path.startsWith('/dashboard/users') && role !== 'SUPER_ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+    }
+
+    if (path.startsWith('/dashboard/discounts') && role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+    }
+
+    if (
+      path !== '/dashboard/products' &&
+      path.startsWith('/dashboard/products') &&
+      role !== 'SUPER_ADMIN'
+    ) {
+      // Let layout or page fetch correct store for redirection
+      return NextResponse.redirect(new URL('/dashboard/products', request.nextUrl));
+    }
+
+    if (
+      path !== '/dashboard/categories' &&
+      path.startsWith('/dashboard/categories') &&
+      role !== 'SUPER_ADMIN'
+    ) {
+      // Let layout or page fetch correct store for redirection
+      return NextResponse.redirect(new URL('/dashboard/products', request.nextUrl));
+    }
+
+  }
+  else {
+
+    if (!session?.user) {
+      return NextResponse.redirect(new URL("/login", request.nextUrl))
+    }
   }
 
-  if (
-    path !== '/dashboard/categories' &&
-    path.startsWith('/dashboard/categories') &&
-    role !== 'SUPER_ADMIN'
-  ) {
-    // Let layout or page fetch correct store for redirection
-    return NextResponse.redirect(new URL('/dashboard/products', req.url));
-  }
+
 }
+
+export const config = {
+  matcher: ["/", "/cart", "/payment", "/payment/:path+", "/transaction-list", "/order-list", "/register", "/profile", "/profile/:path+", "/dashboard", "/dashboard/:path+"],
+};

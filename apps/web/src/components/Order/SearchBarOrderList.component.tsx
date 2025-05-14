@@ -6,9 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import {
   IFilterOrder,
-  IFilterStatus,
   IFilterStatusOrder,
-  IFilterTransactions,
 } from '@/interface/dashboard/filter.interface';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';

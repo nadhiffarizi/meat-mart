@@ -2,7 +2,6 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
 import { Request } from 'express';
-import { hashedPassword } from '../helper/bcrypt';
 import { compare } from 'bcrypt';
 import {
   getUserByEmail,
@@ -12,7 +11,10 @@ import {
 import { IUser } from '@/interface/User.interface';
 import { generateAuthToken } from '@/helper/token';
 import { v4 as uuidv4 } from 'uuid';
-import { addHours, isAfter } from 'date-fns';
+import { isAfter } from 'date-fns';
+import { registerSocialUser } from '@/helper/auth';
+import { hashedPassword } from '@/helper/bcrypt';
+import { ErrorHandler } from '@/helper/responseHandler.helper';
 
 class AuthService {
   async register(req: Request) {
@@ -38,7 +40,7 @@ class AuthService {
       data: {
         email,
         // password: await hashedPassword(password),
-        password: await hashedPassword('ratihjulistina'),
+        password: await hashedPassword('tes'),
         is_verified: false,
         verification_link: verificationToken,
         verification_expiry: tokenExpiry,
@@ -90,18 +92,28 @@ class AuthService {
       };
     }
 
+    if (existingUser.provider !== 'credentials') {
+      return {
+        code: 403,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `The email that you've entered is social login email. Please, use social login button`,
+      };
+    }
+
     if (!existingUser.is_verified) {
       const verificationToken = uuidv4();
       const tokenExpiry = new Date(Date.now() + 3600000);
 
       await sendVerificationEmail(email, verificationToken);
-      await prisma.users.update({
+      const updated = await prisma.users.update({
         where: { email },
         data: {
           verification_link: verificationToken,
           verification_expiry: tokenExpiry,
         },
       });
+      console.log('MENGIRIM EMAIL VERIFIKASI LAGI', updated);
       return {
         code: 403,
         data: null,
@@ -109,7 +121,7 @@ class AuthService {
         message: `The email that you've entered is not verified. Please, check your email`,
       };
     }
-    console.log(await compare(password, existingUser.password!))
+    console.log(await compare(password, existingUser.password!));
 
     if (
       !existingUser.password ||
@@ -153,7 +165,9 @@ class AuthService {
   }
 
   async refreshToken(req: Request) {
-    if (!req.user?.email) throw new Error('invalid token');
+    if (!req.user || !req.user.email) {
+      throw new ErrorHandler('Invalid token', 401);
+    }
     const refreshToken = await generateAuthToken(undefined, req.user?.email);
 
     let feedback: serviceFeedback;
@@ -176,7 +190,7 @@ class AuthService {
         message: 'Invalid verification token',
       };
     }
-    console.log('TOKENN', token);
+
     const user = await prisma.users.findUnique({
       where: { verification_link: token },
     });
@@ -186,7 +200,7 @@ class AuthService {
         code: 400,
         data: null,
         status: statusEnum.FAILED,
-        message: 'Invalid verification token',
+        message: 'Invalid verification link',
       };
     }
 
@@ -203,7 +217,7 @@ class AuthService {
       user.verification_expiry &&
       isAfter(new Date(), user.verification_expiry)
     ) {
-      console.log("into verification link has expired")
+      console.log('into verification link has expired');
       return {
         code: 400,
         data: null,
@@ -258,6 +272,26 @@ class AuthService {
 
   async resetPasswordEmail(req: Request) {
     const { email } = req.body;
+    const user = await prisma.users.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Email does not exist. Please, enter the correct email',
+      };
+    }
+    if (user?.provider !== 'credentials') {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Social login cannot reset password',
+      };
+    }
     const resetToken = uuidv4();
     const tokenResetExpiry = new Date(Date.now() + 3600000);
     await prisma.users.update({
@@ -300,6 +334,14 @@ class AuthService {
         message: 'Invalid reset token',
       };
     }
+    if (user.provider !== 'credentials') {
+      return {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: 'Social login cannot reset password',
+      };
+    }
 
     if (!user.is_verified) {
       return {
@@ -338,6 +380,188 @@ class AuthService {
       status: statusEnum.SUCCESS,
       message: 'Password successfully reseted',
     };
+  }
+
+  async updateUser(req: Request) {
+    const {
+      emailUpdate,
+      email,
+      first_name,
+      last_name,
+      phone_number,
+      password,
+      newPassword,
+    } = req.body;
+
+    console.log('Updating user:', {
+      emailUpdate,
+      email,
+      first_name,
+      last_name,
+      phone_number,
+      password,
+      newPassword,
+    });
+
+    const existingUser = (await getUserByEmail(email)) as IUser;
+
+    if (existingUser.email !== emailUpdate) {
+      const verificationToken = uuidv4();
+      const tokenExpiry = new Date(Date.now() + 3600000);
+      console.log('SELISIH WAKTU', Date.now(), tokenExpiry);
+      await sendVerificationEmail(emailUpdate, verificationToken);
+
+      const emailUpdatedUser = await prisma.users.update({
+        where: {
+          email: existingUser.email,
+        },
+        data: {
+          is_verified: false,
+          verification_link: verificationToken,
+          verification_expiry: tokenExpiry,
+          first_name: first_name,
+          last_name: last_name,
+          phone_number: phone_number,
+          email: emailUpdate,
+          // password: await hashedPassword(password),
+        },
+      });
+
+      return {
+        code: 200,
+        data: emailUpdatedUser,
+        status: statusEnum.SUCCESS,
+        message: 'Profile successfully updated',
+      };
+    }
+
+    if (existingUser.email === emailUpdate) {
+      const updatedUser = await prisma.users.update({
+        where: { email },
+        data: {
+          first_name: first_name,
+          last_name: last_name,
+          phone_number: phone_number,
+          //password: await hashedPassword(password),
+        },
+      });
+
+      console.log('UDATEDUSER', updatedUser);
+      return {
+        code: 200,
+        data: updatedUser,
+        status: statusEnum.SUCCESS,
+        message: 'Profile successfully updated',
+      };
+    }
+
+    if (existingUser.password !== (await hashedPassword(password))) {
+      return {
+        code: 401,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `The password that you've entered is incorrect.`,
+      };
+    }
+
+    if (existingUser.password !== (await hashedPassword(newPassword))) {
+      const updatePass = await prisma.users.update({
+        where: { email },
+        data: { password: await hashedPassword(newPassword) },
+      });
+      console.log('EMAIL TERGANTI', updatePass);
+      return {
+        code: 200,
+        data: updatePass,
+        status: statusEnum.SUCCESS,
+        message: 'Password successfully updated',
+      };
+    }
+
+    return {
+      code: 200,
+      data: null,
+      status: statusEnum.SUCCESS,
+      message: 'Profile successfully updated',
+    };
+  }
+
+  async getUserByEmail(req: Request) {
+    const { email } = req.body;
+    const getUser = await prisma.users.findUnique({
+      where: { email },
+      select: {
+        first_name: true,
+        last_name: true,
+        phone_number: true,
+        email: true,
+        is_verified: true,
+        image_url: true,
+        provider: true,
+        role: true,
+      },
+    });
+    if (!getUser) {
+      throw new Error('User not found');
+    }
+
+    if (!getUser?.is_verified) {
+      throw new Error('The email is not verified');
+    }
+
+    return {
+      code: 200,
+      data: getUser,
+      status: statusEnum.SUCCESS,
+      message: 'Successfully fetch data profile',
+    };
+  }
+
+  async updateImage(req: Request) {
+    const { email, imageUrl } = req.body;
+
+    await prisma.users.update({
+      where: { email },
+      data: {
+        image_url: imageUrl,
+      },
+    });
+
+    return {
+      code: 200,
+      data: null,
+      status: statusEnum.SUCCESS,
+      message: 'Successfully update profile image',
+    };
+  }
+
+  async socialRegister(req: Request) {
+    try {
+      const { email, fullName, image, provider, provider_id, role } = req.body;
+
+      if (!email || !provider) {
+        throw new Error('Email and provider are required');
+      }
+
+      const user = await registerSocialUser({
+        email,
+        name: fullName,
+        image,
+        provider,
+        provider_id,
+        role,
+      });
+
+      return {
+        code: 200,
+        data: user,
+        status: statusEnum.SUCCESS,
+        message: 'Successfully social login',
+      };
+    } catch (error: any) {
+      console.error('Social login error:', error);
+      throw new Error('Error during social login');
+    }
   }
 }
 

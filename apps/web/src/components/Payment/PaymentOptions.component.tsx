@@ -7,6 +7,7 @@ import { callToast } from '@/helper/notify.helper';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import {
+  Backdrop,
   Box,
   Button,
   CircularProgress,
@@ -16,6 +17,7 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -24,9 +26,10 @@ export default function PaymentOptions() {
   const cartState = useAppSelector((state) => state.cartState);
   const userId = useAppSelector((state) => state.userState);
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
 
   //local state
-  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [selectedValue, setSelectedValue] = React.useState('manual');
   const router = useRouter();
 
@@ -35,48 +38,48 @@ export default function PaymentOptions() {
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     try {
-      // await new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     console.log('test');
-      //     resolve('');
-      //   }, 2000);
-      // });
+      setLoading(true);
+      const resPostTrx = await createTransactionAPI(
+        'transaction/create',
+        createTransactionPayload(cartState, selectedValue),
+        session?.user.access_token!,
+      );
+      console.log(resPostTrx);
 
+      if (resPostTrx.status !== 200) {
+        callToast('Error creating transaction, try again', 'ERROR', 2000);
+        setLoading(false);
+        return;
+      }
+
+      // sync to local cart
+      const resTrx = await resPostTrx.json();
+      // console.log(resTrx);
+
+      dispatch(
+        updateCartState(
+          syncCartDataFromAPI(resTrx['data']['cartAfterCheckout']),
+        ),
+      );
       // Do something with selectedValue
       if (selectedValue === 'manual') {
-        const resPostTrx = await createTransactionAPI(
-          'transaction/create',
-          createTransactionPayload(cartState, userId.id),
-        );
-        console.log(resPostTrx);
-
-        if (resPostTrx.status !== 200) {
-          callToast('Error creating transaction, try again', 'ERROR', 2000);
-          setLoading(false);
-          return;
-        }
-
-        // sync to local cart
-        const resTrx = await resPostTrx.json();
-        // console.log(resTrx);
-
-        dispatch(
-          updateCartState(
-            syncCartDataFromAPI(resTrx['data']['cartAfterCheckout']),
-          ),
-        );
-
-        setLoading(false);
         router.push(
           `/payment/confirm/${resTrx['data']['trx']['invoice_number']}`,
         );
+        setLoading(false);
       } else {
         // selectedValue === 'automatic'
+        const redirectUrl = resTrx['data']['trx']['redirect_url'];
+        console.log('responmse automatic2', resTrx);
+        console.log(redirectUrl);
+
+        router.push(redirectUrl);
+        setLoading(false);
       }
     } catch (error) {
-      console.log((error as Error).message);
+      callToast('Error creting transaction, try again later', 'ERROR', 3000);
+      setLoading(false);
     }
   };
 
@@ -135,6 +138,9 @@ export default function PaymentOptions() {
           </Box>
         </FormControl>
       </div>
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import EditStockFormAlert from './alerts/EditStockFormAlert';
 import { IGetCategories } from '@/interface/product/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IGetProductCategory } from '@/interface/product/productCategory.interface';
+import IGetProductCategory from '@/interface/product/productCategory.interface';
 import { IGetStocks } from '@/interface/stock/stocks.interface';
 
 const validationSchema = Yup.object({

@@ -1,7 +1,4 @@
-import {
-  IFilterOrder,
-  IFilterStatusOrder,
-} from '@/interface/dashboard/filter.interface';
+import { IFilterOrder, IFilterStatusOrder } from "@/interface/dashboard/filter.interface";
 
 export const statusFilterUpdate = (
   statusFilter: string,
@@ -67,5 +64,11 @@ export const setQueryParams = (filterOrder: IFilterOrder | undefined) => {
       params.append('status', status);
     }
   }
-  return params;
-};
+
+  if (filterOrder.stores && filterOrder.stores.length > 0) {
+    for (let store of filterOrder.stores) {
+      params.append('store', store.id)
+    }
+  }
+  return params
+}

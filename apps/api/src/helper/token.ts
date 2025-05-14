@@ -8,14 +8,36 @@ import { ErrorHandler } from './responseHandler.helper';
 
 export const generateAuthToken = async (user?: IUser, email?: string) => {
   const existingUser = user || ((await getUserByEmail(email!)) as IUser);
-  if (!existingUser) throw new ErrorHandler('wrong email', 401);
-  delete existingUser.password;
+  if (!existingUser) throw new ErrorHandler('User not found', 401);
 
-  const access_token = sign(existingUser, jwtAccessSecret, {
+  if (existingUser.password) {
+    delete existingUser.password;
+  }
+
+  const tokenPayload = {
+    id: existingUser.id,
+    email: existingUser.email,
+    first_name: existingUser.first_name,
+    last_name: existingUser.last_name,
+    image_url: existingUser.image_url,
+    role: existingUser.role,
+    is_verified: existingUser.is_verified,
+    provider: existingUser.provider || 'credentials',
+  };
+
+  const access_token = sign(tokenPayload, jwtAccessSecret, {
     expiresIn: '30m',
   });
-  const refresh_token = sign({ email: existingUser.email }, jwtRefreshSecret, {
-    expiresIn: '1h',
-  });
-  return { access_token, refresh_token };
+  const refresh_token = sign(
+    {
+      email: existingUser.email,
+      provider: existingUser.provider,
+      role: existingUser.role,
+    },
+    jwtRefreshSecret,
+    {
+      expiresIn: '1h',
+    },
+  );
+  return { access_token, refresh_token, user: tokenPayload };
 };

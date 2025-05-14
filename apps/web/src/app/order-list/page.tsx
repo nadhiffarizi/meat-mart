@@ -7,8 +7,12 @@ import {
   getDataOrderAPI,
   syncOrderDataFromAPI,
 } from '@/helper/transaction/order.helper';
+import { profileSideMenu } from '@/helper/user/user.helper';
 import { IFilterOrder } from '@/interface/dashboard/filter.interface';
 import { IOrder } from '@/interface/transaction/order.interface';
+import { Backdrop, CircularProgress } from '@mui/material';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -36,16 +40,23 @@ export default function OrderListPage() {
   const [filterOrder, setFilterOrder] = React.useState<
     IFilterOrder | undefined
   >(undefined);
+  const { data: session, status } = useSession();
 
   //local state
   const router = useRouter();
   const pathName = usePathname();
-  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [orderData, setOrderData] = React.useState<IOrder[]>();
   const [isChange, setChange] = React.useState<boolean>();
+  const subCategories = profileSideMenu;
 
   // when global filters change
   React.useEffect(() => {
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
     // set query params
     console.log(filterOrder);
     console.log(setQueryParams(filterOrder));
@@ -57,6 +68,7 @@ export default function OrderListPage() {
       const getOrderResponse = getDataOrderAPI(
         `order/list?${params.toString()}`,
         filterOrder!,
+        session?.user.access_token!,
       );
 
       getOrderResponse
@@ -64,7 +76,9 @@ export default function OrderListPage() {
           if (v.status !== 200) throw new Error();
           return v.json();
         })
-        .then((value) => setOrderData(syncOrderDataFromAPI(value['data'])))
+        .then((value) => {
+          setOrderData(syncOrderDataFromAPI(value['data']));
+        })
         .catch(() =>
           callToast('No data satisfy filter criteria', 'INFO', 2000),
         );
@@ -75,20 +89,37 @@ export default function OrderListPage() {
 
     // call get transaction to get list of transactions
   }, [filterOrder, isChange]);
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
         <div className="flex flex-col gap-7 w-4/5 max-w-[2000px] min-w-[600px] py-5 px-5 ">
           <div id="main-container" className="flex w-full h-[670px] gap-5 ">
-            <div
-              id="lefstsidebar-container"
-              className="w-1/5 h-full flex flex-col gap-5"
-            >
-              {/**right sidebar container */}
-              <div className="w-full h-full py-5 px-7  rounded-lg bg-white ">
-                {/* <PaymentSummaryCheckout /> */}
+            <aside className="w-full md:w-64 flex-shrink-0">
+              <div className="bg-white rounded-lg shadow p-4 sticky top-4">
+                <nav>
+                  <ul className="space-y-2">
+                    {subCategories.map((subcat) => (
+                      <li key={subcat.id}>
+                        <Link
+                          href={`${subcat.slug}`}
+                          className="block px-3 py-2 rounded hover:bg-gray-100 transition"
+                        >
+                          {subcat.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               </div>
-            </div>
+            </aside>
             <div
               id="orderlist-container"
               className="flex flex-col gap-4 w-4/5 h-full "

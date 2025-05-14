@@ -4,7 +4,7 @@ export const convertRoleToEnum = (roleString: string) => {
     switch (roleString) {
         case 'ADMIN':
             return E_Role.ADMIN;
-        case 'SUPERADMIN':
+        case 'SUPER_ADMIN':
             return E_Role.SUPER_ADMIN;
         case 'CUSTOMER':
             return E_Role.CUSTOMER

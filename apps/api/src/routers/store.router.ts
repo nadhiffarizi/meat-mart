@@ -1,4 +1,5 @@
 import storeController from '@/controllers/store.controller';
+import storeQueryController from '@/controllers/storeQuery.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
@@ -11,9 +12,15 @@ export class StoreRouter {
   }
 
   private initializeRoutes(): void {
+    this.router.get('/get', storeController.getStoreList);
+    this.router.post('/', storeController.createStore);
+    this.router.post('/get-list/', storeController.getStoreByProvince);
+    this.router.post('/:id', storeController.getStoreById);
+    this.router.patch('/:id', storeController.updateStore);
+    this.router.patch('/delete/:id', storeController.daleteStore);
+    this.router.get('/', verifyToken, storeQueryController.getStoreByAdmin);
     this.router.get('/all', verifyToken, storeController.getAllStores);
     this.router.get('/', verifyToken, storeController.getStore);
-    // .... continue api
   }
 
   getRouter(): Router {

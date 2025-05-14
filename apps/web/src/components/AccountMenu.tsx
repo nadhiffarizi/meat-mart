@@ -1,4 +1,5 @@
 import { signOut, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -9,17 +10,44 @@ import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
-import { Button } from '@mui/material';
+import { Button, ListItem, ListItemButton } from '@mui/material';
 import Link from 'next/link';
-
-// interface AccountMenuProps {
-//   session: any;
-// }
+import { getProfile } from '@/helper/auth/auth';
+import { IProfile } from '@/interface/user/user.interface';
+import { useRouter } from 'next/navigation';
+import { ListIcon, ListOrdered, ShoppingBag } from 'lucide-react';
+import { ShoppingBagOutlined } from '@mui/icons-material';
 
 export default function AccountMenu() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  console.log('Session data:', session);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [profile, setProfile] = useState<IProfile | null>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        if (status === 'authenticated' && session.user?.email) {
+          {
+            const data = await getProfile(session.user.email);
+            // console.log('GET PROFILE', data);
+            setProfile(data);
+            // if (data.image_url) {
+            //   setImagePreview(data.image_url);
+            // }
+          }
+        }
+      } catch (err) {
+        //setError(err instanceof Error ? err.message : 'Failed to load profile');
+        console.error('Profile load error:', err);
+      }
+    }
+
+    loadProfile();
+  }, [status, session]);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -32,7 +60,13 @@ export default function AccountMenu() {
         <Tooltip title="Account settings">
           <Button
             onClick={handleClick}
-            startIcon={<Avatar sx={{ width: 32, height: 32 }} />}
+            startIcon={
+              <Avatar
+                sx={{ width: 32, height: 32 }}
+                src={profile?.image_url || undefined}
+                alt={profile?.first_name || 'User'}
+              />
+            }
             sx={{
               ml: 2,
               textTransform: 'none',
@@ -45,7 +79,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            {session?.user?.first_name || 'Username'}
+            {profile?.first_name || ''}
           </Button>
         </Tooltip>
       </Box>
@@ -89,30 +123,27 @@ export default function AccountMenu() {
         <MenuItem
           onClick={handleClose}
           component={Link}
-          href="/profile"
+          href="/profile/profile"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar /> Profile
+          <Avatar src={profile?.image_url || undefined} /> Akun Saya
         </MenuItem>
         <MenuItem
           onClick={handleClose}
+          component={Link}
+          href="/profile/order-list"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar /> My account
+          <ShoppingBagOutlined className="text-primaryText mr-2" /> Pesanan Saya
         </MenuItem>
         <Divider />
-        {/* <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem> */}
+
         <MenuItem
           onClick={handleClose}
           sx={{

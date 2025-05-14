@@ -1,7 +1,4 @@
-import {
-  IFilterStatus,
-  IFilterTransactions,
-} from '@/interface/dashboard/filter.interface';
+import { IFilterStatus, IFilterStatusOrder, IFilterTransactions } from "@/interface/dashboard/filter.interface";
 
 export const statusFilterUpdate = (
   statusFilter: string,
@@ -28,8 +25,8 @@ export const statusFilterUpdate = (
   return temp;
 };
 
-export const statusFilterToArray = (statusState: IFilterStatus) => {
-  if (!statusState) return undefined;
+export const statusFilterToArray = (statusState: IFilterStatus | IFilterStatusOrder) => {
+  if (!statusState) return undefined
 
   const statusArray: string[] = [];
   Object.entries(statusState).map((value) => {
@@ -68,6 +65,12 @@ export const setQueryParams = (
     for (let status of filterTransactions.statusArray) {
       params.append('status', status);
     }
+
+    if (filterTransactions.stores && filterTransactions.stores.length > 0) {
+      for (let store of filterTransactions.stores) {
+        params.append('store', store.id)
+      }
+    }
+    return params
   }
-  return params;
-};
+}

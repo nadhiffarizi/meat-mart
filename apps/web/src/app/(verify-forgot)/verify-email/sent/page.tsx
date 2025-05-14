@@ -20,13 +20,13 @@ export default function VerificationSentPage() {
       setSuccess(false);
 
       const result = await resendVerificationEmail(email);
-
-      if (result?.success) {
+      if ('error' in result) {
+        setError(result.error);
+        return;
+      } else {
         setSuccess(true);
 
         setTimeout(() => setSuccess(false), 5000);
-      } else {
-        throw new Error(result?.message || 'Failed to resend email');
       }
     } catch (error) {
       console.error('Resend error:', error);

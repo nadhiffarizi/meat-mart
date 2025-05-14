@@ -1,4 +1,3 @@
-import { currencyFormatter } from '@/helper/product/product.helper';
 import { ICart } from '@/interface/cart/cart.interface';
 import { Cancel, Close, Delete } from '@mui/icons-material';
 import { Box, Checkbox, IconButton } from '@mui/material';
@@ -17,19 +16,32 @@ import {
   updateCartState,
 } from '@/redux/slice/cart.slice';
 import DiscountInCartNotif from './DiscountInCartNotif.component';
+import { useSession } from 'next-auth/react';
+import { currencyFormatter } from '@/helper/product/product.helper';
 
 export default function ProductCart({ cartItem }: { cartItem: ICart }) {
   // global state
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
+  const cartState = useAppSelector((state) => state.cartState);
+  const [cartData, setCartData] = React.useState<ICart>();
 
+  React.useEffect(() => {
+    setCartData(mapToCartState());
+  }, [cartItem]);
+
+  // handlers
   // delete cart item
   const handleSubstractToCart = async (qtty: number) => {
     // call api first
-    const resSubCart = await subtractCartAPI('cart/subtract', {
-      quantity: qtty,
-      productId: cartItem.product.id,
-      userId: '1',
-    });
+    const resSubCart = await subtractCartAPI(
+      'cart/subtract',
+      {
+        quantity: qtty,
+        productId: cartItem.product.id,
+      },
+      session?.user.access_token!,
+    );
 
     if (resSubCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
@@ -37,7 +49,10 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
     }
 
     // get latest cart
-    const resGetCart = await getCartDataAPI('cart/get', '1');
+    const resGetCart = await getCartDataAPI(
+      'cart/get',
+      session?.user.access_token!,
+    );
     if (resGetCart.status !== 200) {
       callToast('Something went wrong, try again later', 'ERROR', 3000);
       return;
@@ -52,6 +67,11 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
     dispatch(removeDiscountFromCart({ cartId: cartId }));
   };
 
+  const mapToCartState = () => {
+    const indexCartState = indexCartById(cartState, cartItem.id!);
+    return cartState[indexCartState];
+  };
+
   return (
     <div
       className="w-full h-[130px] px-5 py-4 flex shadow-sm rounded-md
@@ -64,14 +84,15 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
               width: '30%',
               display: 'flex',
               alignItems: 'center',
-              paddingLeft: '.7rem',
-              paddingRight: '.7rem',
               gap: '10px',
-              border: 'solid 1px',
             }}
           >
             {/**image placeholder */}
-            Image placeholder
+            <img
+              className="w-full rounded-md ring-2 h-full object-cover"
+              src={cartItem.product.image || '/templateproduct.png'}
+              alt="product-image"
+            />
           </Box>
           <Box
             sx={{
@@ -88,12 +109,10 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             </div>
             <div className="w-full h-1/3 flex items-center justify-start gap-3">
               <DiscountInCartNotif cartId={cartItem.id!} />
-              {cartItem.discount ? (
+              {cartData && cartData.discount && (
                 <IconButton onClick={() => cancelDiscount(cartItem.id!)}>
                   <Cancel />
                 </IconButton>
-              ) : (
-                <></>
               )}
             </div>
           </Box>
@@ -111,7 +130,9 @@ export default function ProductCart({ cartItem }: { cartItem: ICart }) {
             }}
           >
             <NumberFieldComponent cartItem={cartItem} />
-            {cartItem.discount?.promotion_type === 'BOGO' ? (
+            {cartData &&
+            cartData.discount &&
+            cartData.discount?.promotion_type === 'BOGO' ? (
               <p className="text-sm text-secondaryGreen">
                 You get extra {cartItem.quantity} pcs!
               </p>

@@ -1,5 +1,7 @@
 import orderController from '@/controllers/order.controller';
+import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
+import { verify } from 'jsonwebtoken';
 
 export class OrderRouter {
   private router: Router;
@@ -11,12 +13,9 @@ export class OrderRouter {
 
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT 
-
-    this.router.get('/list', orderController.getOrderListUser);
-    this.router.get('/admin/list', orderController.getOrderListAdmin);
-    this.router.post('/admin/cancel', orderController.cancelOrderByAdmin);
-    this.router.post("/admin/sendorder", orderController.sendOrderByAdmin)
-    this.router.post('/confirm', orderController.confirmOrderByCust);
+    this.router.post('/admin/cancel', verifyToken, orderController.cancelOrderByAdmin);
+    this.router.post("/admin/sendorder", verifyToken, orderController.sendOrderByAdmin)
+    this.router.post('/confirm', verifyToken, orderController.confirmOrderByCust);
 
     // .... continue api
   }

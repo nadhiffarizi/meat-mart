@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helper/api';
-import { IGetUsers } from '@/interface/user/user.interface';
 import FormAlert from './Alerts/EditAdminFormAlert';
 import EditAdminFormDeleteAlert from './Alerts/EditAdminFormDeleteAlert';
+import { IGetUsers } from '@/interface/user/user.interface';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Please enter a valid email.'),

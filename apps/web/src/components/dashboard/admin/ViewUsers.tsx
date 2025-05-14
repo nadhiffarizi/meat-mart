@@ -1,7 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Dropdown from '../DropDown';
-import { IGetUsers } from '@/interface/user/user.interface';
 import { api } from '@/helper/api';
 import { DataTable } from './DataTable';
 import { columns, User } from './columns';
@@ -14,6 +13,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { useSession } from 'next-auth/react';
+import { IGetUsers } from '@/interface/user/user.interface';
 
 function ViewUsers() {
   const [users, setUsers] = useState<User[]>([]);

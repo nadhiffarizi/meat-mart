@@ -219,6 +219,99 @@ class AdminService {
     };
     return feedback;
   }
+  async getListAdmin(req: Request) {
+    const { email } = req.query;
+    try {
+      const existingUser = await getUserByEmail(email as string);
+      if (existingUser?.role !== 'SUPER_ADMIN') {
+        return {
+          code: 403,
+          data: null,
+          status: statusEnum.FAILED,
+          message: `You have insufficient permission to access.`,
+        };
+      }
+
+      const countAdmin = await prisma.users.count({
+        where: { role: 'ADMIN' },
+      });
+      if (countAdmin == 0) {
+        return {
+          code: 200,
+          data: null,
+          status: statusEnum.SUCCESS,
+          message: 'There is no admin',
+        };
+      } else {
+        const listAllAdmin = await prisma.users.findMany({
+          where: { role: 'ADMIN' },
+        });
+
+        return {
+          code: 200,
+          data: listAllAdmin,
+          status: statusEnum.SUCCESS,
+          message: 'successfuly fetching admin',
+        };
+      }
+    } catch (error) {
+      console.error('Fetching admin error:', error);
+      throw new Error('Error during fetching admin');
+    }
+  }
+  async getListAdminByCity(req: Request) {
+    const { city } = req.query;
+
+    try {
+      const countAdmin = await prisma.users.count({
+        where: {
+          role: 'ADMIN',
+          UserAddresses: {
+            some: {
+              city: city as string,
+            },
+          },
+        },
+      });
+
+      if (countAdmin == 0) {
+        return {
+          code: 200,
+          data: null,
+          status: statusEnum.SUCCESS,
+          message: 'There is no admin in this city',
+        };
+      } else {
+        const listAdminByCity = await prisma.users.findMany({
+          where: {
+            role: 'ADMIN',
+            UserAddresses: {
+              some: {
+                city: city as string,
+              },
+            },
+          },
+          include: {
+            UserAddresses: {
+              where: {
+                city: city as string,
+              },
+            },
+          },
+        });
+
+        return {
+          code: 200,
+          data: listAdminByCity,
+          status: statusEnum.SUCCESS,
+          message: 'Successfully fetched admins by city',
+        };
+      }
+    } catch (error) {
+      console.error('Fetching admin error:', error);
+      throw new Error('Error during fetching admin');
+    }
+  }
 }
 
 export default new AdminService();

@@ -1,7 +1,7 @@
 // components/SlidingCategories.tsx
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Scrollbar } from 'swiper/modules';
 import type SwiperCore from 'swiper';
@@ -10,37 +10,24 @@ import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { IGetCategories } from '@/interface/product/category.interface';
-import { useSession } from 'next-auth/react';
-import { api } from '@/helper/api';
+import { meatCategories } from '@/data/categories';
 
-export default function SlidingCategories() {
+export default function Categories() {
   const router = useRouter();
   const pathname = usePathname();
   const swiperRef = useRef<SwiperCore>();
-  const [allCategories, setAllCategories] = useState<IGetCategories[]>([]);
 
-  useEffect(() => {
-    async function getCategories() {
-      try {
-        const response = await api(`category/all`, 'GET', {});
-        setAllCategories(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getCategories();
-  }, []);
+  const pathParts = pathname.split('/');
+  const currentCategorySlug = pathParts[2] || '';
+  const currentSubcategorySlug = pathParts[3] || 'terpopuler';
 
-  const handleCategoryClick = (categoryId: string) => {
-    router.push(`/categories/${categoryId}`);
+  const handleCategoryClick = (slug: string) => {
+    const subSlug = currentSubcategorySlug || 'terpopuler';
+    router.push(`/categories/${slug}/${currentSubcategorySlug}`);
   };
 
-  // Get current category slug from URL
-  const currentCategoryId = pathname.split('/')[2];
-
   return (
-    <div className="relative px-4 pb-6 bg-primaryBackground">
+    <div className="relative px-4 pb-6 bg-primaryBackground ">
       <div className="max-w-7xl mx-auto">
         <div className="relative">
           <Swiper
@@ -63,17 +50,26 @@ export default function SlidingCategories() {
             }}
             className="!py-2"
           >
-            {allCategories.map((category) => (
+            {meatCategories.map((category) => (
               <SwiperSlide key={category.id} className="!w-auto">
                 <button
-                  onClick={() => handleCategoryClick(category.id)}
-                  className={`flex gap-2 items-center justify-center px-4 py-2 rounded-full transition-all duration-200 min-w-[100px]
+                  onClick={() => handleCategoryClick(category.slug)}
+                  className={`flex gap-2 items-center justify-center pr-6 pl-1 py-1 rounded-full transition-all duration-200 min-w-[100px]
                     ${
-                      currentCategoryId === category.id
+                      currentCategorySlug === category.slug
                         ? 'bg-primaryGreen text-white'
                         : 'bg-white hover:bg-primaryGreen hover:text-white'
                     }`}
                 >
+                  <span className="text-2xl md:text-4xl pt-2 rounded-full w-12 h-12 md:w-16 md:h-16 bg-primaryBackground">
+                    <Image
+                      src={category.icon}
+                      alt={category.name}
+                      width={48}
+                      height={48}
+                      className="h-full w-full object-cover p-1 mb-1"
+                    />
+                  </span>
                   <span className="text-xs md:text-sm font-medium whitespace-nowrap">
                     {category.name}
                   </span>

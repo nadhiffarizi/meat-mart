@@ -16,21 +16,6 @@ export default function SetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  if (!token) {
-    return (
-      <div className="max-w-md mx-auto p-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">Invalid Verification Link</h1>
-        <p>The verification link is missing or invalid.</p>
-        <Link
-          href="/"
-          className="text-blue-500 hover:underline mt-4 inline-block"
-        >
-          Return to Home
-        </Link>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full max-w-[450px]">
       <h1 className="text-[21px] font-bold mb-1">Set Your Password</h1>
@@ -48,13 +33,20 @@ export default function SetPasswordPage() {
             setError(null);
             setSuccess(false);
             if (values.password === values.confirmPassword) {
-              await verifyEmail(values.token, values.password);
+              const result = await verifyEmail(values.token, values.password);
+              if ('error' in result) {
+                setError(result.error);
+                return;
+              }
+              if (result?.url) {
+                push(result.url);
+              } else {
+                setSuccess(true);
 
-              setSuccess(true);
-
-              setTimeout(() => setSuccess(false), 5000);
-              open.current = true;
-              push('/login');
+                setTimeout(() => setSuccess(false), 5000);
+                open.current = true;
+                push('/login');
+              }
             } else {
               throw new Error(
                 'Your Password and confirm Password did not match',
@@ -131,7 +123,7 @@ export default function SetPasswordPage() {
             )} */}
             {error ? (
               <div className="p-2 bg-red-50 text-red-600 rounded-md text-sm mb-2">
-                {'Invalid token'}
+                {error}
               </div>
             ) : (
               ''
@@ -140,7 +132,7 @@ export default function SetPasswordPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`font-semibold p-4 w-full rounded-[50px] mb-6 bg-primaryGreen text-white hover:bg-orangeAccent transition-colors ${
+              className={`font-semibold p-4 w-full rounded-[50px] mb-6 bg-primaryGreen text-white hover:bg-gray-300 hover:text-gray-400 ${success ? 'bg-orangeAccent text-white' : ''}transition-colors ${
                 isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
               }`}
             >

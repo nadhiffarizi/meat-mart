@@ -1,12 +1,6 @@
 import { indexCartById, indexProductInCart } from '@/helper/cart/cart.helper';
 import { currencyFormatter } from '@/helper/product/product.helper';
-import { ICart } from '@/interface/cart/cart.interface';
 import { IDiscount } from '@/interface/discount/discount.interface';
-import { IProduct } from '@/interface/product/product.interface';
-import {
-  addDiscountToCartItem,
-  removeDiscountFromCart,
-} from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { Box, Button, Radio } from '@mui/material';
 import * as React from 'react';

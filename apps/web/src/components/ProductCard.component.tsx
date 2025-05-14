@@ -6,10 +6,11 @@ import {
   syncCartDataFromAPI,
 } from '@/helper/cart/cart.helper';
 import { currencyFormatter } from '@/helper/product/product.helper';
-import { IProduct } from '@/interface/product/product.interface';
-import { IStock } from '@/interface/stock/stocks.interface';
+import IProduct from '@/interface/product/product.interface';
+import IStock from '@/interface/stock/stocks.interface';
 import { addToCartState, updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import * as React from 'react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -18,17 +19,21 @@ export default function ProductCard({ product }: { product: IProduct }) {
   const [isMaxAdded, setMaxAdded] = useState<boolean>();
   const cartState = useAppSelector((select) => select.cartState);
   const dispatch = useAppDispatch();
+  const { data: session, status } = useSession();
 
   //local state
   const [errorFetch, setErrorFetch] = useState<boolean>(false);
 
   const handleAddToCart = async (product: IProduct) => {
     // call api first
-    const resAddCart = await addToCartAPI('cart/add', {
-      quantity: 1,
-      productId: product.id,
-      userId: '1',
-    });
+    const resAddCart = await addToCartAPI(
+      'cart/add',
+      {
+        quantity: 1,
+        productId: product.id,
+      },
+      session?.user.access_token!,
+    );
 
     if (resAddCart.status !== 200) {
       toast.error('Something went wrong, try again later');

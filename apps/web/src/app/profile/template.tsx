@@ -6,8 +6,8 @@ type Props = {
 
 export default function template({ children }: Props) {
   return (
-    <div className="min-h-screen flex items-center justify-center -mt-24">
-      <div className="flex justify-center w-full p-4">{children}</div>
+    <div className="flex items-center justify-center">
+      <div className="flex justify-center w-full p-4 ">{children}</div>
     </div>
   );
 }

@@ -1,12 +1,11 @@
-/** @format */
 'use server';
-import { api } from '../api';
 import { cookies } from 'next/headers';
 import { decode } from 'next-auth/jwt';
 import { auth_secret } from '../config';
+import { api } from '../api';
+import { Address } from '@/interface/user/address.interface';
 
 export const login = async (credentials: Partial<Record<string, unknown>>) => {
-  console.log('Aku mencoba masuk ya gaess FRONT END nich');
   try {
     const res = await api('auth/login', 'POST', {
       body: credentials,
@@ -15,7 +14,7 @@ export const login = async (credentials: Partial<Record<string, unknown>>) => {
     if (!res.data?.access_token || !res.data?.refresh_token) {
       throw new Error('Invalid login response');
     }
-    console.log('INI RESnya', res);
+
     return {
       access_token: res.data.access_token,
       refresh_token: res.data.refresh_token,
@@ -35,7 +34,6 @@ export const register = async (newUser: { email: string }) => {
       contentType: 'application/json',
     });
 
-    console.log('Registration success:', data);
     return data;
   } catch (error) {
     console.error('Registration error:', error);
@@ -60,29 +58,31 @@ export const verifyEmail = async (token: string, password: string) => {
       body: { token, password },
       contentType: 'application/json',
     });
-    console.log('Registration success:', data);
+
     return data;
   } catch (error) {
     console.error('Verification error:', error);
+    return {
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+    };
   }
 };
 
 export const resendVerificationEmail = async (email: string) => {
   try {
-    console.log('MASUK HANDLERS RESEND VERIFICATION');
     const data = await api('auth/resend-verification', 'POST', {
       body: { email },
       contentType: 'application/json',
     });
 
-    // if (!data.success) {
-    //   throw new Error(data.message || 'Failed to resend verification email');
-    // }
-
     return data;
   } catch (error) {
     console.error('Resend verification error', error);
-    throw error;
+    return {
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+    };
   }
 };
 
@@ -93,14 +93,13 @@ export const resetEmail = async (email: string) => {
       contentType: 'application/json',
     });
 
-    // if (!data.success) {
-    //   throw new Error(data.message || 'Failed to send reset email');
-    // }
-
     return data;
   } catch (error) {
     console.error('Reset email error', error);
-    throw error;
+    return {
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+    };
   }
 };
 
@@ -119,10 +118,10 @@ export const resetPassword = async (token: string, password: string) => {
 
 export const refreshToken = async () => {
   const cookie = cookies();
-  const ftoken = cookie.get('next-auth.session-token')?.value;
-  if (!ftoken) throw new Error('No session token found');
+  const ntoken = cookie.get('next-auth.session-token')?.value;
+  if (!ntoken) throw new Error('No session token found');
   const decoded = (await decode({
-    token: ftoken,
+    token: ntoken,
     secret: auth_secret,
     salt: 'next-auth.session-token',
   })) as { refresh_token?: string };
@@ -143,33 +142,128 @@ export const refreshToken = async () => {
   };
 };
 
-export const updateUser = async (
-  data: {
-    first_name: string;
-    last_name: string;
-  },
-  token: string,
-) => {
-  await api(
-    '/auth',
-    'PATCH',
-    {
+export const updateUser = async (data: {
+  emailUpdate: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  password: string;
+  newPassword: string;
+}) => {
+  try {
+    await api('auth/', 'PATCH', {
       body: data,
       contentType: 'application/json',
-    },
-    token,
-  );
+    });
+  } catch (error) {
+    console.log('Error UPDATE PROFILE', error);
+  }
+  return data;
+};
+
+export const getProfile = async (email: string) => {
+  try {
+    const res = await api('auth/profile', 'POST', {
+      body: { email },
+      contentType: 'application/json',
+    });
+
+    return res.data;
+  } catch (error) {
+    console.log('Error UPDATE PROFILE', error);
+  }
 };
 
 export async function registerSocialUser(data: {
   email: string;
-  name: string;
+  fullName: string;
   image?: string;
   provider: string;
+  provider_id: string;
 }) {
-  return {
-    id: 'user-id-from-db',
-    access_token: 'generated-jwt-token',
-    refresh_token: 'generated-refresh-token',
-  };
+  try {
+    const res = await api('auth/social', 'POST', {
+      body: data,
+      contentType: 'application/json',
+    });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error UPDATE PROFILE', error);
+  }
+}
+
+export const updateProfileImage = async (email: string, imageUrl: string) => {
+  const response = await api('auth/profile/image', 'POST', {
+    body: { email, imageUrl },
+    contentType: 'application/json',
+  });
+  return response;
+};
+
+export async function getUserAddresses(email: string): Promise<Address[]> {
+  const response = await api(
+    `addresses/get?email=${encodeURIComponent(email)}`,
+    'GET',
+    {
+      contentType: 'application/json',
+    },
+  );
+
+  return response.data;
+}
+
+export async function addUserAddress(
+  email: string,
+  address: Omit<Address, 'id'>,
+): Promise<Address> {
+  const response = await api('addresses/', 'POST', {
+    body: { email, address },
+    contentType: 'application/json',
+  });
+
+  return response.data;
+}
+
+export async function updateUserAddress(
+  email: string,
+  id: string,
+  address: Address,
+): Promise<Address> {
+  const response = await api(`addresses/${id}`, 'PATCH', {
+    body: { email, address },
+    contentType: 'application/json',
+  });
+  console.log('Address Id', id);
+  return response.data;
+}
+
+export async function deleteUserAddress(
+  email: string,
+  id: string,
+): Promise<void> {
+  try {
+    console.log('Deleting address ID:', id);
+    const response = await api(`addresses/${id}`, 'DELETE', {
+      body: { email },
+      contentType: 'application/json',
+    });
+    return response;
+  } catch (error) {
+    console.error('Delete address error:', error);
+    throw error;
+  }
+}
+
+export async function setPrimaryAddress(
+  email: string,
+  id: string,
+): Promise<Address[]> {
+  const response = await api(`addresses/${id}/primary`, 'PATCH', {
+    body: { email },
+    contentType: 'application/json',
+  });
+
+  return response.data;
 }

@@ -5,10 +5,9 @@ import express, {
   Request,
   Response,
   NextFunction,
-  Router,
 } from 'express';
 import cors from 'cors';
-import { PORT } from './config';
+import { PORT, supabase } from './config';
 import authRouter from './routers/auth.router';
 import adminRouter from './routers/admin.router';
 import cartRouter from './routers/cart.router';
@@ -21,12 +20,18 @@ import orderRouter from './routers/order.router';
 import transactionQueryRouter from './routers/transactionQuery.router';
 import categoryDashboardRouter from './routers/category.dashboard.router';
 import categoryRouter from './routers/category.router';
-import storeRouter from './routers/store.router';
 import stockRouter from './routers/stock.router';
 import discountDashboardRouter from './routers/discount.dashboard.router';
 import stockHistoryRouter from './routers/stockHistory.router';
 import transactionDetailDashboardRouter from './routers/transactionDetail.dashboard.router';
 import '@/cronjob/monthlyStockSnapshot.cronjob';
+import orderQueryRouter from './routers/orderQuery.router';
+import { deadlinePayment } from './helper/cronjob/transaction.cron';
+import { orderConfirmation } from './helper/cronjob/order.cron';
+import { midtransSnap } from './helper/midtrans.helper';
+// import { midTransSnap } from './helper/transaction/transaction.helper';
+import addressRouter from './routers/address.router';
+import storeRouter from './routers/store.router';
 
 export default class App {
   private app: Express;
@@ -36,6 +41,7 @@ export default class App {
     this.configure();
     this.routes();
     this.handleError();
+    this.cron();
   }
 
   private configure(): void {
@@ -69,8 +75,10 @@ export default class App {
 
   private routes(): void {
     this.app.use('/api/auth', authRouter.getRouter());
+    this.app.use('/api/addresses', addressRouter.getRouter());
     this.app.use('/api/admin', adminRouter.getRouter());
     this.app.use('/api/order', orderRouter.getRouter());
+    this.app.use('/api/order/list', orderQueryRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
     this.app.use('/api/products', productRouter.getRouter());
     this.app.use('/api/user', userRouter.getRouter());
@@ -82,6 +90,8 @@ export default class App {
       '/api/dashboard/category',
       categoryDashboardRouter.getRouter(),
     );
+    // this.app.use('/api/product', adminRouter.getRouter());
+    this.app.use('/api/store', storeRouter.getRouter());
     this.app.use('/api/category', categoryRouter.getRouter());
     this.app.use('/api/dashboard/product', productDashboardRouter.getRouter());
     this.app.use('/api/store', storeRouter.getRouter());
@@ -95,6 +105,16 @@ export default class App {
       '/api/dashboard/transactionDetail',
       transactionDetailDashboardRouter.getRouter(),
     );
+    this.app.use('/api/discount', discountDashboardRouter.getRouter());
+    this.app.use('/api/store/list', storeRouter.getRouter());
+    // this.app.post('/midtrans', () => {
+    //   midtransSnap()
+    // })
+  }
+
+  private cron(): void {
+    // deadlinePayment().start() // cron for deadline payment
+    // orderConfirmation().start() // cron for order confirmation
   }
 
   public start(): void {

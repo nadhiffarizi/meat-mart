@@ -1,22 +1,65 @@
 'use client';
 import ProductCart from '@/components/Cart/ProductCart.Component';
-import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
+import { getCartDataAPI, syncCartDataFromAPI } from '@/helper/cart/cart.helper';
+import { cartTotalPageAPI } from '@/helper/pagination/pagination.helper';
 import { ICart } from '@/interface/cart/cart.interface';
-import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
+import { PageContext, RefreshContext } from '@/interface/pagination.interface';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { ArrowBack, NavigateBefore, NavigateNext } from '@mui/icons-material';
-import { Box, Button, Checkbox, IconButton, TextField } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  IconButton,
+  TextField,
+} from '@mui/material';
+import { useSession } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-export default function MyCartList() {
+export default function MyCartList({ accessToken }: { accessToken: string }) {
+  // page state
+  const pageState = React.useContext(PageContext);
+  const refreshState = React.useContext(RefreshContext);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const cartState = useAppSelector((state) => state.cartState);
+  const [cartViewData, setCartView] = React.useState<ICart[]>([]);
   const dispatch = useAppDispatch();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
-    dispatch(updateCheckoutProgress('CART'));
-  }, []);
+    if (
+      !accessToken ||
+      !pageState?.currentPage ||
+      !pageState.pageCount ||
+      status === 'loading'
+    ) {
+      console.log('loading di mycartlist');
+      return;
+    }
+
+    // set new params
+    const params = new URLSearchParams();
+    console.log('new page', pageState?.currentPage);
+
+    params.set('page', pageState.currentPage.toString()!);
+    router.replace(`${pathname}?${params.toString()}`);
+
+    // get cart view data
+    const resCartData = getCartDataAPI(
+      'cart/get',
+      accessToken,
+      pageState?.currentPage,
+    );
+    resCartData
+      .then((v) => v.json())
+      .then((value) => {
+        setCartView(syncCartDataFromAPI(value['data']));
+      });
+  }, [pageState?.currentPage, pageState?.pageCount, cartState]);
 
   return (
     <React.Fragment>
@@ -34,13 +77,8 @@ export default function MyCartList() {
         }}
       >
         <div className="flex flex-col w-full gap-5">
-          {cartState.map((cartItem: ICart, index: number) => {
-            return (
-              <>
-                {' '}
-                <ProductCart cartItem={cartItem} key={index} />
-              </>
-            );
+          {cartViewData.map((cartItem: ICart, index: number) => {
+            return <ProductCart cartItem={cartItem} key={index} />;
           })}
         </div>
         <div
@@ -57,11 +95,38 @@ export default function MyCartList() {
             Continue Shopping
           </Button>
           <div className="flex justify-between gap-7 items-center h-full">
-            <IconButton id="backpage-button" className="h-[40px]">
+            <IconButton
+              onClick={() => {
+                if (pageState?.currentPage && pageState?.currentPage > 1) {
+                  pageState.setCurrentPage(pageState.currentPage - 1);
+                }
+              }}
+              id="backpage-button"
+              className="h-[40px]"
+            >
               <NavigateBefore />
             </IconButton>
-            <IconButton id="nextpage-button" className="h-[40px]">
-              <NavigateNext />
+            <IconButton
+              onClick={() => {
+                if (
+                  pageState?.currentPage &&
+                  pageState?.currentPage < pageState.pageCount!
+                ) {
+                  setTimeout(() => {
+                    setLoading(true);
+                    pageState.setCurrentPage(pageState.currentPage! + 1);
+                    setLoading(false);
+                  }, 1000);
+                }
+              }}
+              id="nextpage-button"
+              className="h-[40px]"
+            >
+              {isLoading ? (
+                <CircularProgress color="inherit" />
+              ) : (
+                <NavigateNext />
+              )}
             </IconButton>
           </div>
         </div>

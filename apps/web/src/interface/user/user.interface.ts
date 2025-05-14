@@ -22,3 +22,18 @@ export interface IGetUsers {
   updated_at: string;
   deleted_at?: string;
 }
+
+export interface IProfile {
+  id: string;
+  image_url: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  emailUpdate: string;
+  phone_number: string;
+  is_verified: boolean | undefined;
+  token: string;
+  password: string;
+  newPassword: string;
+  provider: string;
+}

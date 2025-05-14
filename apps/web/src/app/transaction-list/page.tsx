@@ -2,12 +2,16 @@
 import SearchBarTransactionList from '@/components/Transaction/SearchBarTransactionList.component';
 import TransactionListCard from '@/components/Transaction/TransactionListCard.component';
 import { setQueryParams } from '@/helper/filter/transactionFilter.helper';
-import { IFilterTransactions } from '@/interface/dashboard/filter.interface';
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getDataTransactionAPI } from '@/helper/transaction/transaction.helper';
 import { callToast } from '@/helper/notify.helper';
 import { ITransaction } from '@/interface/transaction/transaction.interface';
+import { useSession } from 'next-auth/react';
+import { Backdrop, CircularProgress } from '@mui/material';
+import { IFilterTransactions } from '@/interface/dashboard/filter.interface';
+import { profileSideMenu } from '@/helper/user/user.helper';
+import Link from 'next/link';
 
 // filter context type
 export interface TransactionFilterContextType {
@@ -34,16 +38,22 @@ export default function TransactionListPage() {
   const [filterTransactions, setFilterTransactions] = React.useState<
     IFilterTransactions | undefined
   >(undefined);
+  const { data: session, status } = useSession();
 
   //local state
   const router = useRouter();
   const pathName = usePathname();
-  const [isLoading, setLoading] = React.useState<Boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [trxData, setTrxData] = React.useState<ITransaction[]>();
   const [isChange, setChange] = React.useState<boolean>();
+  const subCategories = profileSideMenu;
 
   // when global filters change
   React.useEffect(() => {
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
     // set query params
     console.log(filterTransactions);
     console.log(setQueryParams(filterTransactions));
@@ -55,6 +65,7 @@ export default function TransactionListPage() {
       const getTrxResponse = getDataTransactionAPI(
         `transaction/list?${params.toString()}`,
         filterTransactions!,
+        session?.user.access_token!,
       );
 
       getTrxResponse
@@ -74,20 +85,36 @@ export default function TransactionListPage() {
     // call get transaction to get list of transactions
   }, [filterTransactions, isChange]);
 
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
   return (
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
         <div className="flex flex-col gap-7 w-4/5 max-w-[2000px] min-w-[600px] py-5 px-5 ">
           <div id="main-container" className="flex w-full h-[670px] gap-5 ">
-            <div
-              id="lefstsidebar-container"
-              className="w-1/5 h-full flex flex-col gap-5"
-            >
-              {/**right sidebar container */}
-              <div className="w-full h-full py-5 px-7  rounded-lg bg-white ">
-                {/* <PaymentSummaryCheckout /> */}
+            <aside className="w-full md:w-64 flex-shrink-0">
+              <div className="bg-white rounded-lg shadow p-4 sticky top-4">
+                <nav>
+                  <ul className="space-y-2">
+                    {subCategories.map((subcat) => (
+                      <li key={subcat.id}>
+                        <Link
+                          href={`${subcat.slug}`}
+                          className="block px-3 py-2 rounded hover:bg-gray-100 transition"
+                        >
+                          {subcat.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               </div>
-            </div>
+            </aside>
             <div
               id="orderlist-container"
               className="flex flex-col gap-4 w-4/5 h-full "

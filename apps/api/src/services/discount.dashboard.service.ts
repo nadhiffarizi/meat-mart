@@ -110,10 +110,9 @@ class DiscountService {
       existingDiscount &&
       existingDiscount.deleted_at
     ) {
-      let existingProduct;
-      if (existingDiscount.product_id) {
-        existingProduct = await findProductById(existingDiscount.product_id);
-      }
+      const existingProduct = await findProductById(
+        existingDiscount.product_id!,
+      );
       const existingStore = await getStoreById(existingDiscount.store_id);
 
       if (

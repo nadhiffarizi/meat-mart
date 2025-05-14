@@ -4,34 +4,26 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountMenu from './AccountMenu';
-import { useAppSelector } from '@/redux/store';
-import { countTotalInCart } from '@/helper/cart/cart.helper';
-import { Button, IconButton } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { getCartDataAPI, syncCartDataFromAPI } from '@/helper/cart/cart.helper';
+import { Backdrop, Button, CircularProgress } from '@mui/material';
 import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
-import { ShoppingBagIcon } from '@heroicons/react/16/solid';
-import NavbarDropDown from './Navbar/NavbarDropdown.component';
+import { updateCartState } from '@/redux/slice/cart.slice';
 import { useRouter } from 'next/navigation';
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   // global state cart
   const cartState = useAppSelector((state: any) => state.cartState);
-  const adressState = useAppSelector((state: any) => state.addressState);
-
-  const { data: session } = useSession();
+  const dispatch = useAppDispatch();
+  const { data: session, status } = useSession();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState('');
-  const [totalCartQtty, setCartQtty] = useState<number>();
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [cartDropdownEl, setCartDropdownEl] =
-    React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [isLoading, setLoading] = useState<boolean>();
   const router = useRouter();
 
   useEffect(() => {
@@ -43,13 +35,6 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
     }
   }, []);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   useEffect(() => {
     const handleScroll = (): void => {
       setIsScrolled(window.scrollY > 10);
@@ -60,22 +45,41 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   }, []);
 
   useEffect(() => {
-    const totalQtty = countTotalInCart(cartState);
-    setCartQtty(totalQtty);
-  }, [cartState]);
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
+    setLoading(true);
+    const resCart = getCartDataAPI('cart/get', session?.user.access_token!);
+    resCart
+      .then((v) => v.json())
+      .then((values) => {
+        dispatch(updateCartState(syncCartDataFromAPI(values['data'])));
+      });
+
+    setLoading(false);
+  }, []);
 
   const handleLocationSelect = (location: string) => {
     setUserLocation(location);
   };
-  // ${isFixed ? 'fixed' : 'relative'}
+
+  if (isLoading) {
+    return (
+      <Backdrop open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   return (
     <div
-      className={` w-full z-40 transition-all duration-300 ${
+      className={`md:-mt-20 lg:mt-0 w-full z-40 transition-all duration-300 ${
         isScrolled ? 'bg-primaryBackground shadow-md' : 'bg-primaryBackground'
       } ${isFixed ? `fixed` : `relative`}`}
     >
-      <div className="w-7xl px-4 md:px-6 lg:px-8">
+      <div className="w-7xl px-4 md:px-0 lg:px-8">
         <div className="flex justify-between gap-2 h-20  items-center">
           <div className="flex items-center justify-between md:gap-6 lg:gap-14">
             <div className="flex-shrink-0 pb-1">

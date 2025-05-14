@@ -1,11 +1,18 @@
-/** @format */
-
 import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { login, refreshToken, registerSocialUser } from './helper/auth/auth';
 import Google from 'next-auth/providers/google';
 import { jwtDecode } from 'jwt-decode';
 import { InvalidAuthError } from './interface/user/auth.error';
+
+export interface ISocialUserData {
+  email: string;
+  fullName?: string;
+  image?: string;
+  provider: string;
+  provider_id: string;
+  role: string;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -55,57 +62,60 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      if (account?.provider == 'google') {
-        return profile?.email_verified || false;
-      }
-      try {
-        // Register or get existing user from your database
-        const socialUser = await registerSocialUser({
-          email: profile?.email!,
-          name: profile?.name!,
-          image: profile?.picture,
-          provider: 'google',
-        });
+      if (account?.provider === 'google') {
+        try {
+          const socialUser = await registerSocialUser({
+            email: profile?.email as string,
+            fullName: profile?.name as string,
+            image: profile?.picture as string,
+            provider: account.provider,
+            provider_id: profile?.sub as string,
+          });
+          console.log('SOCIAL USER PROP', socialUser);
+          if (!socialUser) {
+            return false;
+          }
 
-        // Merge social user data with the user object
-        // user.id = socialUser.id;
-        // user.access_token = socialUser.access_token;
-        // user.refresh_token = socialUser.refresh_token;
-
-        // return true;
-      } catch (error) {
-        console.error('Google registration error:', error);
-        return false;
+          return true;
+        } catch (error) {
+          console.error('Google registration error:', error);
+          return false;
+        }
       }
       return true;
     },
-    async jwt({ token, user, trigger }) {
+
+    async jwt({ token, user }) {
+      console.log('JWT callback - user role:', user?.role, user);
       if (user) {
-        const { access_token, refresh_token } = user;
-        return { access_token, refresh_token };
-      } else if (token.access_token || trigger == 'update') {
-        const newToken = await refreshToken();
-        return newToken;
+        token.access_token = user.access_token;
+        token.refresh_token = user.refresh_token;
+        token.provider = user.provider;
+        token.role = user.role;
       }
       return token;
     },
 
     async session({ session, token }) {
+      console.log('Session callback - token role:', token.role);
       if (token.access_token) {
         const user = jwtDecode(token.access_token!) as User;
-        session.user.id = user.id as string;
-        session.user.email = user.email as string;
-        session.user.img_src = user.img_src as string;
-        session.user.first_name = user.first_name as string;
-        session.user.last_name = user.last_name as string;
-        session.user.role = user.role as string;
-        session.user.access_token = token.access_token as string;
+
+        session.user = {
+          ...session.user,
+          id: user.id as string,
+          email: user.email as string,
+          image_url: user.image_url as string,
+          first_name: user.first_name as string,
+          last_name: user.last_name as string,
+          role: user.role as string,
+          access_token: token.access_token as string,
+          is_verified: user.is_verified,
+          provider: token.provider as string,
+        };
       }
 
       return session;
     },
   },
 });
-
-//access_token = untuk mengakses service di dalam api
-//refresh_token = untuk mengupdate access_token yang baru

@@ -3,13 +3,6 @@ import Dropdown from '@/components/dashboard/DropDown';
 import React from 'react';
 import CreateAdminForm from './forms/CreateAdminForm';
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-
 function CreateAdmin() {
   return (
     // <Dropdown buttonLabel="Add a New Employee">

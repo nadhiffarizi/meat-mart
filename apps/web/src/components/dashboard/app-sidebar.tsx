@@ -2,13 +2,16 @@
 import {
   Calendar,
   CircleUser,
+  CreditCard,
   FileChartColumn,
   Forklift,
   Home,
   Inbox,
+  Package,
   PackageSearch,
   Search,
   Settings,
+  StoreIcon,
   TicketPercent,
   UserRoundPen,
 } from 'lucide-react';
@@ -37,6 +40,8 @@ const items = [
     icon: UserRoundPen,
     hideTo: 'ADMIN',
   },
+  { title: 'User Management', url: '/dashboard/users', icon: UserRoundPen },
+  { title: 'Stores', url: '/dashboard/stores', icon: StoreIcon },
   {
     title: 'Products',
     url: '/dashboard/products',
@@ -54,6 +59,13 @@ const items = [
     hideTo: 'SUPER_ADMIN',
   },
   { title: 'Report', url: '/dashboard/reports', icon: FileChartColumn },
+  {
+    title: 'Transactions',
+    url: '/dashboard/transaction-list',
+    icon: CreditCard,
+  },
+  { title: 'Orders', url: '/dashboard/order-list', icon: Package },
+  { title: 'My Profile', url: '/dashboard/profile', icon: CircleUser },
 ];
 
 export function AppSidebar() {

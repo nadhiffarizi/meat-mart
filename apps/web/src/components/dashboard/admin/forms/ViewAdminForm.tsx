@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helper/api';
-import { IGetUsers } from '@/interface/user/user.interface';
 import { Alert } from '@/components/ui/alert';
 import Link from 'next/link';
 import { PenOff } from 'lucide-react';
+import { IGetUsers } from '@/interface/user/user.interface';
 
 function ViewAdminForm({ id }: { id: string }) {
   const router = useRouter();

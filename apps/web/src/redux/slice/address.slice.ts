@@ -1,6 +1,6 @@
-import IAddress from '@/interface/user/address.interface';
-import { ICart } from '@/interface/cart/cart.interface';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import IAddress from "@/interface/user/address.interface";
+import { ICart } from "@/interface/cart/cart.interface";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const addressInitalState: IAddress = {
   address: '',

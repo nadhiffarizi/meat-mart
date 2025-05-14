@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helper/api';
-import { IGetDashboardProducts } from '@/interface/product/product.interface';
 import ReactivateProductFormAlert from './alerts/ReactivateProductFormAlert';
 import AddProductFormAlert from './alerts/AddProductFormAlert';
 import Image from 'next/image';
 import { IGetCategories } from '@/interface/product/category.interface';
 import Link from 'next/link';
+import IGetDashboardProducts from '@/interface/dashboard/product.dashboard.interface';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Please enter a name for this product.'),

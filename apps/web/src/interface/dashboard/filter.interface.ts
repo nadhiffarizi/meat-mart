@@ -1,4 +1,5 @@
 import { PickerValue } from "@mui/x-date-pickers/internals";
+import IStore from "../store/store.interface";
 
 export interface IFilterStatus {
     AWAITING_PAYMENT: boolean;
@@ -22,7 +23,8 @@ export interface IFilterTransactions {
     invoiceNumber: string | undefined,
     from: number | null,
     until: number | null,
-    statusArray: string[] | undefined
+    statusArray: string[] | undefined,
+    stores?: IStore[] | undefined
 }
 
 export interface IFilterStatus {
@@ -37,5 +39,6 @@ export interface IFilterOrder {
     invoiceNumber: string | undefined,
     from: number | null,
     until: number | null,
-    statusArray: string[] | undefined
+    statusArray: string[] | undefined,
+    stores?: IStore[] | undefined
 }

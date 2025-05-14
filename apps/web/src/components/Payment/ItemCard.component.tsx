@@ -16,14 +16,16 @@ export default function ItemCard({ cartItem }: { cartItem: ICart }) {
               width: '30%',
               display: 'flex',
               alignItems: 'center',
-              paddingLeft: '.7rem',
-              paddingRight: '.7rem',
               gap: '10px',
-              border: 'solid 1px',
+              paddingBottom: '.7em',
             }}
           >
             {/**image placeholder */}
-            Image placeholder
+            <img
+              className="w-full h-full rounded-lg object-cover"
+              src={cartItem.product.image || '/templateproduct.png'}
+              alt="product-image"
+            />
           </Box>
           <Box
             sx={{

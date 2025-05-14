@@ -6,6 +6,7 @@ import { findStocksByProduct } from '@/helper/stock/stock.helper';
 import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
+import { findThumbnailByProductId } from '@/helper/product/product.helper';
 
 class ProductService {
   async create(req: Request) {
@@ -43,7 +44,12 @@ class ProductService {
 
       for (let product of products) {
         const availableStocks = await findStocksByProduct(product.id, loc1);
-        const temp = { ...product, ...{ availableStocks: availableStocks } };
+        const image = await findThumbnailByProductId(product.id);
+        const temp = {
+          ...product,
+          ...{ image: image?.link },
+          ...{ availableStocks: availableStocks },
+        };
         data.push({ ...temp });
       }
 
@@ -73,16 +79,16 @@ class ProductService {
       where: includeDeleted
         ? undefined
         : {
-            deleted_at: null,
-          },
+          deleted_at: null,
+        },
       ...(limit !== undefined ? { take: limit } : {}),
       ...(query
         ? {
-            where: {
-              ...(includeDeleted ? {} : { deleted_at: null }),
-              name: { contains: query, mode: 'insensitive' },
-            },
-          }
+          where: {
+            ...(includeDeleted ? {} : { deleted_at: null }),
+            name: { contains: query, mode: 'insensitive' },
+          },
+        }
         : {}),
     });
 

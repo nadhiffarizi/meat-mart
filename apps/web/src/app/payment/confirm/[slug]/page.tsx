@@ -1,11 +1,12 @@
 'use client';
 
 import { Box, Button, Typography } from '@mui/material';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 export default function ThankYouPage() {
   const params = useParams<{ slug: string }>();
+  const router = useRouter();
 
   // format typography
   const getTypography = (input: string) => {
@@ -61,12 +62,14 @@ export default function ThankYouPage() {
           <div className="w-full h-1/3 flex justify-between">
             <Button
               style={{ textTransform: 'none' }}
+              onClick={() => router.push('/order-list')}
               className="!h-[50px] !w-[40%] !rounded-full !text-xl !text-secondaryGreen !bg-white ring-2 ring-secondaryGreen"
             >
               See my order
             </Button>
             <Button
               style={{ textTransform: 'none' }}
+              onClick={() => router.push('/transaction-list')}
               className="!h-[50px] !w-[40%] !rounded-full !text-xl !text-white !bg-secondaryGreen"
             >
               Upload payment

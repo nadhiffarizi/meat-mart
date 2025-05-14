@@ -24,22 +24,17 @@ export const api = async (
       headers['Authorization'] = 'Bearer ' + access_token;
     } else headers['Authorization'] = 'Bearer ' + token;
   }
+  if (data?.contentType) headers['Content-Type'] = data.contentType;
+  if (token) headers['Authorization'] = 'Bearer ' + token;
 
   const res = await fetch(api_url + path, {
     method,
     body:
       data?.body instanceof FormData ? data.body : JSON.stringify(data?.body),
-    headers,
+    headers: headers,
   });
 
-  console.log('INI res di handlers', res);
-  const contentType = res.headers.get('content-type');
-  if (!contentType?.includes('application/json')) {
-    console.log('berarti text ya?');
-    const text = await res.text();
-    throw new Error(`Request failed`);
-  }
   const json = await res.json();
-  if (res.status > 299) throw new Error(json.message || 'Request failed');
+  if (res.status > 299) throw new Error(json.message);
   return json;
 };

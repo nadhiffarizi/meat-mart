@@ -1,6 +1,7 @@
 import authController, { AuthController } from '@/controllers/auth.controller';
 import cartController from '@/controllers/cart.controller';
 import orderController from '@/controllers/transaction.controller';
+import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
 
 export class CartRouter {
@@ -14,10 +15,12 @@ export class CartRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT
 
-    this.router.post('/add', cartController.add);
-    this.router.post('/subtract', cartController.subtract);
-    this.router.get("/get", cartController.getCart);
-    this.router.put("/update", cartController.updateCartQuantity);
+    this.router.post('/add', verifyToken, cartController.add);
+    this.router.post('/subtract', verifyToken, cartController.subtract);
+    this.router.get("/get/:page", verifyToken, cartController.getCart);
+    this.router.put("/update", verifyToken, cartController.updateCartQuantity);
+    this.router.get("/totalpage", verifyToken, cartController.getTotalPage);
+
     // .... continue api
   }
 

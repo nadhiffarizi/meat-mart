@@ -6,40 +6,38 @@ import { Dialog, DialogTrigger } from '../ui/dialog';
 import { DiscountDialogInCart } from './DiscountModalInCart.component';
 import { useAppSelector } from '@/redux/store';
 import { indexCartById } from '@/helper/cart/cart.helper';
+import { useSession } from 'next-auth/react';
 
 export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
   const cartState = useAppSelector((state) => state.cartState);
   const [isDiscountFound, setDiscountFound] = React.useState<boolean>(false);
+  const { data: session, status } = useSession();
 
   React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
+    if (status === 'loading' || status === 'unauthenticated') {
+      return;
+    }
+    const resGetDiscount = getAvailableDiscountsAPI(
+      `discount/get/${cartId}`,
+      session?.user.access_token!,
+    );
 
     resGetDiscount
       .then((v) => v.json())
       .then((value) => {
         if (value['data'].length) {
           setDiscountFound(true);
+        } else {
+          setDiscountFound(false);
         }
       });
-  }, []);
-
-  React.useEffect(() => {
-    const resGetDiscount = getAvailableDiscountsAPI(`discount/get/${cartId}`);
-
-    resGetDiscount
-      .then((v) => v.json())
-      .then((value) => {
-        if (value['data'].length) {
-          setDiscountFound(true);
-        }
-      });
-  }, [cartState]);
+  }, [cartId]);
 
   // handle modal open
 
   return (
     <div className=" h-full">
-      {isDiscountFound && (
+      {isDiscountFound && status !== 'loading' && (
         <Dialog>
           <DialogTrigger asChild>
             <Button
@@ -47,7 +45,8 @@ export default function DiscountInCartNotif({ cartId }: { cartId: string }) {
               className="!text-xs !text-red-400 "
               startIcon={<Discount />}
             >
-              {cartState[indexCartById(cartState, cartId)].discount
+              {cartState[indexCartById(cartState, cartId)] &&
+              cartState[indexCartById(cartState, cartId)].discount
                 ? `${cartState[indexCartById(cartState, cartId)].discount?.discount_code} applied`
                 : 'Check Available Discounts'}
             </Button>

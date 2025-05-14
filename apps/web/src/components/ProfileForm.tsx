@@ -1,52 +1,50 @@
 'use client';
 
-import { Users } from '@prisma/client';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { IProfile } from '@/interface/product/card.interface';
-import { profile } from 'console';
+import { IProfile } from '@/interface/user/user.interface';
 
 interface ProfileFormProps {
-  profil: IProfile;
+  profile: IProfile;
+  onSubmit: (data: Partial<IProfile>) => Promise<void>;
+  onCancel: () => void;
 }
 
-export default function ProfileForm(profil: IProfile) {
-  const { update } = useSession();
-  const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+export default function ProfileForm({
+  profile,
+  onSubmit,
+  onCancel,
+}: ProfileFormProps) {
   const [formData, setFormData] = useState({
-    firstName: profil.first_name || '',
-    lastName: profil.last_name || '',
-    email: profil.email || '',
-    phoneNumber: profil.phone_number || '',
+    firstName: profile.first_name || '',
+    lastName: profile.last_name || '',
+    email: profile.email || '',
+    phoneNumber: profile.phone_number || '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
+    provider: profile.provider,
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const [phoneNumber, setPhoneNumber] = useState('');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const toggleEditing = () => {
-    setIsEditing(!isEditing);
-    if (!isEditing) {
-      setFormData({
-        firstName: profil.first_name || '',
-        lastName: profil.last_name || '',
-        email: profil.email || '',
-        phoneNumber: profil.phone_number || '',
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      });
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numericValue = value.replace(/\D/g, '');
+    // setPhoneNumber(numericValue);
+    setFormData((prev) => ({
+      ...prev,
+      phoneNumber: numericValue,
+    }));
+    if (numericValue.length > 13 || numericValue.length < 11) {
+      setError('Perhatikan nomor telepon Anda');
+    } else {
       setError('');
-      setSuccess('');
     }
   };
 
@@ -56,47 +54,46 @@ export default function ProfileForm(profil: IProfile) {
     setError('');
     setSuccess('');
 
-    if (
-      formData.newPassword &&
-      formData.newPassword !== formData.confirmPassword
-    ) {
-      setError("New passwords don't match");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phoneNumber: formData.phoneNumber,
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update profile');
+      // Check if password was changed and matches confirmation
+      if (
+        formData.newPassword &&
+        formData.newPassword !== formData.confirmPassword
+      ) {
+        throw new Error('Password baru tidak cocok');
       }
+      console.log('INI Profil', formData);
+      const emailChanged = formData.email !== profile.email;
 
-      await update({
-        ...profil,
+      if (emailChanged) {
+        const changeEmail = await onSubmit({
+          email: profile.email,
+          emailUpdate: formData.email,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone_number: phoneNumber,
+          password: formData.currentPassword,
+          newPassword: formData.newPassword,
+        });
+
+        setSuccess('Profil berhasil diperbarui! Cek email untuk verifikasi');
+        setTimeout(() => onCancel(), 3000);
+      }
+      await onSubmit({
+        email: profile.email,
+        emailUpdate: formData.email,
         first_name: formData.firstName,
         last_name: formData.lastName,
+        phone_number: formData.phoneNumber,
+        password: formData.currentPassword,
+        newPassword: formData.newPassword,
       });
 
-      setSuccess('Profile updated successfully!');
-      setIsEditing(false);
-      router.refresh();
+      setSuccess('Profil berhasil diperbarui!');
+      window.location.reload();
+      setTimeout(() => onCancel(), 5000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : 'Gagal memperbarui profil');
     } finally {
       setIsLoading(false);
     }
@@ -105,206 +102,164 @@ export default function ProfileForm(profil: IProfile) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <div className="flex">
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{error}</h3>
-            </div>
-          </div>
+        <div className="bg-red-50 text-red-600 p-4 rounded mb-4 text-sm font-medium">
+          {`! ${error}`}
         </div>
       )}
 
       {success && (
-        <div className="rounded-md bg-green-50 p-4">
-          <div className="flex">
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-green-800">{success}</h3>
-            </div>
-          </div>
+        <div className="bg-green-50 text-green-600 p-4 rounded mb-4">
+          {success}
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-        {/* First Name */}
-        <div className="sm:col-span-3">
-          <label
-            htmlFor="firstName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            First name
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nama Depan
           </label>
-          {isEditing ? (
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nama Belakang
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          {profile.provider !== 'credentials' ? (
             <input
-              type="text"
-              name="firstName"
-              id="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              type="email"
+              name="email"
+              value={formData.email}
+              disabled
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 "
             />
           ) : (
-            <p className="mt-1 text-sm text-gray-900">
-              {profil.first_name || 'Not provided'}
-            </p>
-          )}
-        </div>
-
-        {/* Last Name */}
-        <div className="sm:col-span-3">
-          <label
-            htmlFor="lastName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Last name
-          </label>
-          {isEditing ? (
             <input
-              type="text"
-              name="lastName"
-              id="lastName"
-              value={formData.lastName}
+              type="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 "
             />
-          ) : (
-            <p className="mt-1 text-sm text-gray-900">
-              {profil.last_name || 'Not provided'}
-            </p>
           )}
+
+          <p className="mt-1 text-sm text-gray-500">
+            Lakukan verifikasi saat email diubah
+          </p>
         </div>
 
-        {/* Email */}
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Email address
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nomor Telepon
           </label>
-          <p className="mt-1 text-sm text-gray-900">{profil.email}</p>
-          {isEditing && (
-            <p className="mt-1 text-xs text-gray-500">
-              To change your email, please contact support.
-            </p>
-          )}
+          <input
+            type="tel"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handlePhoneChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+          />
+          {/* <p className="text-xs text-red-500 mb-4">{error}</p> */}
         </div>
 
-        {/* Phone Number */}
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="phoneNumber"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Phone number
-          </label>
-          {isEditing ? (
-            <input
-              type="tel"
-              name="phoneNumber"
-              id="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          ) : (
-            <p className="mt-1 text-sm text-gray-900">
-              {profil.phone_number || 'Not provided'}
-            </p>
-          )}
-        </div>
+        <div className="md:col-span-2 border-t border-gray-200 pt-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">
+            Ubah Password
+          </h3>
+          <p className="text-xs text-gray-500 mb-4">
+            Kosongkan jika tidak ingin mengubah password
+          </p>
 
-        {isEditing && (
-          <>
-            <div className="sm:col-span-4">
-              <h3 className="text-sm font-medium text-gray-700">
-                Change Password
-              </h3>
-              <p className="mt-1 text-xs text-gray-500">
-                Leave blank to keep current password
-              </p>
-            </div>
-
-            <div className="sm:col-span-4">
-              <label
-                htmlFor="currentPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Current Password
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password Saat Ini
               </label>
               <input
                 type="password"
                 name="currentPassword"
-                id="currentPassword"
-                value={formData.currentPassword}
+                value={
+                  profile.provider !== 'credentials'
+                    ? ''
+                    : formData.currentPassword
+                }
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
               />
             </div>
 
-            <div className="sm:col-span-4">
-              <label
-                htmlFor="newPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                New Password
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password Baru
               </label>
               <input
                 type="password"
                 name="newPassword"
-                id="newPassword"
-                value={formData.newPassword}
+                value={
+                  profile.provider !== 'credentials' ? '' : formData.newPassword
+                }
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-blue-500 focus:gray-blue-500"
               />
             </div>
 
-            <div className="sm:col-span-4">
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm New Password
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Konfirmasi Password Baru
               </label>
               <input
                 type="password"
                 name="confirmPassword"
-                id="confirmPassword"
-                value={formData.confirmPassword}
+                value={
+                  profile.provider !== 'credentials'
+                    ? ''
+                    : formData.confirmPassword
+                }
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
               />
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex justify-end space-x-3">
-        {isEditing ? (
-          <>
-            <button
-              type="button"
-              onClick={toggleEditing}
-              className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Saving...' : 'Save Changes'}
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            onClick={toggleEditing}
-            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Edit Profile
-          </button>
-        )}
+      <div className="flex justify-end space-x-3 pt-6">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-500"
+          disabled={isLoading}
+        >
+          Batal
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-orangeAccent hover:bg-primaryGreen  "
+          disabled={isLoading}
+        >
+          {isLoading ? 'Menyimpan...' : 'Simpan Perubahan'}
+        </button>
       </div>
     </form>
   );

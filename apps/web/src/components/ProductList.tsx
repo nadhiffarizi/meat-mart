@@ -1,27 +1,37 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
-import { ICard } from '@/interface/product/card.interface';
-import {
-  IGetDashboardProducts,
-  IProduct,
-} from '@/interface/product/product.interface';
-import { api } from '@/helper/api';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
+import IProduct from '@/interface/product/product.interface';
+import { getProducts } from '@/helper/product/product.helper';
 
 export const ProductList = () => {
-  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
+  // local state
+  const [productData, setProductData] = useState<IProduct[]>();
+
   useEffect(() => {
-    async function getAllProducts() {
-      try {
-        const response = await api(`products/all?limit=6`, 'GET', {});
-        setAllProducts(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getAllProducts();
+    const resProduct = getProducts('products');
+
+    resProduct
+      .then((v) => v.json())
+      .then((value) => {
+        const a: IProduct[] = [];
+        value['data'].map((product: any) => {
+          const data: IProduct = {
+            name: product['name'],
+            price: product['price'],
+            id: product['id'],
+            slug: product['slug'],
+            weight: product['weight'],
+            image: product['image'],
+            availableStocks: product['availableStocks'],
+          };
+          a.push(data);
+        });
+        console.log(a);
+
+        setProductData([...a]);
+      });
   }, []);
 
   return (
@@ -29,9 +39,19 @@ export const ProductList = () => {
       <div className="py-4">
         <h3 className="text-xl md:text-3xl font-bold">Daging Yang Kamu Mau!</h3>
         <div className="m-auto my-5 grid grid-cols-2 md:text-sm md:grid-cols-3  lg:grid-cols-5  gap-4 md:ml-10 lg:ml-0">
-          {allProducts.map((card, key) => (
-            <Card {...card} stock={0} key={card.id} />
-          ))}
+          {productData &&
+            productData.map((product, key) => (
+              <Card product={product} key={key} />
+            ))}
+        </div>
+      </div>
+      <div className="py-4">
+        <h3 className="text-xl md:text-3xl font-bold ">Promo Menarik</h3>
+        <div className="m-auto my-5  grid grid-cols-2 text-xs md:text-sm md:grid-cols-3  lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
+          {productData &&
+            productData.map((product, key) => (
+              <Card product={product} key={key} />
+            ))}
         </div>
       </div>
     </div>
