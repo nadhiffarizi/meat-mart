@@ -114,7 +114,7 @@ export function Card({ product }: { product: IProduct }) {
                   height={60}
                   alt=""
                   className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
-                    ${!(product.availableStocks.length == 0) ? 'hidden' : 'block'}`}
+                    ${!product.availableStocks ? 'hidden' : 'block'}`}
                   src="/sold-icon.png"
                 />
               </div>
@@ -136,9 +136,7 @@ export function Card({ product }: { product: IProduct }) {
                   // disabled={!session || props.stock === 0}
                   className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
                     ${
-                      !session ||
-                      product.availableStocks.length === 0 ||
-                      isMaxAdded
+                      !session || !product.availableStocks || isMaxAdded
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
                     }`}
