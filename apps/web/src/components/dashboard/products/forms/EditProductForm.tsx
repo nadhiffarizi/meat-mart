@@ -38,14 +38,16 @@ function EditProductForm({ id }: { id: string }) {
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value) || value === '') {
-      formik.setFieldValue('price', value);
+      const numericValue = value === '' ? '' : Math.max(0, Number(value));
+      formik.setFieldValue('price', numericValue);
     }
   };
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value) || value === '') {
-      formik.setFieldValue('weight', value);
+      const numericValue = value === '' ? '' : Math.max(0, Number(value));
+      formik.setFieldValue('weight', numericValue);
     }
   };
 

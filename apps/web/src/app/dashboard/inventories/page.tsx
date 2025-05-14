@@ -66,7 +66,7 @@ function Page() {
             );
           })
         ) : session?.user.role === 'SUPER_ADMIN' ? (
-          <Link href={'/dashboard'}>
+          <Link href={'/dashboard/stores'}>
             <Card className="flex flex-col justify-between w-[200px] md:w-[350px] break-words ">
               <CardHeader>
                 <CardTitle>Create your first store.</CardTitle>
