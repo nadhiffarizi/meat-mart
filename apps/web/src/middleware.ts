@@ -62,9 +62,9 @@ export async function middleware(request: NextRequest) {
   }
   else {
 
-    if (!session?.user) {
-      return NextResponse.redirect(new URL("/login", request.nextUrl))
-    }
+    // if (!session?.user) {
+    //   return NextResponse.redirect(new URL("/login", request.nextUrl))
+    // }
   }
 
 
