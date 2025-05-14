@@ -76,7 +76,6 @@ CREATE TABLE "products" (
 CREATE TABLE "categories" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "product_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -133,7 +132,7 @@ CREATE TABLE "stores" (
 -- CreateTable
 CREATE TABLE "discounts" (
     "id" TEXT NOT NULL,
-    "product_id" TEXT NOT NULL,
+    "product_id" TEXT,
     "store_id" TEXT NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
@@ -167,22 +166,13 @@ CREATE TABLE "carts" (
 -- CreateTable
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
-<<<<<<<< HEAD:apps/api/prisma/migrations/20250510212131_/migration.sql
-    "total_price" DOUBLE PRECISION NOT NULL,
-    "minimum_buy" BOOLEAN,
-    "amount_discount" DOUBLE PRECISION,
-    "deadline_payment" TIMESTAMP(3) NOT NULL,
-    "transaction_status" "E_TransactionStatus" NOT NULL,
-    "payment_proof" TEXT,
-    "users_id" TEXT NOT NULL,
-========
     "total_price" DOUBLE PRECISION,
     "deadline_payment" TIMESTAMP(3),
     "transaction_status" "E_TransactionStatus" NOT NULL,
     "payment_proof" TEXT,
     "users_id" TEXT NOT NULL,
     "invoice_number" TEXT,
->>>>>>>> develop:apps/api/prisma/migrations/20250428143955_added_product_categories/migration.sql
+    "payment_method" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -204,12 +194,8 @@ CREATE TABLE "transactiondetails" (
     "product_id" TEXT NOT NULL,
     "discounted" BOOLEAN NOT NULL,
     "discount_code" TEXT,
-<<<<<<<< HEAD:apps/api/prisma/migrations/20250510212131_/migration.sql
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-========
     "status" "E_OrderStatus" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
->>>>>>>> develop:apps/api/prisma/migrations/20250428143955_added_product_categories/migration.sql
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
 
@@ -261,22 +247,22 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "users_verification_link_key" ON "users"("verification_link");
 
 -- CreateIndex
-<<<<<<<< HEAD:apps/api/prisma/migrations/20250510212131_/migration.sql
 CREATE UNIQUE INDEX "users_provider_id_key" ON "users"("provider_id");
 
 -- CreateIndex
-========
->>>>>>>> develop:apps/api/prisma/migrations/20250428143955_added_product_categories/migration.sql
+CREATE UNIQUE INDEX "products_name_key" ON "products"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "discounts_discount_code_key" ON "discounts"("discount_code");
 
 -- AddForeignKey
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "categories" ADD CONSTRAINT "categories_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "productpictures" ADD CONSTRAINT "productpictures_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -291,7 +277,7 @@ ALTER TABLE "stocks" ADD CONSTRAINT "stocks_store_id_fkey" FOREIGN KEY ("store_i
 ALTER TABLE "stores" ADD CONSTRAINT "stores_storeadmin_id_fkey" FOREIGN KEY ("storeadmin_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "discounts" ADD CONSTRAINT "discounts_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "discounts" ADD CONSTRAINT "discounts_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "discounts" ADD CONSTRAINT "discounts_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

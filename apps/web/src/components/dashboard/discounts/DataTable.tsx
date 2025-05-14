@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
             className={' bg-orangeAccent text-base'}
             onClick={() => {}}
           >
-            Add a New Category
+            Add a New Discount
           </Button>
         </Link>
       </div>

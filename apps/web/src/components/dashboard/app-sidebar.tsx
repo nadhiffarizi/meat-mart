@@ -40,8 +40,12 @@ const items = [
     icon: UserRoundPen,
     hideTo: 'ADMIN',
   },
-  { title: 'User Management', url: '/dashboard/users', icon: UserRoundPen },
-  { title: 'Stores', url: '/dashboard/stores', icon: StoreIcon },
+  {
+    title: 'Stores',
+    url: '/dashboard/stores',
+    icon: StoreIcon,
+    hideTo: 'ADMIN',
+  },
   {
     title: 'Products',
     url: '/dashboard/products',
@@ -65,7 +69,6 @@ const items = [
     icon: CreditCard,
   },
   { title: 'Orders', url: '/dashboard/order-list', icon: Package },
-  { title: 'My Profile', url: '/dashboard/profile', icon: CircleUser },
 ];
 
 export function AppSidebar() {

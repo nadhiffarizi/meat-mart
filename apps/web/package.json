@@ -21,6 +21,7 @@
     "@mui/styled-engine-sc": "^6.3.1",
     "@mui/x-date-pickers": "^8.0.0",
     "@radix-ui/react-accordion": "^1.2.4",
+    "@radix-ui/react-alert-dialog": "^1.1.13",
     "@radix-ui/react-dialog": "^1.1.7",
     "@radix-ui/react-dropdown-menu": "^2.1.14",
     "@radix-ui/react-separator": "^1.1.3",

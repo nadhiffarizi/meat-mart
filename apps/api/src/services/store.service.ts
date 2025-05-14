@@ -98,6 +98,22 @@ class StoreService {
           storeadmin: true,
         },
       });
+
+      const allProducts = await prisma.products.findMany();
+
+      const stockData = allProducts.map((product) => {
+        return {
+          product_id: product.id,
+          store_id: newStore.id,
+          quantity: 0,
+          deleted_at: product.deleted_at ? product.deleted_at : null,
+        };
+      });
+
+      await prisma.stocks.createMany({
+        data: stockData,
+      });
+
       console.log('LATLONG', newStore);
       return {
         code: 200,
@@ -186,6 +202,11 @@ class StoreService {
     console.log('DELETE SERVICE', id, email);
     const deletedstore = await prisma.stores.update({
       where: { id },
+      data: { deleted_at: new Date() },
+    });
+
+    await prisma.stocks.updateMany({
+      where: { store_id: req.params },
       data: { deleted_at: new Date() },
     });
 

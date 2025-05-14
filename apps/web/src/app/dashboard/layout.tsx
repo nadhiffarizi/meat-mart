@@ -17,15 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-center w-full min-h-screen">
+    <div className="flex justify-center w-full min-h-screen bg-white">
       <div className="flex w-full max-w-[1440px] min-w-[320px]">
         {/* <Sidebar />
             <main className="flex-1 py-8 px-10 bg-white">{children}</main> */}
         <SidebarProvider>
           <AppSidebar />
-          <main className="flex flex-col flex-1">
+          <main className="flex flex-col flex-1 bg-white">
             <SidebarTrigger />
-            <div className="py-8 px-10  bg-primaryBackground">{children}</div>
+            <div className="py-8 px-10  bg-white">{children}</div>
           </main>
         </SidebarProvider>
       </div>
