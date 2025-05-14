@@ -313,20 +313,14 @@ function CreateProductForm() {
             }
           }}
         />
-        <div>
-          {JSON.stringify(
-            formik.values.picture.map((f) => f.name),
-            null,
-            2,
-          )}
-        </div>
+
         {formik.touched.picture &&
           typeof formik.errors.picture === 'string' &&
           formik.errors.picture && (
             <div className="text-red-500 text-sm">{formik.errors.picture}</div>
           )}
         {formik.values.picture.length > 0 && (
-          <div className="flex flex-wrap gap-4 mt-2 bg-green-300">
+          <div className="flex flex-wrap gap-4 mt-2">
             {formik.values.picture.map((file, index) => (
               <div key={index} className="relative w-24 h-24">
                 <Image

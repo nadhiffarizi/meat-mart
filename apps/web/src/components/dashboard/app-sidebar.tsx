@@ -74,6 +74,9 @@ const items = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { data: session, update, status } = useSession();
+
+  if (status === 'loading') return null;
+
   return (
     <Sidebar>
       <SidebarContent className="flex flex-col justify-between py-4 px-5">
