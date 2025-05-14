@@ -65,12 +65,13 @@ export const setQueryParams = (
     for (let status of filterTransactions.statusArray) {
       params.append('status', status);
     }
-
-    if (filterTransactions.stores && filterTransactions.stores.length > 0) {
-      for (let store of filterTransactions.stores) {
-        params.append('store', store.id)
-      }
-    }
-    return params
   }
+
+  if (filterTransactions.stores && filterTransactions.stores.length > 0) {
+    for (let store of filterTransactions.stores) {
+      params.append('store', store.id)
+    }
+  }
+  return params
+
 }

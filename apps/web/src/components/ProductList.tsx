@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
-import IProduct from '@/interface/product/product.interface';
 import { getProducts } from '@/helper/product/product.helper';
+import { IProduct } from '@/interface/product/product.interface';
 
 export const ProductList = () => {
   // local state

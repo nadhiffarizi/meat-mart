@@ -3,10 +3,10 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { E_StoreStatus } from '@prisma/client';
-import { createStore, updateStore } from '@/helpers/handlers/store';
-import { StoreWithAdmin } from '@/app/interfaces/store.interface';
 import { X } from 'lucide-react';
 import { StoreFormSchema } from '@/models/auth.model';
+import { StoreWithAdmin } from '@/interface/store/store.interface';
+import { createStore, updateStore } from '@/helper/store/store.helper';
 
 interface StoreFormProps {
   open: boolean;

@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { StoreWithAdmin } from '@/types/store';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { StoreWithAdmin } from '@/interface/store/store.interface';
 
 export const columns = (
   handleEdit: (store: StoreWithAdmin) => void,

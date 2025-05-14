@@ -6,8 +6,8 @@ import {
   syncCartDataFromAPI,
 } from '@/helper/cart/cart.helper';
 import { currencyFormatter } from '@/helper/product/product.helper';
-import IProduct from '@/interface/product/product.interface';
-import IStock from '@/interface/stock/stocks.interface';
+import { IProduct } from '@/interface/product/product.interface';
+import { IStock } from '@/interface/stock/stocks.interface';
 import { addToCartState, updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { useSession } from 'next-auth/react';

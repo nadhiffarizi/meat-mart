@@ -8,7 +8,6 @@ import { Snackbar, Alert, Button } from '@mui/material';
 import { IGetProductPictures } from '@/interface/product/productPictures.interface';
 import { api } from '@/helper/api';
 import { Plus } from 'lucide-react';
-import IProduct from '@/interface/product/product.interface';
 import {
   addToCartAPI,
   getCartDataAPI,
@@ -19,6 +18,7 @@ import {
 import { callToast } from '@/helper/notify.helper';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { IProduct } from '@/interface/product/product.interface';
 
 export function Card({ product }: { product: IProduct }) {
   // global state

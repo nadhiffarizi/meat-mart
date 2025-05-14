@@ -1,3 +1,4 @@
+import { StoreWithAdmin } from '@/interface/store/store.interface';
 import prisma from '@/lib/prisma';
 
 export async function getStoresWithAdmin(): Promise<StoreWithAdmin[]> {

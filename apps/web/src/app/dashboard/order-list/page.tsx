@@ -9,7 +9,7 @@ import {
   getDataOrderAPI,
   syncOrderDataFromAPI,
 } from '@/helper/transaction/order.helper';
-import { IFilterOrder } from '@/interface/filter.interface';
+import { IFilterOrder } from '@/interface/dashboard/filter.interface';
 import { IOrder } from '@/interface/transaction/order.interface';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { useSession } from 'next-auth/react';

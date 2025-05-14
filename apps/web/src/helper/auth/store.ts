@@ -1,4 +1,4 @@
-import { StoreWithAdmin } from '@/app/interfaces/store.interface';
+import { StoreWithAdmin } from '@/interface/store/store.interface';
 import { api } from '../api';
 
 export const createStore = async (

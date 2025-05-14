@@ -5,7 +5,10 @@ import CategoryMenu from '@/components/CategoryMenu';
 import { meatCategories } from '@/data/categories';
 import { api } from '@/helper/api';
 import { IGetCategories } from '@/interface/product/category.interface';
-import { IGetDashboardProducts } from '@/interface/product/product.interface';
+import {
+  IGetDashboardProducts,
+  IProduct,
+} from '@/interface/product/product.interface';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
@@ -21,7 +24,7 @@ interface CategoryPageProps {
 export default function CategoryPage({
   params: { categoryId },
 }: CategoryPageProps) {
-  const [allProducts, setAllProducts] = useState<IGetDashboardProducts[]>([]);
+  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [allCategories, setAllCategories] = useState<IGetCategories[]>([]);
 
   useEffect(() => {
@@ -87,7 +90,7 @@ export default function CategoryPage({
             <div>
               {allProducts.map((product) => {
                 return allProducts.map((card, key) => (
-                  <Card {...card} stock={0} key={card.id} />
+                  <Card product={card} key={card.id} />
                 ));
               })}
             </div>

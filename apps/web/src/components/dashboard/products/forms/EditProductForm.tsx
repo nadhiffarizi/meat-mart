@@ -12,7 +12,6 @@ import EditProductFormAlert from './alerts/EditProductFormAlert';
 import { IGetCategories } from '@/interface/product/category.interface';
 import Image from 'next/image';
 import Link from 'next/link';
-import IGetProductCategory from '@/interface/product/productCategory.interface';
 import IGetDashboardProducts from '@/interface/dashboard/product.dashboard.interface';
 
 const validationSchema = Yup.object({

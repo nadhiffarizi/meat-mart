@@ -1,5 +1,6 @@
 'use client';
 
+import { Address } from '@/interface/user/address.interface';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { Address } from '@/interfaces/card.interface';
 import { SelectChangeEvent } from '@mui/material/Select';
 
 interface AddressDialogProps {

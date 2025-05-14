@@ -32,7 +32,7 @@ function Page() {
         </h3>
         <div className="m-auto my-5 grid grid-cols-2 md:text-sm md:grid-cols-3  lg:grid-cols-5  gap-4 md:ml-10 lg:ml-0">
           {filteredProducts.map((card, key) => (
-            <Card {...card} stock={0} key={card.id} />
+            <Card product={card} key={card.id} />
           ))}
         </div>
       </div>

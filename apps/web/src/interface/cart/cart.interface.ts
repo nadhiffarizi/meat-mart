@@ -18,9 +18,6 @@ export interface payloadCartService {
   productId?: string;
   userId?: string;
 }
-import { IDiscount } from "../discount/discount.interface"
-import IProduct from "../product/product.interface"
-import IStock from "../stock/stocks.interface"
 
 export interface ICart {
   id?: string,

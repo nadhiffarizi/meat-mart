@@ -1,5 +1,10 @@
 import { IStock } from '../stock/stocks.interface';
 
+import { IGetProductPictures } from "../product/productPictures.interface";
+import { IGetStocks } from "../stock/stocks.interface";
+import { IGetProductCategory } from '../product/productCategory.interface';
+
+
 export interface IProduct {
   id: string;
   name: string;
@@ -8,10 +13,6 @@ export interface IProduct {
   weight: number;
   availableStocks: IStock[];
 }
-
-import { IGetProductPictures } from "../product/productPictures.interface";
-import { IGetStocks } from "../stock/stocks.interface";
-import { IGetProductCategory } from '../product/productCategory.interface';
 
 
 export default interface IGetDashboardProducts {

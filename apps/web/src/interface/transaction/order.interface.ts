@@ -1,4 +1,4 @@
-import IProduct from "../product/product.interface";
+import { IProduct } from "../product/product.interface";
 
 export interface IOrder {
     id: string,
