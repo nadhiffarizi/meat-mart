@@ -147,10 +147,10 @@ export default function CartPage() {
                 className="w-1/3 h-full flex flex-col gap-5"
               >
                 {/**right sidebar container */}
-                <div className="w-full h-1/4 py-5 px-7 shadow-md rounded-lg bg-white ">
+                <div className="w-full py-5 px-7 shadow-md rounded-lg bg-white ">
                   <ChooseAddressCheckout />
                 </div>
-                <div className="w-full h-3/5 max-h-[400px] py-5 px-7 shadow-md rounded-lg bg-white ">
+                <div className="w-full py-5 px-7 shadow-md rounded-lg bg-white ">
                   <PaymentSummaryCart />
                 </div>
               </div>
