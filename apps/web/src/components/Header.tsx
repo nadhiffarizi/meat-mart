@@ -25,7 +25,7 @@ export const Header = () => {
 
   return (
     <div className="">
-      {!isDashboard && <Navbar isFixed={false} />}
+      {!isDashboard && <Navbar isFixed={true} />}
 
       {!isDashboard && <Mobile isSticky={isScrolled} />}
       {isScrolled && <div className="h-[0px] bg-red-700"></div>}
