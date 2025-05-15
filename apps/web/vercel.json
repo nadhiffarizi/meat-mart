@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx turbo run build --filter=./apps/web",
+  "buildCommand": "npx turbo run build --filter=./",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs"
 }
