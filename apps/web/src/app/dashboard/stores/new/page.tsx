@@ -14,3 +14,9 @@
 // }
 
 // export default page;
+
+import * as React from 'react';
+
+export default function StoreNewPage() {
+  return <div></div>;
+}

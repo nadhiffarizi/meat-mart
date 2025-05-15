@@ -1,5 +1,4 @@
 'use client';
-import { trxChangeContext } from '@/app/transaction-list/page';
 import { callToast } from '@/helper/notify.helper';
 import { currencyFormatter } from '@/helper/product/product.helper';
 import {
@@ -7,7 +6,10 @@ import {
   rejectTransactionAPI,
   uploadPaymentProof,
 } from '@/helper/transaction/transaction.helper';
-import { ITransaction } from '@/interface/transaction/transaction.interface';
+import {
+  ITransaction,
+  TrxChangeContext,
+} from '@/interface/transaction/transaction.interface';
 import { Payment, ShoppingBag } from '@mui/icons-material';
 import {
   Backdrop,
@@ -26,7 +28,7 @@ export default function TransactionListCardAdmin({
   trx: ITransaction;
 }) {
   // global state
-  const changeStatus = React.useContext(trxChangeContext);
+  const changeStatus = React.useContext(TrxChangeContext);
   const { data: session, status } = useSession();
 
   //local state

@@ -2,7 +2,7 @@ import { createNewCartItem, indexCartById, indexProductInCart, maxStockAvailable
 import { syncRedeemedDiscountFromAPI } from "@/helper/discount/discount.helper";
 import { ICart } from "@/interface/cart/cart.interface";
 import { IDiscount } from "@/interface/discount/discount.interface";
-import IProduct from "@/interface/product/product.interface";
+import { IProduct } from "@/interface/product/product.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const cartInitalState: ICart[] = [];

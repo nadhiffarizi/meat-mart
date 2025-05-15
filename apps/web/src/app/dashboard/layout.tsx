@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 // import Sidebar from '@/components/dashboard/Sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,11 +23,13 @@ export default function RootLayout({
         {/* <Sidebar />
             <main className="flex-1 py-8 px-10 bg-white">{children}</main> */}
         <SidebarProvider>
-          <AppSidebar />
-          <main className="flex flex-col flex-1 bg-white">
-            <SidebarTrigger />
-            <div className="py-8 px-10  bg-white">{children}</div>
-          </main>
+          <Suspense>
+            <AppSidebar />
+            <main className="flex flex-col flex-1 bg-white">
+              <SidebarTrigger />
+              <div className="py-8 px-10  bg-white">{children}</div>
+            </main>
+          </Suspense>
         </SidebarProvider>
       </div>
     </div>

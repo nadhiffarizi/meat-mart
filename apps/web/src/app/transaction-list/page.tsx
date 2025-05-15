@@ -122,6 +122,7 @@ export default function TransactionListPage() {
                     return (
                       <TrxChangeContext.Provider
                         value={{ isChange, setChange }}
+                        key={index}
                       >
                         <TransactionListCard trx={trx} key={index} />
                       </TrxChangeContext.Provider>

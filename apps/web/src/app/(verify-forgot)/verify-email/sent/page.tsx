@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { resendVerificationEmail } from '@/helper/auth/auth';
 import { useState } from 'react';
 
-export default function VerificationSentPage() {
+export default function VerificationSentClient() {
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
   const [isSending, setIsSending] = useState(false);
@@ -25,7 +25,6 @@ export default function VerificationSentPage() {
         return;
       } else {
         setSuccess(true);
-
         setTimeout(() => setSuccess(false), 5000);
       }
     } catch (error) {
@@ -44,9 +43,9 @@ export default function VerificationSentPage() {
     <div className="max-w-md mx-auto text-center p-4">
       <h1 className="text-2xl font-bold mb-4">Check Your Email</h1>
       <div className="bg-gray-100 p-4 rounded-lg mb-6">
-        <p className="">{email}</p>
+        {email && <p>{email}</p>}
       </div>
-      <p>We have ve sent a verification link to your email address.</p>
+      <p>We have sent a verification link to your email address.</p>
 
       {success && (
         <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
@@ -54,14 +53,13 @@ export default function VerificationSentPage() {
         </div>
       )}
 
-      {/* Error message */}
       {error && (
         <div className="mt-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>
       )}
 
       <div className="mt-6 space-y-4">
         <p className="text-sm text-gray-600">
-          Did not receive the email?{' '}
+          Didn't receive the email?{' '}
           <button
             className={`text-blue-500 underline ${isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleResend}
