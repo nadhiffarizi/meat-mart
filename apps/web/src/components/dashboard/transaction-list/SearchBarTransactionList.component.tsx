@@ -29,11 +29,11 @@ import { callToast } from '@/helper/notify.helper';
 import { useSession } from 'next-auth/react';
 import { getStoreByAdmin } from '@/helper/store/store.helper';
 import IStore from '@/interface/store/store.interface';
-import { trxFilterContext } from '@/app/dashboard/transaction-list/page';
+import { TrxFilterContext } from '@/interface/transaction/transaction.interface';
 
 export default function SearchBarTransactionListAdmin() {
   // global state
-  const filterContext = React.useContext(trxFilterContext);
+  const filterContext = React.useContext(TrxFilterContext);
   const { data: session, status } = useSession();
 
   // localstate

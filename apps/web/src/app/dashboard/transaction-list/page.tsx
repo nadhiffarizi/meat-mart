@@ -6,32 +6,16 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getDataTransactionAPI } from '@/helper/transaction/transaction.helper';
 import { callToast } from '@/helper/notify.helper';
-import { ITransaction } from '@/interface/transaction/transaction.interface';
+import {
+  ITransaction,
+  TrxChangeContext,
+  TrxFilterContext,
+} from '@/interface/transaction/transaction.interface';
 import SearchBarTransactionListAdmin from '@/components/dashboard/transaction-list/SearchBarTransactionList.component';
 import { useSession } from 'next-auth/react';
 import TransactionListCardAdmin from '@/components/dashboard/transaction-list/TransactionListCard.component';
 import TransactionAdminTable from '@/components/dashboard/transaction-list/TransactionListAdminTable.component';
 import { IFilterTransactions } from '@/interface/dashboard/filter.interface';
-
-// filter context type
-export interface TransactionFilterContextType {
-  filterTransactions: IFilterTransactions | undefined;
-  setFilterTransactions: (filter: IFilterTransactions | undefined) => void;
-}
-
-export const trxFilterContext = React.createContext<
-  TransactionFilterContextType | undefined
->(undefined);
-
-// transaction status change
-export interface ITrxChangeContextType {
-  isChange: boolean | undefined;
-  setChange: (isChange: boolean | undefined) => void;
-}
-
-export const trxChangeContext = React.createContext<
-  ITrxChangeContextType | undefined
->(undefined);
 
 export default function TransactionListPageAdmin() {
   //global state
@@ -89,17 +73,17 @@ export default function TransactionListPageAdmin() {
       </h1>
 
       <div className="w-full ">
-        <trxFilterContext.Provider
+        <TrxFilterContext.Provider
           value={{ filterTransactions, setFilterTransactions }}
         >
           <SearchBarTransactionListAdmin />
-        </trxFilterContext.Provider>
+        </TrxFilterContext.Provider>
       </div>
       <div className="w-full">
         {trxData && (
-          <trxChangeContext.Provider value={{ isChange, setChange }}>
+          <TrxChangeContext.Provider value={{ isChange, setChange }}>
             <TransactionAdminTable trxData={trxData} />
-          </trxChangeContext.Provider>
+          </TrxChangeContext.Provider>
         )}
       </div>
     </div>

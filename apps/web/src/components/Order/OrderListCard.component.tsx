@@ -1,8 +1,10 @@
-import { orderChangeContext } from '@/app/order-list/page';
 import { callToast } from '@/helper/notify.helper';
 import { confirmOrderAPI } from '@/helper/transaction/order.helper';
 import { currencyFormatter } from '@/helper/product/product.helper';
-import { IOrder } from '@/interface/transaction/order.interface';
+import {
+  IOrder,
+  OrderChangeContext,
+} from '@/interface/transaction/order.interface';
 import { ShoppingBag } from '@mui/icons-material';
 import {
   Backdrop,
@@ -19,7 +21,7 @@ import { useRouter } from 'next/navigation';
 
 export default function OrderListCard({ orderData }: { orderData: IOrder }) {
   // global state
-  const changeStatus = React.useContext(orderChangeContext);
+  const changeStatus = React.useContext(OrderChangeContext);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const { data: session, status } = useSession();
 
