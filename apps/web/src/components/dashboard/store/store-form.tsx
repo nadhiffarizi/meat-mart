@@ -2,7 +2,6 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { E_StoreStatus } from '@prisma/client';
 import { X } from 'lucide-react';
 import { StoreFormSchema } from '@/models/auth.model';
 import { StoreWithAdmin } from '@/interface/store/store.interface';
@@ -28,7 +27,7 @@ export default function StoreForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const initialValues: Partial<StoreWithAdmin> = {
     name: storeData?.name || '',
-    status: storeData?.status || E_StoreStatus.BRANCH,
+    status: storeData?.status || 'BRANCH',
     address: storeData?.address || '',
     province: storeData?.province || '',
     city: storeData?.city || '',
@@ -120,11 +119,8 @@ export default function StoreForm({
                     onChange={(e) => setFieldValue('status', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   >
-                    {Object.values(E_StoreStatus).map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
+                    <option value="BRANCH">BRANCH</option>
+                    <option value="CENTRAL">CENTRAL</option>
                   </select>
                   <ErrorMessage
                     name="status"

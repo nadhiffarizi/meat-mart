@@ -1,6 +1,6 @@
 import { IUser } from '@/interface/user/user.interface';
-import { E_Role } from '@prisma/client';
 
+type E_Role = 'CUSTOMER' | 'ADMIN' | 'SUPER_ADMIN';
 declare module 'next-auth' {
   interface User {
     id: string;

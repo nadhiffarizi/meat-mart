@@ -1,7 +1,7 @@
 /** @format */
 import * as Yup from 'yup';
-import { E_StoreStatus } from '@prisma/client';
 
+export type E_StoreStatus = 'BRANCH' | 'CENTRAL';
 export const registerValidator = Yup.object({
   email: Yup.string().email().required('Email is required'),
   //   password: Yup.string()
@@ -30,7 +30,7 @@ export const updateProfileValidator = Yup.object({
 export const StoreFormSchema = Yup.object().shape({
   name: Yup.string().required('Store name is required'),
   status: Yup.mixed<E_StoreStatus>()
-    .oneOf(Object.values(E_StoreStatus))
+    .oneOf(['BRANCH', 'CENTRAL'] as const)
     .required('Store type is required'),
   address: Yup.string().required('Address is required'),
   province: Yup.string().required('Province is required'),

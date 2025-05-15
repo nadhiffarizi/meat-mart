@@ -1,5 +1,5 @@
+import { E_StoreStatus } from '@/models/auth.model';
 import { User } from 'next-auth';
-import { E_StoreStatus } from '@prisma/client';
 
 export default interface IStore {
   id: string;
