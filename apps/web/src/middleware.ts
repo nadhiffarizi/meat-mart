@@ -7,6 +7,11 @@ export async function middleware(request: NextRequest) {
   const path = url.pathname;
   const role = session?.user?.role;
   const { pathname } = request.nextUrl;
+
+  console.log(
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ',
+    session?.user,
+  );
   if (
     (pathname.startsWith('/login') || pathname.startsWith('/register')) &&
     session?.user != null

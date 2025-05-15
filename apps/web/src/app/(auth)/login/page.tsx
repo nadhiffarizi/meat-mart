@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react';
 import { googleLogin, login } from '@/app/action/auth';
 import { useRouter } from 'next/navigation';
 import { Alert, Button, CircularProgress, Snackbar } from '@mui/material';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, SignInResponse, useSession } from 'next-auth/react';
 
 export default function Page() {
   const router = useRouter();
@@ -51,8 +51,12 @@ export default function Page() {
 
       const result = await signIn('google', {
         redirect: true,
-        callbackUrl: session?.user?.role === 'CUSTOMER' ? '/' : '/dashboard',
+        callbackUrl: '/', //session?.user?.role === 'CUSTOMER' ? '/' : '/dashboard',
       });
+
+      // const result: SignInResponse = await googleLogin();
+
+      alert(result);
 
       if (result?.error) {
         setErrMessage(result.error);

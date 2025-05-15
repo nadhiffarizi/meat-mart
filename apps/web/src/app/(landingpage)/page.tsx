@@ -7,12 +7,14 @@ import Categories from '@/components/CategoryMenu';
 export default function Home() {
   return (
     <div>
-      <div className="mt-0 mb-6">
-        <div className="md:pt-10 lg:pt-24">
+      <div className="">
+        <div className="md:pt-0 lg:pt-0">
           <Categories />
         </div>
+        <div className="mt-4">
+          <Carousel />
+        </div>
 
-        <Carousel />
         <div className="my-5">
           <ProductList />
         </div>

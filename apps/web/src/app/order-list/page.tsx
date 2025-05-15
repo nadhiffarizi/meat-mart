@@ -9,31 +9,16 @@ import {
 } from '@/helper/transaction/order.helper';
 import { profileSideMenu } from '@/helper/user/user.helper';
 import { IFilterOrder } from '@/interface/dashboard/filter.interface';
-import { IOrder } from '@/interface/transaction/order.interface';
+import {
+  IOrder,
+  OrderChangeContext,
+  OrderFilterContext,
+} from '@/interface/transaction/order.interface';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-
-// filter context type
-export interface OrderFilterContextType {
-  filterOrder: IFilterOrder | undefined;
-  setFilterOrder: (filter: IFilterOrder | undefined) => void;
-}
-
-export const orderFilterContext = React.createContext<
-  OrderFilterContextType | undefined
->(undefined);
-
-// order status change context type
-export interface IOrderChangeContextType {
-  isChange: boolean | undefined;
-  setChange: (isChange: boolean | undefined) => void;
-}
-export const orderChangeContext = React.createContext<
-  IOrderChangeContextType | undefined
->(undefined);
 
 export default function OrderListPage() {
   //global state
@@ -129,20 +114,20 @@ export default function OrderListPage() {
                 <h1 className=" text-start text-3xl font-semibold text-secondaryGreen">
                   Order List
                 </h1>
-                <orderFilterContext.Provider
+                <OrderFilterContext.Provider
                   value={{ filterOrder, setFilterOrder }}
                 >
                   <SearchBarOrderList />
-                </orderFilterContext.Provider>
+                </OrderFilterContext.Provider>
 
                 {orderData &&
                   orderData?.map((order, index: number) => {
                     return (
-                      <orderChangeContext.Provider
+                      <OrderChangeContext.Provider
                         value={{ isChange, setChange }}
                       >
                         <OrderListCard orderData={order} key={index} />
-                      </orderChangeContext.Provider>
+                      </OrderChangeContext.Provider>
                     );
                   })}
               </div>

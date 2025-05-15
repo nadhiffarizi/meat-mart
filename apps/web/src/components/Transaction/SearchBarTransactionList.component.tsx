@@ -12,13 +12,13 @@ import {
   statusFilterToArray,
   statusFilterUpdate,
 } from '@/helper/filter/transactionFilter.helper';
-import { trxFilterContext } from '@/app/transaction-list/page';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { callToast } from '@/helper/notify.helper';
+import { TrxFilterContext } from '@/interface/transaction/transaction.interface';
 
 export default function SearchBarTransactionList() {
   // consume context
-  const filterContext = React.useContext(trxFilterContext);
+  const filterContext = React.useContext(TrxFilterContext);
 
   // localstate
   const [status, setStatus] = React.useState<IFilterStatus>({

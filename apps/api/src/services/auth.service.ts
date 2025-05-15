@@ -543,7 +543,7 @@ class AuthService {
         throw new Error('Email and provider are required');
       }
 
-      const user = await registerSocialUser({
+      const token = await registerSocialUser({
         email,
         name: fullName,
         image,
@@ -554,7 +554,7 @@ class AuthService {
 
       return {
         code: 200,
-        data: user,
+        data: token,
         status: statusEnum.SUCCESS,
         message: 'Successfully social login',
       };

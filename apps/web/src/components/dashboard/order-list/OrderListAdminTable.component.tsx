@@ -13,8 +13,10 @@ import { Close, MoreHoriz, Visibility } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { callToast } from '@/helper/notify.helper';
-import { IOrder } from '@/interface/transaction/order.interface';
-import { orderChangeContext } from '@/app/dashboard/order-list/page';
+import {
+  IOrder,
+  OrderChangeContext,
+} from '@/interface/transaction/order.interface';
 import {
   cancelOrderAPI,
   sendOrderAPI,
@@ -28,7 +30,7 @@ export default function OrderAdminTable({
 }) {
   // global state
   const { data: session } = useSession();
-  const orderContext = React.useContext(orderChangeContext);
+  const orderContext = React.useContext(OrderChangeContext);
   // local state
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [orderState, setOrderState] = React.useState<IOrder>();

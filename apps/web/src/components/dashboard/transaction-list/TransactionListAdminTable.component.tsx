@@ -1,4 +1,7 @@
-import { ITransaction } from '@/interface/transaction/transaction.interface';
+import {
+  ITransaction,
+  TrxChangeContext,
+} from '@/interface/transaction/transaction.interface';
 import {
   Table,
   TableBody,
@@ -28,7 +31,6 @@ import {
 } from '@/helper/transaction/transaction.helper';
 import { useSession } from 'next-auth/react';
 import { callToast } from '@/helper/notify.helper';
-import { trxChangeContext } from '@/app/dashboard/transaction-list/page';
 
 export default function TransactionAdminTable({
   trxData,
@@ -37,7 +39,7 @@ export default function TransactionAdminTable({
 }) {
   // global state
   const { data: session } = useSession();
-  const trxContext = React.useContext(trxChangeContext);
+  const trxContext = React.useContext(TrxChangeContext);
   // local state
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [trxState, setTrxState] = React.useState<ITransaction>();

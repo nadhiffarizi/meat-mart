@@ -14,11 +14,11 @@ import {
   statusFilterToArray,
   statusFilterUpdate,
 } from '@/helper/filter/orderFilter.helper';
-import { orderFilterContext } from '@/app/order-list/page';
+import { OrderFilterContext } from '@/interface/transaction/order.interface';
 
 export default function SearchBarOrderList() {
   // consume context
-  const filterContext = React.useContext(orderFilterContext);
+  const filterContext = React.useContext(OrderFilterContext);
 
   // localstate
   const [status, setStatus] = React.useState<IFilterStatusOrder>({

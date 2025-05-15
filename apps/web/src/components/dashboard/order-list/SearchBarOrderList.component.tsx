@@ -22,20 +22,19 @@ import { callToast } from '@/helper/notify.helper';
 import { useSession } from 'next-auth/react';
 import { getStoreByAdmin } from '@/helper/store/store.helper';
 import IStore from '@/interface/store/store.interface';
-import { trxFilterContext } from '@/app/dashboard/transaction-list/page';
 import {
   statusFilterToArray,
   statusFilterUpdate,
 } from '@/helper/filter/orderFilter.helper';
-import { orderFilterContext } from '@/app/dashboard/order-list/page';
 import {
   IFilterOrder,
   IFilterStatusOrder,
 } from '@/interface/dashboard/filter.interface';
+import { OrderFilterContext } from '@/interface/transaction/order.interface';
 
 export default function SearchBarOrderListAdmin() {
   // global state
-  const filterContext = React.useContext(orderFilterContext);
+  const filterContext = React.useContext(OrderFilterContext);
   const { data: session, status } = useSession();
 
   // localstate
