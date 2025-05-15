@@ -40,20 +40,22 @@ export const registerSocialUser = async (data: ISocialUserData) => {
     }
 
     // Generate tokens for the user
-    const { access_token, refresh_token } = await generateAuthToken(user);
+    // const { access_token, refresh_token } = await generateAuthToken(user);
+    const token = await generateAuthToken(user);
 
-    return {
-      id: user.id,
-      email: user.email,
-      access_token,
-      refresh_token,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      image_url: user.image_url,
-      role: user.role,
-      is_verified: user.is_verified,
-      provider: user.provider,
-    };
+    // return {
+    //   id: user.id,
+    //   email: user.email,
+    //   access_token,
+    //   refresh_token,
+    //   first_name: user.first_name,
+    //   last_name: user.last_name,
+    //   image_url: user.image_url,
+    //   role: user.role,
+    //   is_verified: user.is_verified,
+    //   provider: user.provider,
+    // };
+    return token;
   } catch (error) {
     console.error('Error in registerSocialUser:', error);
     throw error;

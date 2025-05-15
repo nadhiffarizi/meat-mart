@@ -536,6 +536,7 @@ class AuthService {
   }
 
   async socialRegister(req: Request) {
+    console.log('MASUUUUUUKK?????????????????????????????????????');
     try {
       const { email, fullName, image, provider, provider_id, role } = req.body;
 
@@ -543,7 +544,7 @@ class AuthService {
         throw new Error('Email and provider are required');
       }
 
-      const user = await registerSocialUser({
+      const token = await registerSocialUser({
         email,
         name: fullName,
         image,
@@ -552,9 +553,11 @@ class AuthService {
         role,
       });
 
+      console.log('TOKEN GUYYYYYSs', token);
+
       return {
         code: 200,
-        data: user,
+        data: token,
         status: statusEnum.SUCCESS,
         message: 'Successfully social login',
       };
