@@ -68,30 +68,49 @@ const validationSchema = Yup.object({
     otherwise: (schema) => schema.notRequired(),
   }),
   discount_percentage: Yup.number()
+    .transform((value, originalValue) =>
+      originalValue === '' ? undefined : value,
+    )
     .min(0, 'Discount percentage must be at least 0%')
-    .max(100, 'Discount percentage cannot exceed 100%'),
-  discount_amount: Yup.number().min(0, 'Discount amount must be at least 0'),
-}).test(
-  'discount-exclusive',
-  'You must provide either a discount percentage or amount (not both)',
-  function (values) {
-    const { promotion_type, discount_percentage, discount_amount } =
-      values as any;
+    .max(100, 'Discount percentage cannot exceed 100%')
+    .test(
+      'exclusive-discount',
+      'You must provide either a discount percentage or amount (not both)',
+      function (value) {
+        const { discount_amount, promotion_type } = this.parent;
+        const hasPercentage = typeof value === 'number';
+        const hasAmount = typeof discount_amount === 'number';
 
-    if (promotion_type === 'CUSTOM' || promotion_type === 'MINIMUM_BUY') {
-      const hasPercentage =
-        discount_percentage != null && discount_percentage !== '';
-      const hasAmount = discount_amount != null && discount_amount !== '';
+        if (promotion_type === 'CUSTOM' || promotion_type === 'MINIMUM_BUY') {
+          return (hasPercentage || hasAmount) && !(hasPercentage && hasAmount);
+        }
 
-      // Only one must be present, and not both
-      return (hasPercentage || hasAmount) && !(hasPercentage && hasAmount);
-    }
+        return true;
+      },
+    )
+    .notRequired(),
+  discount_amount: Yup.number()
+    .transform((value, originalValue) =>
+      originalValue === '' ? undefined : value,
+    )
+    .min(0, 'Discount amount must be at least 0')
+    .test(
+      'exclusive-discount-amount',
+      'You must provide either a discount percentage or amount (not both)',
+      function (value) {
+        const { discount_percentage, promotion_type } = this.parent;
+        const hasAmount = typeof value === 'number';
+        const hasPercentage = typeof discount_percentage === 'number';
 
-    // For BOGO or others — skip validation
-    return true;
-  },
-);
+        if (promotion_type === 'CUSTOM' || promotion_type === 'MINIMUM_BUY') {
+          return (hasAmount || hasPercentage) && !(hasAmount && hasPercentage);
+        }
 
+        return true;
+      },
+    )
+    .notRequired(),
+});
 function CreateDiscountForm({ storeId }: { storeId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
