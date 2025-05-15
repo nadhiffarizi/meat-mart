@@ -1,4 +1,7 @@
 {
-  "buildCommand": "npx turbo run build --filter=./",
-  "framework": "nextjs"
+  "projects": {
+    "web": {
+      "root": "apps/web"
+    }
+  }
 }
