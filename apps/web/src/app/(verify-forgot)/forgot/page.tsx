@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 type Props = {};
 
-export default function page({}: Props) {
+export default function Page({}: Props) {
   const router = useRouter();
   const [success, setSuccess] = useState<boolean>(false);
   const [errMessage, setErrMessage] = useState('');

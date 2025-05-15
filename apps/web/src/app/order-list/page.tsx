@@ -140,6 +140,7 @@ export default function OrderListPage() {
                     return (
                       <orderChangeContext.Provider
                         value={{ isChange, setChange }}
+                        key={index}
                       >
                         <OrderListCard orderData={order} key={index} />
                       </orderChangeContext.Provider>

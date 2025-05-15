@@ -109,9 +109,9 @@ export default function CategoryProducts({
       <main className="flex-1">
         <h1 className="text-3xl font-bold mb-6">{category.name}</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((card, key) => (
+          {filteredProducts.map((card, index) => (
             // <Card {...card} key={key} />
-            <div>hello</div>
+            <div key={index}>hello</div>
           ))}
         </div>
       </main>
