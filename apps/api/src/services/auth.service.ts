@@ -536,7 +536,6 @@ class AuthService {
   }
 
   async socialRegister(req: Request) {
-    console.log('MASUUUUUUKK?????????????????????????????????????');
     try {
       const { email, fullName, image, provider, provider_id, role } = req.body;
 
@@ -552,8 +551,6 @@ class AuthService {
         provider_id,
         role,
       });
-
-      console.log('TOKEN GUYYYYYSs', token);
 
       return {
         code: 200,
