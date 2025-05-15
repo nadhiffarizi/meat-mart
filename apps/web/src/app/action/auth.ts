@@ -13,7 +13,7 @@ export const login = async (credentials: { email: string; password: string }) =>
 
 export const googleLogin = async () => {
   try {
-    await signIn('google', {
+    return await signIn('google', {
       redirect: true,
       callbackUrl: '/',
     });

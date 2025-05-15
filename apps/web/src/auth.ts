@@ -1,7 +1,7 @@
 import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { login, refreshToken, registerSocialUser } from './helper/auth/auth';
 import Google from 'next-auth/providers/google';
+import { login, registerSocialUser } from './helper/auth/auth';
 import { jwtDecode } from 'jwt-decode';
 import { InvalidAuthError } from './interface/user/auth.error';
 
@@ -39,9 +39,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        console.log('Apakah aku di src/auth.ts', credentials);
         try {
-          return await login(credentials);
+          const { access_token, refresh_token } = await login(credentials);
+
+          const decoded = jwtDecode(access_token) as any;
+
+          return {
+            id: decoded.id,
+            email: decoded.email,
+            role: decoded.role,
+            provider: decoded.provider,
+            is_verified: decoded.is_verified,
+            access_token: access_token,
+            refresh_token: refresh_token,
+            first_name: decoded.first_name,
+            last_name: decoded.last_name,
+            image_url: decoded.image_url,
+          };
         } catch (error: unknown) {
           throw new InvalidAuthError(error);
         }
@@ -64,16 +78,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ account, profile }) {
       if (account?.provider === 'google') {
         try {
-          const socialUser = await registerSocialUser({
+          const { user, accessToken, refreshToken } = await registerSocialUser({
             email: profile?.email as string,
             fullName: profile?.name as string,
             image: profile?.picture as string,
             provider: account.provider,
             provider_id: profile?.sub as string,
           });
-          console.log('SOCIAL USER PROP', socialUser);
-          if (!socialUser) {
-            return false;
+
+          if (account) {
+            (account as any).customUser = {
+              ...user,
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            };
           }
 
           return true;
@@ -82,39 +100,48 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return false;
         }
       }
+
       return true;
     },
-
-    async jwt({ token, user }) {
-      console.log('JWT callback - user role:', user?.role, user);
+    async jwt({ token, user, account }) {
       if (user) {
+        // Credential login
         token.access_token = user.access_token;
         token.refresh_token = user.refresh_token;
         token.provider = user.provider;
         token.role = user.role;
+        token.id = user.id;
       }
+
+      // Social login
+      if (account?.provider === 'google' && (account as any).customUser) {
+        const social = (account as any).customUser;
+        token.access_token = social.access_token;
+        token.refresh_token = social.refresh_token;
+        token.provider = social.provider;
+        token.role = social.role;
+        token.id = social.id;
+        token.email = social.email;
+        token.is_verified = social.is_verified;
+        token.first_name = social.first_name;
+        token.last_name = social.last_name;
+        token.image_url = social.image_url;
+      }
+
       return token;
     },
-
     async session({ session, token }) {
-      console.log('Session callback - token role:', token.role);
-      if (token.access_token) {
-        const user = jwtDecode(token.access_token!) as User;
-
-        session.user = {
-          ...session.user,
-          id: user.id as string,
-          email: user.email as string,
-          image_url: user.image_url as string,
-          first_name: user.first_name as string,
-          last_name: user.last_name as string,
-          role: user.role as string,
-          access_token: token.access_token as string,
-          is_verified: user.is_verified,
-          provider: token.provider as string,
-        };
-      }
-
+      session.user = {
+        id: token.id,
+        email: token.email,
+        image_url: token.image_url,
+        first_name: token.first_name,
+        last_name: token.last_name,
+        role: token.role,
+        access_token: token.access_token,
+        is_verified: token.is_verified,
+        provider: token.provider,
+      };
       return session;
     },
   },

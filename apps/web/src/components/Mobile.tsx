@@ -33,7 +33,7 @@ const Mobile = ({ isSticky }: MobileProps) => {
       className={`md:hidden ${isSticky ? 'fixed top-0 left-0 right-0 z-50 h-20 bg-primaryBackground shadow-md transition-all ' : ''}`}
     >
       {!isSticky && (
-        <div className="pt-20 pb-4 space-y-1 max-w-[350px]">
+        <div className="pt-0 pb-4 space-y-1 max-w-[350px]">
           <button
             className="ml-4 pt-4 flex items-center justify-start gap-1"
             onClick={() => setShowLocationModal(true)}

@@ -24,7 +24,7 @@ export const Header = () => {
   }, [pathname]);
 
   return (
-    <div className="lg:mb-0 md:mb-24 ">
+    <div className="">
       {!isDashboard && <Navbar isFixed={false} />}
 
       {!isDashboard && <Mobile isSticky={isScrolled} />}
