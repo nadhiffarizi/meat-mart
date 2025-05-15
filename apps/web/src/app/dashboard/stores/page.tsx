@@ -2,9 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { E_Role } from '@prisma/client';
 import { toast, Toaster } from 'sonner';
-
 import StoreForm from '@/components/dashboard/store/store-form';
 import {
   deleteStore,
@@ -107,7 +105,7 @@ export default function StorePage() {
     }
   };
 
-  if (session?.user.role !== E_Role.SUPER_ADMIN) {
+  if (session?.user.role !== 'SUPER_ADMIN') {
     return (
       <>
         <Toaster
