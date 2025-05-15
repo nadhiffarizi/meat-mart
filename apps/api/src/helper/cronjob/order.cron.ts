@@ -40,8 +40,6 @@ export const orderConfirmation = () => {
             trxUpdateByOrderConfirm(order.transaction_id)
         }
 
-    }, {
-        scheduled: false
     })
 
     return task

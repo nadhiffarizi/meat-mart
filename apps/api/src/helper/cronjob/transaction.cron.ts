@@ -64,9 +64,7 @@ export const deadlinePayment = () => {
         }
       }
     },
-    {
-      scheduled: false,
-    },
+
   );
 
   return task;
