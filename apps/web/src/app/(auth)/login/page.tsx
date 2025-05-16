@@ -56,13 +56,11 @@ export default function Page() {
 
       // const result: SignInResponse = await googleLogin();
 
-      alert(result);
-
-      if (result?.error) {
-        setErrMessage(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
-      }
+      // if (result?.error) {
+      //   setErrMessage(result.error);
+      // } else if (result?.url) {
+      //   router.push(result.url);
+      // }
     } catch (error) {
       setErrMessage('Failed to login with Google');
     } finally {
