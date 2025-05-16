@@ -84,6 +84,36 @@ class ProductService {
     }
   }
 
+  async getProductsCount(req: Request) {
+    try {
+      const loc1: ILocation = {
+        lat: '-6.2263977',
+        lon: '106.8584389',
+      };
+      const query = req.query.q as string;
+      const data = await xDistancePrisma(loc1).products.count({
+        where: {
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+        },
+      });
+
+      return returnServiceFeedback(
+        200,
+        data,
+        statusEnum.SUCCESS,
+        'Product count fetched successfully.',
+      );
+    } catch (error) {
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'Product count fetched unsuccessfully.',
+      );
+    }
+  }
+
   async getAllProducts(req: Request) {
     const includeDeleted = req.query.includeDeleted === 'true';
     const rawLimit = Number(req.query.limit);

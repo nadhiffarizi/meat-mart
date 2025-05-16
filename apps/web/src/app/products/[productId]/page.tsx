@@ -28,6 +28,7 @@ import {
 import { callToast } from '@/helper/notify.helper';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import { Alert, Snackbar } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   params: {
@@ -41,6 +42,7 @@ export default function CarouselDemo({ params: { productId } }: Props) {
   >([]);
   const [productData, setProductData] = React.useState<IProduct>();
   const { data: session, update } = useSession();
+  const router = useRouter();
 
   //grab product pictures
   React.useEffect(() => {
@@ -219,6 +221,17 @@ export default function CarouselDemo({ params: { productId } }: Props) {
       >
         Add to Cart
       </button>
+
+      <Button
+        variant="link"
+        className=" text-primaryText px-4 py-2 text-base "
+        onClick={() => {
+          router.push('/');
+        }}
+        type="button"
+      >
+        Back to Products
+      </Button>
     </div>
   );
 }

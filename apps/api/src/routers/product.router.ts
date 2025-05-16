@@ -15,6 +15,7 @@ export class ProductRouter {
   private initializeRoutes(): void {
     // dont forget to include middleware function before SIT
     this.router.get('/', productController.getProducts);
+    this.router.get('/count', productController.getProductsCount);
     this.router.get('/all', productController.getAllProducts);
     this.router.get(
       '/category/:categoryId',
