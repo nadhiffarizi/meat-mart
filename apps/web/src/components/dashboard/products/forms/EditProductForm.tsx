@@ -313,62 +313,64 @@ function EditProductForm({ id }: { id: string }) {
             }
           }}
         />
-        <div className="flex flex-wrap gap-4 mt-2">
-          {formik.values.existingPictures.map((pictureLink, index) => {
-            return (
-              <div key={pictureLink} className="relative w-24 h-24">
-                <Image
-                  src={pictureLink}
-                  alt={`Existing Image Preview ${index + 1}`}
-                  className="w-full h-full object-cover rounded border"
-                  width={500}
-                  height={500}
-                ></Image>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const updated = [...formik.values.existingPictures];
-                    updated.splice(index, 1);
-                    formik.setFieldValue('existingPictures', updated);
-                  }}
-                  disabled={disabled}
-                  className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-tr rounded-bl hover:bg-red-600"
-                >
-                  x
-                </button>
-              </div>
-            );
-          })}
-        </div>
-
-        {formik.values.picture.length > 0 && (
+        <div className="flex gap-4">
+          {' '}
           <div className="flex flex-wrap gap-4 mt-2">
-            {formik.values.picture.map((file, index) => (
-              <div key={index} className="relative w-24 h-24">
-                <Image
-                  src={URL.createObjectURL(file)}
-                  alt={`Preview ${index + 1}`}
-                  className="w-full h-full object-cover rounded border"
-                  width={500}
-                  height={500}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const updatedPictures = formik.values.picture.filter(
-                      (values, i) => i !== index,
-                    );
-                    formik.setFieldValue('picture', updatedPictures);
-                  }}
-                  disabled={disabled}
-                  className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-tr rounded-bl hover:bg-red-600"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
+            {formik.values.existingPictures.map((pictureLink, index) => {
+              return (
+                <div key={pictureLink} className="relative w-24 h-24">
+                  <Image
+                    src={pictureLink}
+                    alt={`Existing Image Preview ${index + 1}`}
+                    className="w-full h-full object-cover rounded border"
+                    width={500}
+                    height={500}
+                  ></Image>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = [...formik.values.existingPictures];
+                      updated.splice(index, 1);
+                      formik.setFieldValue('existingPictures', updated);
+                    }}
+                    disabled={disabled}
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-tr rounded-bl hover:bg-red-600"
+                  >
+                    x
+                  </button>
+                </div>
+              );
+            })}
           </div>
-        )}
+          {formik.values.picture.length > 0 && (
+            <div className="flex flex-wrap gap-4 mt-2">
+              {formik.values.picture.map((file, index) => (
+                <div key={index} className="relative w-24 h-24">
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-full object-cover rounded border"
+                    width={500}
+                    height={500}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedPictures = formik.values.picture.filter(
+                        (values, i) => i !== index,
+                      );
+                      formik.setFieldValue('picture', updatedPictures);
+                    }}
+                    disabled={disabled}
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-tr rounded-bl hover:bg-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <Button
