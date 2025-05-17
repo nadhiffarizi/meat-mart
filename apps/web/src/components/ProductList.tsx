@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
 import { getProducts } from '@/helper/product/product.helper';
 import { IProduct } from '@/interface/product/product.interface';
+import { IStock } from '@/interface/stock/stocks.interface';
 
 export const ProductList = () => {
   // local state

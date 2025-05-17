@@ -28,6 +28,13 @@ class ProductService {
         lat: '-6.2263977',
         lon: '106.8584389',
       };
+      const { categoryId } = req.query;
+      const { productId } = req.query;
+      const rawLimit = Number(req.query.limit);
+      const rawPage = Number(req.query.page);
+      const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+      const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+      const query = typeof req.query.q === 'string' ? req.query.q : undefined;
       const products = await xDistancePrisma(loc1).products.findMany({
         select: {
           id: true,
@@ -39,6 +46,14 @@ class ProductService {
           updated_at: true,
           deleted_at: true,
         },
+        where: {
+          ...(categoryId ? { categoryId: categoryId as string } : {}),
+          ...(productId ? { id: productId as string } : {}),
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+        },
+        take: limit,
+        skip: (page - 1) * limit,
       });
       const data: any[] = [];
 
@@ -69,6 +84,36 @@ class ProductService {
     }
   }
 
+  async getProductsCount(req: Request) {
+    try {
+      const loc1: ILocation = {
+        lat: '-6.2263977',
+        lon: '106.8584389',
+      };
+      const query = req.query.q as string;
+      const data = await xDistancePrisma(loc1).products.count({
+        where: {
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+        },
+      });
+
+      return returnServiceFeedback(
+        200,
+        data,
+        statusEnum.SUCCESS,
+        'Product count fetched successfully.',
+      );
+    } catch (error) {
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'Product count fetched unsuccessfully.',
+      );
+    }
+  }
+
   async getAllProducts(req: Request) {
     const includeDeleted = req.query.includeDeleted === 'true';
     const rawLimit = Number(req.query.limit);
@@ -79,16 +124,16 @@ class ProductService {
       where: includeDeleted
         ? undefined
         : {
-          deleted_at: null,
-        },
+            deleted_at: null,
+          },
       ...(limit !== undefined ? { take: limit } : {}),
       ...(query
         ? {
-          where: {
-            ...(includeDeleted ? {} : { deleted_at: null }),
-            name: { contains: query, mode: 'insensitive' },
-          },
-        }
+            where: {
+              ...(includeDeleted ? {} : { deleted_at: null }),
+              name: { contains: query, mode: 'insensitive' },
+            },
+          }
         : {}),
     });
 

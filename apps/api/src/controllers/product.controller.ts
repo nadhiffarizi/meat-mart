@@ -24,6 +24,20 @@ export class ProductController {
     }
   }
 
+  public async getProductsCount(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try registering
+      const data: serviceFeedback = await productService.getProductsCount(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getProductById(req: Request, res: Response, next: NextFunction) {
     try {
       // try registering
@@ -92,6 +106,5 @@ export class ProductController {
   //   }
   // }
 }
-
 
 export default new ProductController();

@@ -29,8 +29,6 @@ export function Card({ product }: { product: IProduct }) {
   // local state
   const [isMaxAdded, setMaxAdded] = useState<boolean>();
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [productPictures, setProductPictures] =
-    useState<IGetProductPictures[]>();
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,12 +95,12 @@ export function Card({ product }: { product: IProduct }) {
         </Alert>
       </Snackbar>
 
-      <Link href={`/products/${product.slug}`} passHref>
+      <Link href={`/products/${product.id}`} passHref>
         <div className="w-full max-w-[230px] bg-primaryIcon rounded-lg shadow-xl relative">
           <div className="w-full">
             <div className="w-full px-2 py-2 rounded-xl">
               <div className="relative">
-                <img
+                <Image
                   width={216}
                   height={100}
                   className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"
