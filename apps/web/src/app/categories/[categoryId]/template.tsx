@@ -7,7 +7,7 @@ export default function CategoryLayout({ children }: { children: ReactNode }) {
   return (
     <div className="bg-primaryBackground">
       <Header />
-      <div className="pt-0 md:pt-10 lg:pt-24">
+      <div className="pt-0 md:pt-24">
         <SlidingCategories />
       </div>
       {children}
