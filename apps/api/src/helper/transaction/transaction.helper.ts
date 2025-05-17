@@ -112,7 +112,7 @@ export const createTransaction = async (trxId: string, totalPrice: number, userI
       id: trxId,
     }, data: {
       total_price: totalPrice,
-      deadline_payment: setDeadlinePayment(new Date(now.getTime() + (1 * 60 * 60 * 1000))), // 1hr deadline
+      deadline_payment: setDeadlinePayment(new Date()), // 1hr deadline
       invoice_number: generateInvoiceNumber(trxId, userId),
       payment_method: !method ? 'MANUAL' : method.toUpperCase()
     }

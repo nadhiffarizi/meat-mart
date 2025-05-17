@@ -6,5 +6,5 @@ export interface ICheckout {
 
 export interface IOrderInput {
     cartId: string,
-    discountId?: string
+    discountId?: string,
 }

@@ -9,7 +9,7 @@ export const deadlinePayment = () => {
   const task = cron.schedule(
     '*/10 * * * * * ',
     async () => {
-      console.log('checking deadline payment..');
+      console.log('checking deadline payment.. at', new Date());
       // deadline payment for 1 hrs, update where the deadline already exceeds
       // for the sake of demo, runs every 5 seconds
       // update transaction status
@@ -32,6 +32,7 @@ export const deadlinePayment = () => {
                 deadline_payment: {
                   lte: new Date(),
                 },
+                transaction_status: E_TransactionStatus.AWAITING_PAYMENT
               },
             },
             {
@@ -40,11 +41,14 @@ export const deadlinePayment = () => {
                 deadline_payment: {
                   lte: new Date(),
                 },
+                transaction_status: E_TransactionStatus.AWAITING_PAYMENT
               },
             },
           ],
         },
       });
+      console.log("UNPAID TRX ", unpaidTrx);
+
       await prisma.transactions.updateMany({
         where: {
           id: {

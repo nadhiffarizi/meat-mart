@@ -47,7 +47,7 @@ export default function DiscountCard({
         if (discount.discount_amount) {
           return `OFF ${currencyFormatter(discount.discount_amount)}`;
         } else if (discount.discount_percentage) {
-          return `OFF ${discount.discount_percentage}`;
+          return `OFF ${discount.discount_percentage}%`;
         } else {
           return 0;
         }

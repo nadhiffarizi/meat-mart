@@ -100,7 +100,7 @@ export function Card({ product }: { product: IProduct }) {
           <div className="w-full">
             <div className="w-full px-2 py-2 rounded-xl">
               <div className="relative">
-                <Image
+                <img
                   width={216}
                   height={100}
                   className="w-full rounded-lg h-[150px] lg:h-[150px] object-cover"

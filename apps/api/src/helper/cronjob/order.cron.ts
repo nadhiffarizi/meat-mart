@@ -4,7 +4,7 @@ import { E_OrderStatus } from '@prisma/client';
 import { trxUpdateByOrderConfirm } from '../transaction/transaction.helper';
 export const orderConfirmation = () => {
     const task = cron.schedule("*/5 * * * * * ", async () => {
-        console.log("checking order confirmation..");
+        console.log("checking order confirmation.. at", new Date());
         // after 7 days if not confirm after sending the order, then do automatic confirm
         // for the sake of demo, runs every 5 seconds
         // populate orders

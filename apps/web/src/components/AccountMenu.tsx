@@ -134,7 +134,7 @@ export default function AccountMenu() {
         <MenuItem
           onClick={handleClose}
           component={Link}
-          href="/profile/order-list"
+          href="/order-list"
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
