@@ -69,9 +69,6 @@ export function Card({ product }: { product: IProduct }) {
 
     const index = indexProductInCart(cartState, product);
     setMaxAdded(isMaxAddedToCart(cartState[index], product));
-
-    // Add to cart logic here
-    console.log('Added to cart:', product.name);
   };
 
   const handleCloseSnackbar = () => {
@@ -121,7 +118,7 @@ export function Card({ product }: { product: IProduct }) {
             <div className="px-2 md:px-5 mt-4 flex flex-col text-sm md:text-[16px]">
               <b className="h-4 md:h-6 w-full">{product.name}</b>
               <p className="mt-1 md:mt-0 h-4 md:h-6 mb-2 w-full overflow-hidden text-xs md:text-sm text-gray-500">
-                /pack
+                {product.weight}g
               </p>
               <div className="flex justify-between items-center mb-4 md:mb-4">
                 <b className="text-[#159953] overflow-hidden">

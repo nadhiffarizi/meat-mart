@@ -36,7 +36,7 @@ type Props = {
   };
 };
 
-export default function CarouselDemo({ params: { productId } }: Props) {
+export default function Page({ params: { productId } }: Props) {
   const [productPictures, setProductPictures] = React.useState<
     IGetProductPictures[]
   >([]);

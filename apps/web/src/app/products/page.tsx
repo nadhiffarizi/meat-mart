@@ -14,7 +14,7 @@ function Page() {
   const [productData, setProductData] = useState<IProduct[]>();
   const [totalCount, setTotalCount] = useState<number>();
   const [page, setPage] = useState<number>(1);
-  const limit = 2;
+  const limit = 5;
 
   useEffect(() => {
     const resProduct = getProducts(
@@ -73,7 +73,7 @@ function Page() {
             page={page}
             setPage={setPage}
             totalCount={totalCount}
-            itemsPerPage={2}
+            itemsPerPage={limit}
           />
         )}
       </div>

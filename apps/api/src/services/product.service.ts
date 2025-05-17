@@ -47,10 +47,18 @@ class ProductService {
           deleted_at: true,
         },
         where: {
-          ...(categoryId ? { categoryId: categoryId as string } : {}),
           ...(productId ? { id: productId as string } : {}),
           ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
           deleted_at: null,
+          ...(categoryId
+            ? {
+                ProductCategories: {
+                  some: {
+                    category_id: categoryId as string,
+                  },
+                },
+              }
+            : {}),
         },
         take: limit,
         skip: (page - 1) * limit,
@@ -86,6 +94,7 @@ class ProductService {
 
   async getProductsCount(req: Request) {
     try {
+      const { categoryId } = req.query;
       const loc1: ILocation = {
         lat: '-6.2263977',
         lon: '106.8584389',
@@ -95,6 +104,15 @@ class ProductService {
         where: {
           ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
           deleted_at: null,
+          ...(categoryId
+            ? {
+                ProductCategories: {
+                  some: {
+                    category_id: categoryId as string,
+                  },
+                },
+              }
+            : {}),
         },
       });
 
