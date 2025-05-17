@@ -13,4 +13,6 @@ export const profileSideMenu = [
   { id: '3', name: 'Pesanan Saya', slug: 'order-list' },
   { id: '4', name: 'Transaksi', slug: 'transaction-list' },
   { id: '5', name: 'Voucher Saya', slug: '/profile/profile' },
+  { id: '6', name: 'Keranjang Belanja', slug: 'cart' },
+
 ];

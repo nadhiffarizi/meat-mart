@@ -19,6 +19,21 @@ export class TransactionQueryController {
       next(error);
     }
   }
+
+  public async getTrxListUserCountPage(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try create order
+      const data: serviceFeedback =
+        await transactionQueryService.getTrxListUserCountPage(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
   public async getTransactionListAdmin(
     req: Request,
     res: Response,
@@ -28,6 +43,21 @@ export class TransactionQueryController {
       // try create order
       const data: serviceFeedback =
         await transactionQueryService.getTransactionListAdmin(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getTrxListAdminCountPage(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try create order
+      const data: serviceFeedback =
+        await transactionQueryService.getTrxListAdminCountPage(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);

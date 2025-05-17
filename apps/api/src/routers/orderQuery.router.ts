@@ -1,4 +1,3 @@
-import orderController from '@/controllers/order.controller';
 import orderQueryController from '@/controllers/orderQuery.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
 import { Router } from 'express';
@@ -15,7 +14,10 @@ export class OrderRouterQuery {
     // dont forget to include middleware function before SIT 
 
     this.router.get('/', verifyToken, orderQueryController.getOrderListUser);
+    this.router.get('/totalpage', verifyToken, orderQueryController.getOrderListUserTotalPage);
     this.router.get('/admin', verifyToken, orderQueryController.getOrderListAdmin);
+    this.router.get('/admin/totalpage', verifyToken, orderQueryController.getOrderListAdminTotalPage);
+
     // .... continue api
   }
 

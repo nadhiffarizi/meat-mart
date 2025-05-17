@@ -117,7 +117,7 @@ class CartService {
           user_id: user?.id!,
         },
         orderBy: {
-          id: 'asc',
+          created_at: 'desc'
         },
         skip: Number(page) === 0 ? 0 : (Number(page) - 1) * 3,
         take: Number(page) === 0 ? countCart : 3,

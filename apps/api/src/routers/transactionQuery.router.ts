@@ -14,7 +14,10 @@ export class TransactionQueryRouter {
     // dont forget to include middleware function before SIT 
 
     this.router.get('/', verifyToken, transactionQueryController.getTransactionListUser);
+    this.router.get('/totalpage', verifyToken, transactionQueryController.getTrxListUserCountPage);
     this.router.get('/admin', verifyToken, transactionQueryController.getTransactionListAdmin);
+    this.router.get('/admin/totalpage', verifyToken, transactionQueryController.getTrxListAdminCountPage);
+
     // .... continue api
   }
 

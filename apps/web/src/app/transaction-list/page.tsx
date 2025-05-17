@@ -4,7 +4,10 @@ import TransactionListCard from '@/components/Transaction/TransactionListCard.co
 import { setQueryParams } from '@/helper/filter/transactionFilter.helper';
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { getDataTransactionAPI } from '@/helper/transaction/transaction.helper';
+import {
+  getDataTransactionAPI,
+  getPageTransactionAPI,
+} from '@/helper/transaction/transaction.helper';
 import { callToast } from '@/helper/notify.helper';
 import {
   ITransaction,
@@ -12,10 +15,12 @@ import {
   TrxFilterContext,
 } from '@/interface/transaction/transaction.interface';
 import { useSession } from 'next-auth/react';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Backdrop, Button, CircularProgress, IconButton } from '@mui/material';
 import { IFilterTransactions } from '@/interface/dashboard/filter.interface';
 import { profileSideMenu } from '@/helper/user/user.helper';
 import Link from 'next/link';
+import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import { PageContext } from '@/interface/pagination.interface';
 
 export default function TransactionListPage() {
   //global state
@@ -29,6 +34,8 @@ export default function TransactionListPage() {
   const pathName = usePathname();
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [trxData, setTrxData] = React.useState<ITransaction[]>();
+  const [totalPage, setTotalPage] = React.useState();
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [isChange, setChange] = React.useState<boolean>();
   const subCategories = profileSideMenu;
 
@@ -41,11 +48,26 @@ export default function TransactionListPage() {
     // set query params
     console.log(filterTransactions);
     console.log(setQueryParams(filterTransactions));
-    const params = setQueryParams(filterTransactions);
+    const params = setQueryParams(filterTransactions, currentPage);
     router.replace(`${pathName}?${params.toString()}`);
 
     try {
       setLoading(true);
+      const getTrxTotalPage = getPageTransactionAPI(
+        `transaction/list/totalpage?${params.toString()}`,
+        session?.user.access_token!,
+      );
+
+      getTrxTotalPage
+        .then((v) => v.json())
+        .then((value) => {
+          console.log(
+            'trx total page with filter:',
+            value['data']['totalPage'],
+          );
+          setTotalPage(value['data']['totalPage']);
+        });
+
       const getTrxResponse = getDataTransactionAPI(
         `transaction/list?${params.toString()}`,
         filterTransactions!,
@@ -67,7 +89,7 @@ export default function TransactionListPage() {
     setLoading(false);
 
     // call get transaction to get list of transactions
-  }, [filterTransactions, isChange]);
+  }, [filterTransactions, isChange, currentPage]);
 
   if (isLoading) {
     return (
@@ -80,7 +102,10 @@ export default function TransactionListPage() {
     <React.Fragment>
       <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
         <div className="flex flex-col gap-7 w-4/5 max-w-[2000px] min-w-[600px] py-5 px-5 ">
-          <div id="main-container" className="flex w-full h-[670px] gap-5 ">
+          <div
+            id="main-container"
+            className="flex w-full max-h-[1000px] gap-5 "
+          >
             <aside className="w-full md:w-64 flex-shrink-0">
               <div className="bg-white rounded-lg shadow p-4 sticky top-4">
                 <nav>
@@ -128,6 +153,43 @@ export default function TransactionListPage() {
                       </TrxChangeContext.Provider>
                     );
                   })}
+
+                <div className="flex justify-between gap-7 items-center h-full">
+                  <Button
+                    onClick={() => {
+                      if (currentPage && currentPage > 1) {
+                        setCurrentPage(currentPage - 1);
+                      }
+                    }}
+                    id="backpage-button"
+                    className="h-[40px] !text-secondaryGreen"
+                    style={{ textTransform: 'none' }}
+                  >
+                    <NavigateBefore />
+                    Previous
+                  </Button>
+                  <div className="w-full flex justify-center text-secondaryGreen ">
+                    Page {currentPage} of {totalPage}
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      if (currentPage && currentPage < totalPage!) {
+                        setTimeout(() => {
+                          setLoading(true);
+                          setCurrentPage(currentPage! + 1);
+                          setLoading(false);
+                        }, 1000);
+                      }
+                    }}
+                    id="nextpage-button"
+                    className="h-[40px] !text-secondaryGreen"
+                    style={{ textTransform: 'none' }}
+                  >
+                    Next
+                    <NavigateNext />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

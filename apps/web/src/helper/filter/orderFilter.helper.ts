@@ -44,11 +44,14 @@ export const statusFilterToArray = (statusState: IFilterStatusOrder) => {
   return statusArray;
 };
 
-export const setQueryParams = (filterOrder: IFilterOrder | undefined) => {
+export const setQueryParams = (filterOrder: IFilterOrder | undefined, page?: number) => {
   if (!filterOrder) return '';
 
   const params = new URLSearchParams();
-  let queryParams: string[] = [];
+  if (page) {
+    params.append('page', String(page))
+  }
+
   if (filterOrder.from) {
     params.append('from', filterOrder.from.toString());
   }

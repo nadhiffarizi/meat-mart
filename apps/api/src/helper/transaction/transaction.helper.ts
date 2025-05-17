@@ -245,38 +245,3 @@ export const updateTrxStatus = async (
   return updatedTrx
 }
 
-// export const midTransSnap = () => {
-//     let snap = new midtransClient.Snap({
-//         isProduction: false,
-//         serverKey: midtransServerKey
-//     })
-
-//     let parameter = {
-//         "transaction_details": {
-//             "order_id": "YOUR-ORDERID-123456",
-//             "gross_amount": 10000
-//         },
-//         "credit_card": {
-//             "secure": true
-//         },
-//         "customer_details": {
-//             "first_name": "budi",
-//             "last_name": "pratama",
-//             "email": "budi.pra@example.com",
-//             "phone": "08111222333"
-//         }
-//     };
-
-//     snap.createTransaction(parameter)
-//         .then((transaction: any) => {
-//             // transaction token
-//             let transactionToken = transaction.token;
-//             console.log('transactionToken:', transactionToken);
-//         })
-// }
-
-export const xenditSnap = () => {
-  const xenditClient = new Xendit({
-    secretKey: xenditSecretKey
-  })
-}

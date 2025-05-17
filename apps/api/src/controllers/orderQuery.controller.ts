@@ -18,6 +18,22 @@ export class OrderControllerQuery {
       next(error);
     }
   }
+
+  public async getOrderListUserTotalPage(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try create order
+      const data: serviceFeedback =
+        await orderQueryService.getOrderListUserTotalPage(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getOrderListAdmin(
     req: Request,
     res: Response,
@@ -27,6 +43,21 @@ export class OrderControllerQuery {
       // try get order list by admin
       const data: serviceFeedback =
         await orderQueryService.getOrderListAdmin(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getOrderListAdminTotalPage(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      // try create order
+      const data: serviceFeedback =
+        await orderQueryService.getOrderListAdminTotalPage(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {
       next(error);

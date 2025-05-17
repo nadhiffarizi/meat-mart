@@ -39,12 +39,15 @@ export const statusFilterToArray = (statusState: IFilterStatus | IFilterStatusOr
 };
 
 export const setQueryParams = (
-  filterTransactions: IFilterTransactions | undefined,
+  filterTransactions: IFilterTransactions | undefined, page?: number
 ) => {
   if (!filterTransactions) return '';
 
   const params = new URLSearchParams();
-  let queryParams: string[] = [];
+  if (page) {
+    params.append('page', String(page))
+  }
+
   if (filterTransactions.from) {
     params.append('from', filterTransactions.from.toString());
   }

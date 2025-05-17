@@ -234,7 +234,7 @@ export default function TransactionAdminTable({
           {trxData.map((trx, index) => (
             <TableRow className={` !h-[50px]`} key={index}>
               <TableCell className="font-medium">
-                {trx.invoice_number.toUpperCase()}
+                {trx.invoice_number}
               </TableCell>
               <TableCell>{trx.transaction_status.replace('_', ' ')}</TableCell>
               <TableCell className="">{trx.payment_method}</TableCell>

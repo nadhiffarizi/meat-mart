@@ -1,12 +1,18 @@
 'use client';
 import OrderAdminTable from '@/components/dashboard/order-list/OrderListAdminTable.component';
 import SearchBarOrderListAdmin from '@/components/dashboard/order-list/SearchBarOrderList.component';
-import OrderListCard from '@/components/Order/OrderListCard.component';
-import SearchBarOrderList from '@/components/Order/SearchBarOrderList.component';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { setQueryParams } from '@/helper/filter/orderFilter.helper';
 import { callToast } from '@/helper/notify.helper';
 import {
   getDataOrderAPI,
+  getPageOrderAPI,
   syncOrderDataFromAPI,
 } from '@/helper/transaction/order.helper';
 import { IFilterOrder } from '@/interface/dashboard/filter.interface';
@@ -31,6 +37,8 @@ export default function OrderListPageAdmin() {
   const pathName = usePathname();
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [orderData, setOrderData] = React.useState<IOrder[]>();
+  const [totalPage, setTotalPage] = React.useState();
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [isChange, setChange] = React.useState<boolean>();
 
   // when global filters change
@@ -38,7 +46,7 @@ export default function OrderListPageAdmin() {
     // set query params
     console.log(filterOrder);
     console.log(setQueryParams(filterOrder));
-    const params = setQueryParams(filterOrder);
+    const params = setQueryParams(filterOrder, currentPage);
     router.replace(`${pathName}?${params.toString()}`);
 
     try {
@@ -46,6 +54,21 @@ export default function OrderListPageAdmin() {
         setLoading(true);
         return;
       }
+      // get total page
+      const getOrderTotalPage = getPageOrderAPI(
+        `order/list/admin/totalpage?${params.toString()}`,
+        session.user.access_token!,
+      );
+
+      getOrderTotalPage
+        .then((v) => v.json())
+        .then((value) => {
+          console.log(
+            'order total page with filter',
+            value['data']['totalPage'],
+          );
+          setTotalPage(value['data']['totalPage']);
+        });
 
       setLoading(true);
       const getOrderResponse = getDataOrderAPI(
@@ -71,7 +94,7 @@ export default function OrderListPageAdmin() {
     setLoading(false);
 
     // call get transaction to get list of transactions
-  }, [filterOrder, isChange, status]);
+  }, [filterOrder, isChange, status, currentPage]);
 
   if (isLoading) {
     return (
@@ -83,7 +106,7 @@ export default function OrderListPageAdmin() {
 
   return (
     <React.Fragment>
-      <div className="flex justify-center items-center w-full bg-[#F5F5F5]">
+      <div className="flex justify-center items-center w-full">
         <div
           id="orderlist-container"
           className="flex flex-col gap-4 w-full h-full px-2"
@@ -93,17 +116,47 @@ export default function OrderListPageAdmin() {
             <h1 className=" text-start text-3xl font-semibold text-primaryText">
               Admin Order List
             </h1>
-            <OrderFilterContext.Provider
-              value={{ filterOrder, setFilterOrder }}
-            >
-              <SearchBarOrderListAdmin />
-            </OrderFilterContext.Provider>
-
-            {orderData && (
-              <OrderChangeContext.Provider value={{ isChange, setChange }}>
-                <OrderAdminTable orderData={orderData} />
-              </OrderChangeContext.Provider>
-            )}
+            <div className="w-full px-1">
+              <OrderFilterContext.Provider
+                value={{ filterOrder, setFilterOrder }}
+              >
+                <SearchBarOrderListAdmin />
+              </OrderFilterContext.Provider>
+            </div>
+            <div className="w-full px-1">
+              {orderData && (
+                <OrderChangeContext.Provider value={{ isChange, setChange }}>
+                  <OrderAdminTable orderData={orderData} />
+                </OrderChangeContext.Provider>
+              )}
+            </div>
+            <Pagination>
+              <PaginationContent className="!w-full !flex !justify-between !py-2 !px-2">
+                <PaginationItem className="!w-1/3">
+                  <PaginationPrevious
+                    onClick={() => {
+                      if (currentPage && currentPage > 1) {
+                        setCurrentPage(currentPage - 1);
+                      }
+                    }}
+                    className="!ring-1 !ring-slate-300"
+                  />
+                </PaginationItem>
+                <PaginationItem className="w-1/3  flex justify-center">
+                  Page {currentPage} of {totalPage}
+                </PaginationItem>
+                <PaginationItem className="!w-1/3 flex justify-end">
+                  <PaginationNext
+                    onClick={() => {
+                      if (currentPage && currentPage < totalPage!) {
+                        setCurrentPage(currentPage + 1);
+                      }
+                    }}
+                    className="!ring-1 !ring-slate-300"
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </div>
       </div>

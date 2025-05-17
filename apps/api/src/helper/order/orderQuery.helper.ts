@@ -7,14 +7,15 @@ import { IUser } from "@/interface/User.interface"
 import { convertRoleToEnum } from "../role.helper"
 import { findStoreByAdmin, findStoreBySuperAdmin } from "../store/store.helper"
 import { getTrxById } from "../transaction/transaction.helper"
+import { string } from "zod"
 
 
-export const getOrderByInvoice = async (userId: string, invoice: string) => {
+export const getOrderByInvoice = async (user: IUser, invoice: string) => {
 
     /** returns order list created by userId for specific invoice number */
 
     // get transaction by invoice number
-    const trx = await getTransactionByInvoice(userId, invoice)
+    const trx = await getTransactionByInvoice(user, invoice)
     console.log(trx);
 
 
@@ -43,7 +44,7 @@ export const getOrderByInvoice = async (userId: string, invoice: string) => {
     return updatedList
 }
 
-export const getOrderByParams = async (userId: string, status?: string[], from?: string, until?: string) => {
+export const getOrderByParams = async (userId: string, status?: string[], from?: string, until?: string, page?: string) => {
     // access by user facing service
     const trx = await prisma.transactions.findMany({
         select: {
@@ -87,7 +88,9 @@ export const getOrderByParams = async (userId: string, status?: string[], from?:
         },
         orderBy: {
             created_at: 'desc'
-        }
+        },
+        skip: !page ? 0 : (Number(page) - 1) * 6,
+        take: 6
     })
 
     // for every order get product data
@@ -200,8 +203,8 @@ export const getOrderAdminByInvoice = async (admin: IUser | undefined, invoice: 
     return orderList
 }
 
-export const getOrderAdminByParams = async (admin: IUser | undefined, status?: string[], from?: string, until?: string, storesId?: string[]) => {
-
+export const getOrderAdminByParams = async (admin: IUser | undefined, status?: string[], from?: string, until?: string, storesId?: string[], page?: string) => {
+    /**return order list by admin maximum 10 */
     if (!admin) throw new Error("no admin user found ")
     // populate stores id and admin Ids
     let stores: any = []
@@ -242,11 +245,11 @@ export const getOrderAdminByParams = async (admin: IUser | undefined, status?: s
                         in: adminIds
                     }
                 }
-
             }
         }, orderBy: {
             created_at: 'desc'
-        }
+        }, skip: !page ? 0 : (Number(page) - 1) * 10,
+        take: 10
     })
 
     // add product name and invoice number
@@ -260,4 +263,95 @@ export const getOrderAdminByParams = async (admin: IUser | undefined, status?: s
         orderList.push(temp)
     }
     return orderList
+}
+
+export const getOrderByParamsTotalPage = async (userId: string, status?: string[], from?: string, until?: string) => {
+    /**return total page based on filter, every page get 6 order list (customer facing) */
+    // access by user facing service
+    const trx = await prisma.transactions.findMany({
+        select: {
+            id: true
+        },
+        where: {
+            AND: {
+                users_id: userId,
+                deleted_at: null
+            }
+        }
+    })
+
+    // get orderslist
+    const count = await prisma.transactionDetails.count({
+        where: {
+            AND: {
+                transaction_id: {
+                    in: trx.map((t) => t.id)
+                }, created_at: {
+                    gte: !from ? new Date("January 01, 1979") : new Date(parseInt(from)),
+                    lte: !until ? new Date() : new Date(parseInt(until) + 1000 * 60 * 60 * 24) //plus 1 day
+                }, status: {
+                    in: convertOrderStatusToEnum(status as string[])
+                },
+            }
+
+        },
+    })
+
+    if (count % 6 === 0) {
+        return count / 6
+    } else {
+        return Math.floor(count / 6) + 1
+    }
+}
+
+export const getOrderAdminByParamsTotalPage = async (admin: IUser | undefined, status?: string[], from?: string, until?: string, storesId?: string[]) => {
+    if (!admin) throw new Error("no admin user found ")
+    // populate stores id and admin Ids
+    let stores: any = []
+    let adminIds = []
+    if (admin.role === E_Role.ADMIN) {
+        stores = [...await findStoreByAdmin(admin.id)]
+        adminIds = [admin.role]
+    } else {
+        stores = [...await findStoreBySuperAdmin()]
+        const users = await prisma.users.findMany({
+            where: {
+                role: {
+                    in: [E_Role.SUPER_ADMIN, E_Role.ADMIN]
+                }
+            }
+        })
+
+        adminIds = [...users.map((user) => user.id)]
+    }
+
+    // get orders data 
+    const count = await prisma.transactionDetails.count({
+        where: {
+            AND: {
+                deleted_at: null,
+                created_at: {
+                    gte: !from ? new Date("January 01, 1979") : new Date(parseInt(from)),
+                    lte: !until ? new Date() : new Date(parseInt(until) + 1000 * 60 * 60 * 24) //plus 1 day
+                },
+                status: {
+                    in: [...convertOrderStatusToEnum(status as string[])]
+                },
+                stores: {
+                    id: {
+                        in: !storesId || (storesId as string[]).length === 0 ? stores.map((store: any) => store.id) : [...storesId].map((id) => id)
+                    },
+                    storeadmin_id: {
+                        in: adminIds
+                    }
+                }
+            }
+        },
+    })
+
+    if (count % 10 === 0) {
+        return count / 10
+    } else {
+        return Math.floor(count / 10) + 1
+    }
 }

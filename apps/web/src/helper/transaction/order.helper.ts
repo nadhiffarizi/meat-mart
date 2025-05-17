@@ -11,6 +11,11 @@ export const getDataOrderAPI = async (apiRouter: string, payload: IFilterOrder, 
   return response
 }
 
+export const getPageOrderAPI = async (apiRouter: string, token: string) => {
+  const response = await apiRequest(apiRouter, 'GET', undefined, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
+  return response
+}
+
 export const confirmOrderAPI = async (apiRouter: string, payload: { "orderId": string }, token: string) => {
   const response = await apiRequest(apiRouter, 'POST', { ...payload }, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
   return response

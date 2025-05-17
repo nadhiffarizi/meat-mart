@@ -28,7 +28,6 @@ import '@/cronjob/monthlyStockSnapshot.cronjob';
 import orderQueryRouter from './routers/orderQuery.router';
 import { deadlinePayment } from './helper/cronjob/transaction.cron';
 import { orderConfirmation } from './helper/cronjob/order.cron';
-import { midtransSnap } from './helper/midtrans.helper';
 // import { midTransSnap } from './helper/transaction/transaction.helper';
 import addressRouter from './routers/address.router';
 import storeRouter from './routers/store.router';
@@ -107,14 +106,11 @@ export default class App {
     );
     this.app.use('/api/discount', discountDashboardRouter.getRouter());
     this.app.use('/api/store/list', storeRouter.getRouter());
-    // this.app.post('/midtrans', () => {
-    //   midtransSnap()
-    // })
   }
 
   private cron(): void {
-    deadlinePayment().start() // cron for deadline payment
-    orderConfirmation().start() // cron for order confirmation
+    // deadlinePayment().start() // cron for deadline payment
+    // orderConfirmation().start() // cron for order confirmation
   }
 
   public start(): void {

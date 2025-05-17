@@ -8,6 +8,11 @@ export const getDataTransactionAPI = async (apiRouter: string, payload: IFilterT
   return response
 }
 
+export const getPageTransactionAPI = async (apiRouter: string, token: string) => {
+  const response = await apiRequest(apiRouter, 'GET', undefined, { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` })
+  return response
+}
+
 export const uploadPaymentProof = async (apiRouter: string, token: string, formData: FormData) => {
 
   const response = await apiRequest(apiRouter, 'POST', undefined, { "Authorization": `Bearer ${token}` }, formData)

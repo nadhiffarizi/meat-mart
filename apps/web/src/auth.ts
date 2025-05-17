@@ -142,6 +142,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         is_verified: token.is_verified,
         provider: token.provider,
       };
+
+      console.log(session);
+
       return session;
     },
   },
