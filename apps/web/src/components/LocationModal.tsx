@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { openCageApiKey } from '@/helper/config';
 import { Search } from '@mui/icons-material';
 import { Address } from '@/interface/user/address.interface';
+import { useSession } from 'next-auth/react';
 
 interface LocationModalProps {
   open: boolean;
@@ -23,6 +24,7 @@ export const LocationModal = ({
   const [error, setError] = useState<string | null>(null);
   const [manualLocation, setManualLocation] = useState('');
   const [watchId, setWatchId] = useState<number | null>(null);
+  const { data: session, update } = useSession();
   const [currentAddress, setCurrentAddress] = useState<Partial<Address>>({
     recipient_name: '',
     recipient_phone_number: '',
@@ -179,6 +181,12 @@ export const LocationModal = ({
   };
 
   if (!open) return null;
+
+  if (
+    session?.user.role &&
+    (session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN')
+  )
+    return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

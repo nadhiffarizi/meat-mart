@@ -33,7 +33,7 @@ const Mobile = ({ isSticky }: MobileProps) => {
       className={`md:hidden ${isSticky ? 'fixed top-0 left-0 right-0 z-50 h-20 bg-primaryBackground shadow-md transition-all ' : ''}`}
     >
       {!isSticky && (
-        <div className="pt-0 pb-4 space-y-1 max-w-[350px]">
+        <div className="pt-20 pb-4 space-y-1 max-w-[350px]">
           <button
             className="ml-4 pt-4 flex items-center justify-start gap-1"
             onClick={() => setShowLocationModal(true)}
@@ -63,9 +63,8 @@ const Mobile = ({ isSticky }: MobileProps) => {
               ).value;
               router.push(`/products?q=${input}`);
             }}
-            className="hidden md:flex flex-1 max-w-md md:max-w-full"
+            className=" md:flex flex-1"
           >
-            {' '}
             <input
               type="text"
               name="search"
@@ -73,7 +72,6 @@ const Mobile = ({ isSticky }: MobileProps) => {
               className="w-full text-sm rounded-full h-[48px] text-primaryText bg-white border border-gray-200 py-2 px-4 pl-10 focus:outline-none "
             />
           </form>
-
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search />
           </div>
