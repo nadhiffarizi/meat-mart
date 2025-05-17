@@ -42,7 +42,7 @@ export default function Categories() {
   return (
     <div className="relative px-4 pb-6 bg-primaryBackground ">
       <div className="max-w-7xl mx-auto">
-        <div className="relative">
+        <div className="relative px-14">
           <Swiper
             modules={[Navigation, Scrollbar]}
             spaceBetween={16}
