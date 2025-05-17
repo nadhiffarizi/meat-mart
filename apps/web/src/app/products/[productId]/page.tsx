@@ -198,7 +198,7 @@ export default function Page({ params: { productId } }: Props) {
               <div className="text-secondaryText">{productData.weight}g</div>
             </div>
 
-            <div className="text-primaryGreen font-semibold text-xl">
+            <div className="text-[#159953] font-semibold text-xl">
               {new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR',
@@ -215,8 +215,8 @@ export default function Page({ params: { productId } }: Props) {
         className={`h-9 rounded-md text-base max-w-screen-lg w-full
           ${
             !session || !productData?.availableStocks || isMaxAdded
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
+              ? 'bg-gray-400 cursor-not-allowed text-white'
+              : 'bg-orangeAccent text-white hover:bg-orange-600'
           }`}
       >
         Add to Cart
