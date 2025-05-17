@@ -88,7 +88,7 @@ export default function Page({ params: { productId } }: Props) {
   const cartState = useAppSelector((state) => state.cartState);
 
   // local state
-  const [isMaxAdded, setMaxAdded] = React.useState<boolean>();
+  const [isMaxAdded, setMaxAdded] = React.useState<boolean>(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
