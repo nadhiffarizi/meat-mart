@@ -11,7 +11,7 @@ export const ProductList = () => {
   const [productData, setProductData] = useState<IProduct[]>();
 
   useEffect(() => {
-    const resProduct = getProducts('products');
+    const resProduct = getProducts(`products?page=1&limit=5`);
 
     resProduct
       .then((v) => v.json())

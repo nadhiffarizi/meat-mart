@@ -15,6 +15,7 @@ export default function Template({ children }: Props) {
       <SessionProvider>
         <InitialState>
           <Header />
+          <div className="pt-0 md:pt-24"></div>
           {children}
           <Footer />
         </InitialState>
