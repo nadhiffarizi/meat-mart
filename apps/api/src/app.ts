@@ -110,7 +110,7 @@ export default class App {
 
   private cron(): void {
     deadlinePayment().start() // cron for deadline payment
-    // orderConfirmation().start() // cron for order confirmation
+    orderConfirmation().start() // cron for order confirmation
   }
 
   public start(): void {
