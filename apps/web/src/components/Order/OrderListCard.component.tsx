@@ -104,12 +104,12 @@ export default function OrderListCard({ orderData }: { orderData: IOrder }) {
       </Box>
       <Box sx={{ width: '100%', height: '20%' }}>
         <div className="w-full h-full py-1 flex justify-end gap-7">
-          <Button
+          {/* <Button
             style={{ textTransform: 'none' }}
             className=" !w-[200px]  !text-secondaryGreen !font-semibold"
           >
             Check Order Detail
-          </Button>
+          </Button> */}
           {orderData.status === 'ON_DELIVERY' ? (
             <Button
               style={{ textTransform: 'none' }}

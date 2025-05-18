@@ -230,12 +230,12 @@ export default function TransactionListCard({ trx }: { trx: ITransaction }) {
       </Box>
       <Box sx={{ width: '100%', height: '20%' }}>
         <div className="w-full h-full py-1 flex justify-end gap-7">
-          <Button
+          {/* <Button
             style={{ textTransform: 'none' }}
             className=" !w-[200px]  !text-secondaryGreen !font-semibold"
           >
             Transaction Detail
-          </Button>
+          </Button> */}
           {trx.transaction_status === 'AWAITING_PAYMENT' ? (
             <Button
               style={{ textTransform: 'none' }}
