@@ -49,20 +49,24 @@ export default function Page() {
     try {
       setIsSocialLoading((prev) => ({ ...prev, google: true }));
       setErrMessage('');
-
-      const result = await signIn('google', {
+      await signIn('google', {
         redirect: true,
         callbackUrl: '/',
       });
 
-      const error = (result as SignInResponse).error;
-      const url = (result as SignInResponse).url;
+      // const result = await signIn('google', {
+      //   redirect: true,
+      //   callbackUrl: '/',
+      // });
 
-      if (error) {
-        setErrMessage(error);
-      } else if (url) {
-        router.push(url);
-      }
+      // const error = (result as SignInResponse).error;
+      // const url = (result as SignInResponse).url;
+
+      // if (error) {
+      //   setErrMessage(error);
+      // } else if (url) {
+      //   router.push(url);
+      // }
     } catch (error) {
       console.error('Google login error:', error);
       setErrMessage('Failed to login with Google');
