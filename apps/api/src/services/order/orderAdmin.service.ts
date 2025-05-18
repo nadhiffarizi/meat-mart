@@ -10,7 +10,7 @@ import {
 import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { updateStockQuantity } from '@/helper/stock/stock.helper';
 import { updateTrxStatus } from '@/helper/transaction/transaction.helper';
-import { E_OrderStatus, E_Role } from '@prisma/client';
+import { E_OrderStatus, E_Role } from '.prisma/client';
 import { Request } from 'express';
 
 class OrderServiceAdmin {

@@ -9,7 +9,7 @@ import {
   getTrxAdminByParamsTotalPage,
   getTrxByParamsTotalPage,
 } from '@/helper/transaction/transactionQuery.helper';
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 import { Request } from 'express';
 
 class TransactionListService {
@@ -28,10 +28,7 @@ class TransactionListService {
 
       if (invoice) {
         // get transaction list by invoice number
-        const result = await getTransactionByInvoice(
-          user!,
-          String(invoice),
-        );
+        const result = await getTransactionByInvoice(user!, String(invoice));
         if (result) {
           transactionList = [result];
         }
@@ -42,12 +39,12 @@ class TransactionListService {
             user?.id!,
             status as string[],
             from as string,
-            until as string, page as string
+            until as string,
+            page as string,
           )),
         ];
       }
       console.log(user?.id);
-
 
       // feedback from service
       return returnServiceFeedback(
@@ -77,11 +74,25 @@ class TransactionListService {
 
       if (role_ !== E_Role.CUSTOMER)
         throw new Error('role is customer, cannot access this service');
-      const count = await getTrxByParamsTotalPage(user!, status as string[], from as string, until as string)
-      return returnServiceFeedback(200, { "totalPage": count }, statusEnum.SUCCESS, "get total page success")
-
+      const count = await getTrxByParamsTotalPage(
+        user!,
+        status as string[],
+        from as string,
+        until as string,
+      );
+      return returnServiceFeedback(
+        200,
+        { totalPage: count },
+        statusEnum.SUCCESS,
+        'get total page success',
+      );
     } catch (error) {
-      return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get total page failed")
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'get total page failed',
+      );
     }
   }
 
@@ -111,7 +122,7 @@ class TransactionListService {
             until as string,
             store as string[],
             user?.role,
-            page as string
+            page as string,
           )),
         ];
       }
@@ -139,13 +150,28 @@ class TransactionListService {
       // check role
       const role = convertRoleToEnum(user?.role!);
       if (role === E_Role.CUSTOMER) throw new Error('Unauthorized role');
-      const count = await getTrxAdminByParamsTotalPage(user?.id!, status as string[], from as string, until as string, store as string[], role)
+      const count = await getTrxAdminByParamsTotalPage(
+        user?.id!,
+        status as string[],
+        from as string,
+        until as string,
+        store as string[],
+        role,
+      );
 
-      return returnServiceFeedback(200, { "totalPage": count }, statusEnum.SUCCESS, "get total page success")
-
+      return returnServiceFeedback(
+        200,
+        { totalPage: count },
+        statusEnum.SUCCESS,
+        'get total page success',
+      );
     } catch (error) {
-      return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "get total page failed")
-
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'get total page failed',
+      );
     }
   }
 }

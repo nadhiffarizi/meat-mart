@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { startOfDay } from 'date-fns';
-import { PrismaClient } from '.prisma/client';
+import { E_StockStatus, PrismaClient } from '.prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,7 @@ async function monthlySnapshotStocks() {
     product_id: stock.product_id,
     store_id: stock.store_id,
     quantity: Number(stock.quantity),
-    status: 'SNAPSHOT' as const,
+    status: E_StockStatus.SNAPSHOT,
   }));
 
   await prisma.stockHistory.createMany({
