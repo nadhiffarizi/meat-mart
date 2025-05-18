@@ -9,40 +9,49 @@ import {
 } from '@/helper/discount.prisma';
 import { getStoreById } from '@/helper/store.prisma';
 import { findProductById } from '@/helper/product/product.helper';
+import { Prisma } from '@prisma/client';
 
 class DiscountService {
   async getAllDiscounts(req: Request) {
-    let allDiscounts;
-    if (req.query.includeDeleted === 'true') {
-      if (req.query.storeId) {
-        allDiscounts = await prisma.discounts.findMany({
-          where: { store_id: req.query.storeId as string },
-          include: { products: true },
-        });
-      } else {
-        allDiscounts = await prisma.discounts.findMany({
-          include: { products: true },
-        });
-      }
-    } else {
-      if (req.query.storeId) {
-        allDiscounts = await prisma.discounts.findMany({
-          where: { store_id: req.query.storeId as string, deleted_at: null },
-          include: { products: true },
-        });
-      } else {
-        allDiscounts = await prisma.discounts.findMany({
-          where: {
-            deleted_at: null,
-          },
-          include: { products: true },
-        });
-      }
+    const rawLimit = Number(req.query.limit);
+    const rawPage = Number(req.query.page);
+    const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+    const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+    const query = typeof req.query.q === 'string' ? req.query.q : undefined;
+
+    const where: Prisma.DiscountsWhereInput = {
+      ...(req.query.includeDeleted === 'true' ? {} : { deleted_at: null }),
+      ...(query
+        ? { discount_code: { contains: query, mode: 'insensitive' } }
+        : {}),
+    };
+
+    if (!req.query.storeId) {
+      const feedback: serviceFeedback = {
+        code: 400,
+        data: null,
+        status: statusEnum.FAILED,
+        message: `storeId is required to fetch all stocks.`,
+      };
+      return feedback;
     }
+
+    const [allDiscounts, count] = await Promise.all([
+      prisma.discounts.findMany({
+        where,
+        take: limit,
+        skip: (page - 1) * limit,
+        orderBy: { created_at: 'desc' },
+        include: {
+          products: true,
+        },
+      }),
+      prisma.discounts.count({ where }),
+    ]);
 
     const feedback: serviceFeedback = {
       code: 200,
-      data: allDiscounts,
+      data: { discounts: allDiscounts, count: count },
       status: statusEnum.SUCCESS,
       message: `Successfully fetched all discounts.`,
     };

@@ -9,25 +9,44 @@ import { Stock } from './columns';
 function ViewStocks({ storeId }: { storeId: string }) {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const { data: session, update, status } = useSession();
+  const [search, setSearch] = useState<string>('');
+  const [totalCount, setTotalCount] = useState<number>();
+  const [page, setPage] = useState<number>(1);
+  const limit = 10;
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   useEffect(() => {
     async function getStocks() {
       try {
         const response = await api(
-          `stock/all?storeId=${storeId}`,
+          `stock/all?storeId=${storeId}&page=${page}&limit=${limit}&q=${search}`,
           'GET',
           {},
           session?.user.access_token,
         );
-        setStocks(response.data as Stock[]);
+        setTotalCount(response.data.count);
+        setStocks(response.data.stocks as Stock[]);
       } catch (error: any) {
         console.log(error);
       }
     }
     getStocks();
-  }, [session?.user.access_token, session, storeId]);
+  }, [session?.user.access_token, session, storeId, page, search]);
 
-  return <DataTable columns={columns} data={stocks} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={stocks}
+      setSearch={setSearch}
+      totalCount={totalCount}
+      page={page}
+      setPage={setPage}
+      limit={limit}
+    />
+  );
 }
 
 export default ViewStocks;
