@@ -20,7 +20,7 @@ interface Address {
 }
 
 export default function ChooseAddressCheckout() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showListModal, setShowListModal] = useState(false);
@@ -28,6 +28,7 @@ export default function ChooseAddressCheckout() {
     lat: string;
     lng: string;
   } | null>(null);
+  const [isLoading, setLoading] = useState<boolean>();
 
   const selectedAddress =
     addresses.find((addr) => addr.is_selected) || addresses[0];
@@ -45,6 +46,11 @@ export default function ChooseAddressCheckout() {
   }, [selectedAddress]);
 
   useEffect(() => {
+    if (status !== 'authenticated') {
+      setLoading(true);
+      return;
+    }
+    setLoading(true);
     const fetchAddresses = async () => {
       if (session?.user?.email) {
         try {
@@ -65,7 +71,8 @@ export default function ChooseAddressCheckout() {
       }
     };
     fetchAddresses();
-  }, [session]);
+    setLoading(false);
+  }, []);
 
   const handleAddAddress = (newAddress: Address) => {
     setAddresses([...addresses, newAddress]);
@@ -89,6 +96,37 @@ export default function ChooseAddressCheckout() {
 
     setShowListModal(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex flex-col gap-5">
+        <div className="h-1/3 w-full flex items-center">
+          <h1 className="text-xl text-black font-semibold">Loading....</h1>
+        </div>
+
+        <div className="h-2/3 min-h-[60px] w-full grid grid-cols-2 gap-2 rounded-lg border border-gray-300 py-3 px-3 hover:border-primaryGreen">
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          ></Box>
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'end',
+            }}
+          ></Box>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex flex-col gap-5">

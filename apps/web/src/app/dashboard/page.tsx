@@ -51,6 +51,20 @@ function Page() {
             description="View your sale and stock reports."
           />
         </div>
+        <div className="flex gap-4 flex-wrap">
+          <ReportTypeCard
+            title="Transaction"
+            link={`/dashboard/transaction-list`}
+            description="View and manage your transactions."
+          />
+        </div>
+        <div className="flex gap-4 flex-wrap">
+          <ReportTypeCard
+            title="Order"
+            link={`/dashboard/order-list`}
+            description="View and manage your orders."
+          />
+        </div>
       </div>
     </div>
   );
