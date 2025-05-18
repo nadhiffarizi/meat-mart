@@ -145,13 +145,16 @@ function CreateProductForm() {
               }
             } catch (error) {
               console.error(error);
-              toast.error('Something went wrong in uploading your pictures!', {
-                duration: Infinity,
-                action: {
-                  label: 'Dismiss',
-                  onClick: () => toast.dismiss(),
+              toast.error(
+                'Something went wrong in uploading your pictures! Your file is either too large or is not compatible.',
+                {
+                  duration: Infinity,
+                  action: {
+                    label: 'Dismiss',
+                    onClick: () => toast.dismiss(),
+                  },
                 },
-              });
+              );
               return;
             }
           }
