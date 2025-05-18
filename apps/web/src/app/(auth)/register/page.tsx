@@ -8,7 +8,7 @@ import { useFormik } from 'formik';
 import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, SignInResponse } from 'next-auth/react';
 import Image from 'next/image';
 import { googleLogin } from '@/app/action/auth';
 
@@ -55,7 +55,7 @@ export default function Page() {
         callbackUrl: '/',
       });
 
-      if (result?.error) {
+      if (result && result.error) {
         setErrMessage(result.error);
       } else if (result?.url) {
         router.push(result.url);
