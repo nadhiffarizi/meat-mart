@@ -57,7 +57,7 @@ function CreateProductForm() {
           {},
           session?.user.access_token,
         );
-        setAllCategories(allCategories.data);
+        setAllCategories(allCategories.data.categories);
       }
       getAllCategories();
     } catch (error) {

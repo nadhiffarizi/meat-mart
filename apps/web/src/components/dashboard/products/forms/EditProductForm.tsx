@@ -64,7 +64,7 @@ function EditProductForm({ id }: { id: string }) {
           {},
           session?.user.access_token,
         );
-        setAllCategories(allCategories.data);
+        setAllCategories(allCategories.data.categories);
       }
       getAllCategories();
     } catch (error) {
