@@ -216,7 +216,7 @@ function CreateProductForm() {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="weight">
-          Weight <span className="text-red-500">*</span>
+          Weight (g)<span className="text-red-500">*</span>
         </label>
         <input
           type="text"

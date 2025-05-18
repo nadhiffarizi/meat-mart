@@ -35,7 +35,7 @@ import { signOut, useSession } from 'next-auth/react';
 // Menu items.
 const items = [
   {
-    title: 'User Management',
+    title: 'Users',
     url: '/dashboard/users',
     icon: UserRoundPen,
     hideTo: 'ADMIN',
