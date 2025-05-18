@@ -109,7 +109,7 @@ export function Card({ product }: { product: IProduct }) {
                   height={60}
                   alt=""
                   className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
-                    ${!product.availableStocks ? 'hidden' : 'block'}`}
+                    ${product.availableStocks ? 'hidden' : 'block'}`}
                   src="/sold-icon.png"
                 />
               </div>
