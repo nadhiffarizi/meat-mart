@@ -194,7 +194,7 @@ function EditDiscountForm({
           {},
           session?.user.access_token,
         );
-        setAllProducts(allProducts.data);
+        setAllProducts(allProducts.data.products);
       } catch (error) {
         console.log(error);
       }

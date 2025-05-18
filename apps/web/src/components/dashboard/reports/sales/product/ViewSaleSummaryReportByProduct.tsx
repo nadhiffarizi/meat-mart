@@ -38,7 +38,7 @@ function ViewSaleSummaryReportByProduct({ storeId }: { storeId: string }) {
           {},
           session?.user.access_token,
         );
-        const { created_at } = response.data as IGetStores;
+        const { created_at } = response.data[0] as IGetStores;
         const earliestDate = dayjs(new Date(created_at)).startOf('month');
         const currentMonth = dayjs().startOf('month');
         const options: IDropDownOptions[] = [];
