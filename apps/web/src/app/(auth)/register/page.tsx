@@ -55,10 +55,13 @@ export default function Page() {
         callbackUrl: '/',
       });
 
-      if (result && result.error) {
-        setErrMessage(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
+      const error = (result as SignInResponse).error;
+      const url = (result as SignInResponse).url;
+
+      if (error) {
+        setErrMessage(error);
+      } else if (url) {
+        router.push(url);
       }
     } catch (error) {
       console.error('Google login error:', error);
