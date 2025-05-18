@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
           <Input
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search email..."
+            placeholder="Search emails..."
             className="max-w-sm"
           />
         </form>

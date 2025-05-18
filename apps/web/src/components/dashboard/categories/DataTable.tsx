@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
           className="w-full max-w-sm"
         >
           <Input
-            placeholder="Filter categories..."
+            placeholder="Search categories..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="w-full"
