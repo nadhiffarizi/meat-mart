@@ -3,23 +3,34 @@ import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
 import { getCategoryById, getCategoryByName } from '@/helper/category.prisma';
+import { Prisma } from '@prisma/client';
 
 class CategoryService {
   async getAllCategories(req: Request) {
-    let allCategories;
-    if (req.query.includeDeleted === 'true') {
-      allCategories = await prisma.categories.findMany();
-    } else {
-      allCategories = await prisma.categories.findMany({
-        where: {
-          deleted_at: null,
-        },
-      });
-    }
+    const rawLimit = Number(req.query.limit);
+    const rawPage = Number(req.query.page);
+    const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+    const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+    const query = typeof req.query.q === 'string' ? req.query.q : undefined;
+
+    const where: Prisma.CategoriesWhereInput = {
+      ...(req.query.includeDeleted === 'true' ? {} : { deleted_at: null }),
+      ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+    };
+
+    const [allCategories, count] = await Promise.all([
+      prisma.categories.findMany({
+        where,
+        take: limit,
+        skip: (page - 1) * limit,
+        orderBy: { created_at: 'desc' },
+      }),
+      prisma.categories.count({ where }),
+    ]);
 
     const feedback: serviceFeedback = {
       code: 200,
-      data: allCategories,
+      data: { categories: allCategories, count: count },
       status: statusEnum.SUCCESS,
       message: `Successfully fetched all categories.`,
     };

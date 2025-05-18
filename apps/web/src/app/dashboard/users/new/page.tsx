@@ -1,4 +1,4 @@
-import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
+import CreateAdminForm from '@/components/dashboard/admin/forms/CreateAdminForm';
 import ViewUsers from '@/components/dashboard/admin/ViewUsers';
 import Dropdown from '@/components/dashboard/DropDown';
 import React from 'react';
@@ -11,7 +11,7 @@ function page() {
         Add Employees
       </div>
 
-      <CreateAdmin />
+      <CreateAdminForm />
     </div>
   );
 }
