@@ -223,13 +223,13 @@ function CreateDiscountForm({ storeId }: { storeId: string }) {
       try {
         setDisabled(true);
         try {
-          const existingAccount = await api(
+          const existingDiscount = await api(
             `dashboard/discount?discountCode=${values.discount_code}&includeDeleted=true`,
             'GET',
             {},
             session?.user.access_token,
           );
-          if ((existingAccount.data as IGetDiscounts).deleted_at) {
+          if ((existingDiscount.data as IGetDiscounts).deleted_at) {
             setOpenDiscountRecovery(true);
             return;
           }

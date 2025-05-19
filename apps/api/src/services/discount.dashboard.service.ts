@@ -91,7 +91,7 @@ class DiscountService {
         code: 404,
         data: null,
         status: statusEnum.FAILED,
-        message: req.query.name
+        message: req.query.discountCode
           ? `Discount with discountCode ${req.query.discountCode} does not exist.`
           : `Discount with ID ${req.query.id} does not exist.`,
       };
@@ -214,7 +214,7 @@ class DiscountService {
       promotion_type: req.body.promotion_type,
     };
 
-    if (req.body.promotion_type === 'custom') {
+    if (req.body.promotion_type === 'CUSTOM') {
       newDiscount = await prisma.discounts.create({
         data: {
           ...newDiscountBody,

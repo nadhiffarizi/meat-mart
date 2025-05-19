@@ -206,7 +206,7 @@ class StoreService {
     });
 
     await prisma.stocks.updateMany({
-      where: { store_id: req.params },
+      where: { store_id: req.params.id },
       data: { deleted_at: new Date() },
     });
 
