@@ -45,7 +45,7 @@ export default class App {
 
   private configure(): void {
     const allowedOrigins = [
-      'https://meat-mart-web-5k1u.vercel.app', // your frontend
+      'https://meat-mart-web-um8w.vercel.app/', // your frontend
     ];
 
     this.app.use(
