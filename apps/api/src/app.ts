@@ -44,10 +44,26 @@ export default class App {
   }
 
   private configure(): void {
-    this.app.use(cors());
+    const allowedOrigins = [
+      'https://meat-mart-web-5k1u.vercel.app', // your frontend
+    ];
+
+    this.app.use(
+      cors({
+        origin: allowedOrigins,
+        credentials: true, // if you're using cookies or Authorization headers
+      }),
+    );
+
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
   }
+
+  // private configure(): void {
+  //   this.app.use(cors());
+  //   this.app.use(json());
+  //   this.app.use(urlencoded({ extended: true }));
+  // }
 
   private handleError(): void {
     // not found
@@ -109,8 +125,8 @@ export default class App {
   }
 
   private cron(): void {
-    // deadlinePayment().start() // cron for deadline payment
-    // orderConfirmation().start() // cron for order confirmation
+    deadlinePayment().start(); // cron for deadline payment
+    orderConfirmation().start(); // cron for order confirmation
   }
 
   public start(): void {
