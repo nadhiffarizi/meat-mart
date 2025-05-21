@@ -23,7 +23,7 @@ function Page() {
                 </Link>
               </div>
             </div>
-            <PenOff className="w-8 h-8" />
+            <PenOff className="w- 8 h-8" />
           </div>
         </Alert>
       )}
