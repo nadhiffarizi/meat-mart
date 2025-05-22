@@ -1,5 +1,5 @@
 {
-  "extends": ["//"],
+  "globalDependencies": ["**/.env*"],
   "tasks": {
     "prisma": {}
   }
