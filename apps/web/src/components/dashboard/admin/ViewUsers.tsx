@@ -1,17 +1,8 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Dropdown from '../DropDown';
 import { api } from '@/helper/api';
 import { DataTable } from './DataTable';
 import { columns, User } from './columns';
-import { Toaster, toast } from 'sonner';
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { useSession } from 'next-auth/react';
 import { IGetUsers } from '@/interface/user/user.interface';
 

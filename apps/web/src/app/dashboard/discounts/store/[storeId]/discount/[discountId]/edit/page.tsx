@@ -1,6 +1,4 @@
 import EditDiscountForm from '@/components/dashboard/discounts/forms/EditDiscountForm';
-import EditProductForm from '@/components/dashboard/products/forms/EditProductForm';
-import EditStockForm from '@/components/dashboard/stocks/forms/EditStocksForm';
 import React from 'react';
 
 type Props = {

@@ -1,30 +1,12 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
-import {
-  ChevronDown,
-  ChevronDownIcon,
-  ChevronUp,
-  ChevronUpIcon,
-  Dot,
-  MoreHorizontal,
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, Dot } from 'lucide-react';
 import { ArrowUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
 import { IGetDashboardProducts } from '@/interface/product/product.interface';
 import dayjs from 'dayjs';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type StockHistory = {
   id: string;
   quantity: number;

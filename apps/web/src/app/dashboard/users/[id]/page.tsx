@@ -1,5 +1,3 @@
-import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
-import EditAdminForm from '@/components/dashboard/admin/forms/EditAdminForm';
 import ViewAdminForm from '@/components/dashboard/admin/forms/ViewAdminForm';
 import React from 'react';
 

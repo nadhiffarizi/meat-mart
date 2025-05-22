@@ -9,15 +9,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { IGetStocks } from '@/interface/stock/stocks.interface';
 import IGetDashboardProducts from '@/interface/dashboard/product.dashboard.interface';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Stock = {
   id: string;
   quantity: number;

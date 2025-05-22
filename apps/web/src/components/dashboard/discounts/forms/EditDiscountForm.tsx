@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/helper/api';
-import { IGetCategories } from '../../../../interface/product/category.interface';
 import EditDiscountFormDeleteAlert from './alerts/EditDiscountFormDeleteAlert';
 import EditDiscountFormAlert from './alerts/EditDiscountFormAlert';
 import { IGetDiscounts } from '@/interface/discount/discount.interface';

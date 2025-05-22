@@ -6,10 +6,6 @@ import { DataTable } from './DataTable';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';
 import { TransactionDetailSummary } from './columns';
-import {
-  IGetStockHistory,
-  IGetStockHistoryRange,
-} from '@/interface/stockHistory/stockHistory.interface';
 import dayjs from 'dayjs';
 import { IGetStores } from '@/interface/store/store.interface';
 

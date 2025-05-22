@@ -1,8 +1,4 @@
-import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
-import ViewUsers from '@/components/dashboard/admin/ViewUsers';
-import Dropdown from '@/components/dashboard/DropDown';
 import React from 'react';
-import { CornerDownLeft } from 'lucide-react';
 import CreateDiscountForm from '@/components/dashboard/discounts/forms/CreateDiscountForm';
 
 type Props = {
