@@ -3,6 +3,7 @@ import { ReportTypeCard } from '@/components/dashboard/reports/ReportTypeCard';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
+// dashboard homepage
 function Page() {
   const { data: session, update } = useSession();
   return (
