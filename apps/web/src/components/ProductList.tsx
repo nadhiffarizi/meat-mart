@@ -5,10 +5,12 @@ import { Card } from './Card';
 import { getProducts } from '@/helper/product/product.helper';
 import { IProduct } from '@/interface/product/product.interface';
 import { IStock } from '@/interface/stock/stocks.interface';
+import CardSkeletonList from './skeleton/card.skeleton';
 
 export const ProductList = () => {
   // local state
-  const [productData, setProductData] = useState<IProduct[]>();
+  const [productData, setProductData] = useState<IProduct[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const resProduct = getProducts(`products?page=1&limit=5`);
@@ -32,6 +34,12 @@ export const ProductList = () => {
         console.log(a);
 
         setProductData([...a]);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
@@ -40,19 +48,25 @@ export const ProductList = () => {
       <div className="py-4">
         <h3 className="text-xl md:text-3xl font-bold">Daging Yang Kamu Mau!</h3>
         <div className="m-auto my-5 grid grid-cols-2 md:text-sm md:grid-cols-3  lg:grid-cols-5  gap-4 md:ml-10 lg:ml-0">
-          {productData &&
-            productData.map((product, key) => (
+          {isLoading ? (
+            <CardSkeletonList />
+          ) : (
+            productData?.map((product, key) => (
               <Card product={product} key={key} />
-            ))}
+            ))
+          )}
         </div>
       </div>
       <div className="py-4">
         <h3 className="text-xl md:text-3xl font-bold ">Promo Menarik</h3>
         <div className="m-auto my-5  grid grid-cols-2 text-xs md:text-sm md:grid-cols-3  lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
-          {productData &&
-            productData.map((product, key) => (
+          {isLoading ? (
+            <CardSkeletonList />
+          ) : (
+            productData?.map((product, key) => (
               <Card product={product} key={key} />
-            ))}
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -72,7 +72,6 @@ class AuthService {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      console.log('Aku lagi dicek dulu');
       return {
         code: 400,
         data: null,

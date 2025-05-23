@@ -18,6 +18,7 @@ export class StoreController {
 
   public async createStore(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log('CREATE STORE CONTROLLER');
       const data = await storeService.createStore(req);
       responseHandler(res, data.message, data.status, data.data, data.code);
     } catch (error) {

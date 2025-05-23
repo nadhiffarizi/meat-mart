@@ -23,7 +23,7 @@ export default function InitialState({
     }
 
     setLoading(false);
-  }, [session]);
+  }, [status]);
 
   if (isLoading) {
     return (
