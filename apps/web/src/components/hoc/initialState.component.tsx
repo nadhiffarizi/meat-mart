@@ -23,14 +23,14 @@ export default function InitialState({
     }
 
     setLoading(false);
-  }, [session]);
+  }, [status]);
 
-  if (isLoading) {
-    return (
-      <Backdrop open={isLoading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Backdrop open={isLoading}>
+  //       <CircularProgress color="inherit" />
+  //     </Backdrop>
+  //   );
+  // }
   return <div>{children}</div>;
 }
