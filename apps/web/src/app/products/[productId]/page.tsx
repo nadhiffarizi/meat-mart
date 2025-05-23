@@ -140,7 +140,7 @@ export default function Page({ params: { productId } }: Props) {
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8 flex flex-col items-center gap-4 mb-16">
+    <div className="w-full px-4 sm:px-6 md:px-8 flex flex-col items-center gap-4 mb-16 -mt-96 md:-mt-56">
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}

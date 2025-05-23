@@ -13,17 +13,16 @@ export default function InitialState({
 }) {
   const dispatch = useAppDispatch();
   const { data: session, status } = useSession();
-  const [isLoading, setLoading] = useState<boolean>();
+  const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (status === 'loading') {
-      console.log('status', status);
       setLoading(true);
       return;
     }
 
     setLoading(false);
-  }, [status]);
+  }, [session]);
 
   if (isLoading) {
     return (
