@@ -18,42 +18,25 @@ import { useRouter } from 'next/navigation';
 import { ListIcon, ListOrdered, ShoppingBag } from 'lucide-react';
 import { ShoppingBagOutlined } from '@mui/icons-material';
 
-export default function AccountMenu() {
-  const { data: session, status } = useSession();
+export default function AccountMenu(data: { data: IProfile }) {
+  const { status } = useSession();
   const router = useRouter();
-  console.log('Session data:', session);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [profile, setProfile] = useState<IProfile | null>(null);
-
-  useEffect(() => {
-    async function loadProfile() {
-      try {
-        if (status === 'authenticated' && session.user?.email) {
-          {
-            const data = await getProfile(session.user.email);
-            // console.log('GET PROFILE', data);
-            setProfile(data);
-            // if (data.image_url) {
-            //   setImagePreview(data.image_url);
-            // }
-          }
-        }
-      } catch (err) {
-        //setError(err instanceof Error ? err.message : 'Failed to load profile');
-        console.error('Profile load error:', err);
-      }
-    }
-
-    loadProfile();
-  }, [status, session]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleMenuItemClick = (path: string) => {
+    setAnchorEl(null);
+    window.location.href = path;
+  };
+
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -63,8 +46,8 @@ export default function AccountMenu() {
             startIcon={
               <Avatar
                 sx={{ width: 32, height: 32 }}
-                src={profile?.image_url || undefined}
-                alt={profile?.first_name || 'User'}
+                src={data.data?.image_url || undefined}
+                alt={data.data?.first_name || 'User'}
               />
             }
             sx={{
@@ -79,7 +62,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            {profile?.first_name || ''}
+            {data.data?.first_name || ''}
           </Button>
         </Tooltip>
       </Box>
@@ -121,20 +104,16 @@ export default function AccountMenu() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem
-          onClick={handleClose}
-          component={Link}
-          href="/profile/profile"
+          onClick={() => handleMenuItemClick('/profile/profile')}
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
           }}
         >
-          <Avatar src={profile?.image_url || undefined} /> Akun Saya
+          <Avatar src={data.data?.image_url || undefined} /> Akun Saya
         </MenuItem>
         <MenuItem
-          onClick={handleClose}
-          component={Link}
-          href="/order-list"
+          onClick={() => handleMenuItemClick('/order-list')}
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',
@@ -157,7 +136,10 @@ export default function AccountMenu() {
           Settings
         </MenuItem>
         <MenuItem
-          onClick={() => signOut()}
+          onClick={() => {
+            setAnchorEl(null);
+            signOut();
+          }}
           sx={{
             fontSize: '14px',
             fontFamily: '__Inter_d65c78, __Inter_Fallback_d65c78',

@@ -32,10 +32,13 @@ export default function ProfilePage({ params }: profileSlug) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [hasReloaded, setHasReloaded] = useState(true);
 
   const pathname = usePathname();
 
   const currentSlug = pathname.split('/')[2];
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -45,6 +48,7 @@ export default function ProfilePage({ params }: profileSlug) {
         if (status === 'authenticated' && session.user?.email) {
           const data = await getProfile(session.user.email);
           setProfile(data);
+
           if (data.image_url) {
             setImagePreview(data.image_url);
           }
@@ -92,6 +96,8 @@ export default function ProfilePage({ params }: profileSlug) {
 
     if (file.size > 1 * 1024 * 1024) {
       setError('File size should be less than 1MB');
+      setTimeout(() => window.location.reload(), 1000);
+
       return;
     }
 
@@ -136,6 +142,7 @@ export default function ProfilePage({ params }: profileSlug) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload image');
+
       console.error('Upload error:', err);
     } finally {
       setUploading(false);
@@ -169,14 +176,38 @@ export default function ProfilePage({ params }: profileSlug) {
 
   if (error) {
     return (
-      <div className="text-center py-10 text-red-500 h-screen">
-        <p className="text-center  mt-44"> Failed to load profile</p>
+      <div className="md:w-[90%] w-[90%] lg:w-[70%] mx-auto pb-4 rounded-sm">
+        <div className="flex flex-col md:flex-row gap-8">
+          <aside className="w-full md:w-64 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow p-4 sticky top-4">
+              <nav>
+                <ul className="space-y-2">
+                  {subcategories.map((subcat) => (
+                    <li key={subcat.id}>
+                      <Link
+                        href={`/${subcat.slug}`}
+                        className="block px-3 py-2 rounded hover:bg-gray-100 transition"
+                      >
+                        {subcat.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          </aside>
+          <main className="flex-1">
+            <div className="text-center py-10 text-red-500 h-screen max-w-3xl mx-auto bg-white">
+              <p className="text-center  mt-44"> {error}</p>
+            </div>
+          </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="md:w-[90%] w-[90%] lg:w-[70%] mx-auto pb-4 bg-red rounded-sm">
+    <div className="md:w-[90%] w-[90%] lg:w-[70%] mx-auto pb-4 rounded-sm">
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
@@ -302,12 +333,6 @@ export default function ProfilePage({ params }: profileSlug) {
                   <div className="px-6 py-8 sm:p-10">
                     <AddressManager />
                   </div>
-                </>
-              )}
-
-              {currentSlug == 'specialty-items' && (
-                <>
-                  <div>heloo {currentSlug}</div>
                 </>
               )}
             </div>

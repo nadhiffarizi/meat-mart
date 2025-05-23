@@ -13,6 +13,8 @@ import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
 import { updateCartState } from '@/redux/slice/cart.slice';
 import { useRouter } from 'next/navigation';
+import { getProfile } from '@/helper/auth/auth';
+import { IProfile } from '@/interface/user/user.interface';
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   // global state cart
@@ -25,6 +27,7 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   const [userLocation, setUserLocation] = useState('');
   const [isLoading, setLoading] = useState<boolean>();
   const router = useRouter();
+  const [profile, setProfile] = useState<IProfile | null>(null);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('userLocation');
@@ -71,6 +74,24 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
         <CircularProgress color="inherit" />
       </Backdrop>
     );
+  }
+  if (status === 'authenticated') {
+    useEffect(() => {
+      async function loadProfile() {
+        try {
+          if (session?.user?.email) {
+            const data = await getProfile(session.user.email);
+
+            setProfile(data);
+          }
+        } catch (err) {
+          //setError(err instanceof Error ? err.message : 'Failed to load profile');
+          console.error('Profile load error:', err);
+        }
+      }
+
+      loadProfile();
+    }, [status, session]);
   }
 
   return (
@@ -143,10 +164,9 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
           </div>
 
           <div className="flex items-center justify-end ml-4">
-            {session?.user?.id ? (
+            {session?.user.email ? (
               <>
-                <CartButtonNavbar />
-                <AccountMenu />
+                <CartButtonNavbar /> {profile && <AccountMenu data={profile} />}
               </>
             ) : (
               <>
