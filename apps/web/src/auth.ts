@@ -70,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           access_type: 'offline',
           response_type: 'code',
           scope: 'openid email profile',
+          redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/google',
         },
       },
     }),

@@ -49,6 +49,8 @@ export default class App {
         origin: [
           'https://meat-mart-web-5k1u.vercel.app',
           'http://localhost:3000',
+          'https://accounts.google.com',
+          'http://localhost:3000/api/auth/callback/google',
         ],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
