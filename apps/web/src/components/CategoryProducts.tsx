@@ -7,7 +7,7 @@ import { IProduct } from '@/interface/product/product.interface';
 import { api } from '@/helper/api';
 import { IGetCategories } from '@/interface/product/category.interface';
 import { PaginationComponent } from './Pagination';
-import CardSkeletonList from './skeleton/card.skeleton'; // Import your skeleton component
+import CardSkeletonList from './skeleton/card.skeleton';
 
 interface CategoryProductsProps {
   categoryData: IGetCategories;
