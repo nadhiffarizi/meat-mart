@@ -52,7 +52,7 @@ export default function CategoryProducts({
   }, [categoryData, page]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-8">
+    <div className="flex flex-col md:flex-row gap-8 ">
       <main className="flex-1">
         <h1 className="text-3xl font-bold mb-6">{categoryData.name}</h1>
 
@@ -62,7 +62,7 @@ export default function CategoryProducts({
           </div>
         ) : filteredProducts.length > 0 ? (
           <>
-            <div className="m-auto my-5 grid grid-cols-2 md:text-sm md:grid-cols-3 lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
+            <div className="m-auto my-5 grid grid-cols-2 md:text-sm md:grid-cols-3 lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0 ">
               {filteredProducts.map((product) => (
                 <Card product={product} key={product.id} />
               ))}

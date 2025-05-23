@@ -35,7 +35,7 @@ export default function SubcategoryPage({ params }: Props) {
   }, [params.categoryId]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 min-h-96">
+    <div className="max-w-7xl mx-auto px-4 min-h-96 md:mb-40">
       {categoryData && <CategoryProducts categoryData={categoryData} />}
     </div>
   );
