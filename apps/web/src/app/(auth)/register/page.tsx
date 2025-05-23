@@ -8,7 +8,7 @@ import { useFormik } from 'formik';
 import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, SignInResponse } from 'next-auth/react';
 import Image from 'next/image';
 import { googleLogin } from '@/app/action/auth';
 
@@ -49,17 +49,24 @@ export default function Page() {
     try {
       setIsSocialLoading((prev) => ({ ...prev, google: true }));
       setErrMessage('');
-
-      const result = await signIn('google', {
+      await signIn('google', {
         redirect: true,
         callbackUrl: '/',
       });
 
-      if (result?.error) {
-        setErrMessage(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
-      }
+      // const result = await signIn('google', {
+      //   redirect: true,
+      //   callbackUrl: '/',
+      // });
+
+      // const error = (result as SignInResponse).error;
+      // const url = (result as SignInResponse).url;
+
+      // if (error) {
+      //   setErrMessage(error);
+      // } else if (url) {
+      //   router.push(url);
+      // }
     } catch (error) {
       console.error('Google login error:', error);
       setErrMessage('Failed to login with Google');
