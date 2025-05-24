@@ -56,7 +56,7 @@ function CreateStoreForm() {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value) || value === '') {
       const numericValue = value === '' ? '' : Math.max(0, Number(value));
-      formik.setFieldValue('postal_code', numericValue);
+      formik.setFieldValue('postal_code', numericValue.toString());
     }
   };
 

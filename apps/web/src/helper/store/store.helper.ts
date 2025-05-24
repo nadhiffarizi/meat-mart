@@ -27,6 +27,7 @@ export async function updateStore(
   id: string,
   store: StoreWithAdmin,
 ): Promise<StoreWithAdmin> {
+  console.log('VALUES STORE UPDATE', store);
   const response = await api(`store/${id}`, 'PATCH', {
     body: { email, store },
     contentType: 'application/json',
@@ -58,7 +59,7 @@ export const deleteStoreById = async (email: string, id: string) => {
     contentType: 'application/json',
   });
   console.log('IN HANDLERS STORE FOR DELETE res', response);
-  return response;
+  return response.data;
 };
 
 export const getStoreById = async (email: string, id: string) => {

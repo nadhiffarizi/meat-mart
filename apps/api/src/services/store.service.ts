@@ -235,14 +235,13 @@ class StoreService {
       data: { deleted_at: new Date() },
     });
 
-    // await prisma.stocks.updateMany({
-    //   where: { store_id: req.params },
-    //   data: { deleted_at: new Date() },
-    // });
+    const remainingStore = await prisma.stores.findMany({
+      where: { deleted_at: null },
+    });
 
     return {
       code: 200,
-      data: null,
+      data: remainingStore,
       status: statusEnum.SUCCESS,
       message: 'successfull delete store',
     };
