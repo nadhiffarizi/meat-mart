@@ -52,7 +52,7 @@ export default class App {
           'https://accounts.google.com',
           'http://localhost:3000/api/auth/callback/google',
         ],
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
       }),
@@ -128,8 +128,8 @@ export default class App {
   }
 
   private cron(): void {
-    deadlinePayment().start(); // cron for deadline payment
-    orderConfirmation().start(); // cron for order confirmation
+    // deadlinePayment().start(); // cron for deadline payment
+    // orderConfirmation().start(); // cron for order confirmation
   }
 
   public start(): void {

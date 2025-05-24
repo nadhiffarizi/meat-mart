@@ -9,19 +9,41 @@ import IStore from '@/interface/store/store.interface';
 
 function ViewStores() {
   const [stores, setStores] = useState<IStore[]>([]);
-  const { data: session, update, status } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     async function getStores() {
       try {
-        const data = await getListStore(session?.user.email);
+        if (status === 'loading') return;
+
+        if (!session?.user?.email) {
+          setError('No user email found in session');
+          setLoading(false);
+          return;
+        }
+
+        const data = await getListStore(session.user.email);
         setStores(data);
       } catch (error: any) {
-        console.log(error);
+        console.error('Error fetching stores:', error);
+        setError(error.message || 'Failed to fetch stores');
+      } finally {
+        setLoading(false);
       }
     }
+
     getStores();
-  }, [session?.user.email, session]);
+  }, [session, status]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return <DataTable columns={columns} data={stores} />;
 }

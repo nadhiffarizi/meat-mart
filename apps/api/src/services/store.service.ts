@@ -52,7 +52,7 @@ class StoreService {
 
   async createStore(req: Request) {
     const { store, email } = req.body;
-    console.log('THE ADDRESS IN SERVICE', store);
+
     try {
       const superAdmin = await getSuperAdminByEmail(email);
 
@@ -62,15 +62,11 @@ class StoreService {
 
       const fullAddress = `${store.address}, ${store.district}, ${store.city}, ${store.province}, ${store.postal_code}, Indonesia`;
 
-      console.log(
-        'ADDRESSS TOKO======================================',
-        fullAddress,
-      );
       const coordinates = await getCoordinates(fullAddress);
-      console.log(
-        'CORDINATE TOKO======================================',
-        coordinates,
-      );
+      // console.log(
+      //   'CORDINATE TOKO======================================',
+      //   coordinates,
+      // );
       if (!coordinates) {
         throw new Error('Could not geocode the provided address');
       }
@@ -84,7 +80,7 @@ class StoreService {
           province: store.province,
           city: store.city,
           district: store.district,
-          postal_code: store.postal_code,
+          postal_code: store.postal_code.toString(),
           status: store.status,
           latitude: coordinates?.lat.toString() || '',
           longitude: coordinates?.lng.toString() || '',
@@ -176,9 +172,36 @@ class StoreService {
         throw new Error('Super Admin not found');
       }
 
+      const fullAddress = `${store.address}, ${store.district}, ${store.city}, ${store.province}, ${store.postal_code}, Indonesia`;
+
+      const coordinates = await getCoordinates(fullAddress);
+      // console.log(
+      //   'CORDINATE TOKO======================================',
+      //   coordinates,
+      // );
+      if (!coordinates) {
+        throw new Error('Could not geocode the provided address');
+      }
+      const adminId = store.storeadmin_id || superAdmin.id;
+
       const updatedStore = await prisma.stores.update({
         where: { id: id as string },
-        data: store,
+        data: {
+          name: store.name,
+          address: store.address,
+          province: store.province,
+          city: store.city,
+          district: store.district,
+          postal_code: store.postal_code.toString(),
+          status: store.status,
+          latitude: coordinates?.lat.toString() || '',
+          longitude: coordinates?.lng.toString() || '',
+          storeadmin: {
+            connect: {
+              id: adminId,
+            },
+          },
+        },
         include: {
           storeadmin: true,
         },
@@ -197,7 +220,7 @@ class StoreService {
   async deleteStoreById(req: Request) {
     const { id } = req.params;
     const { email } = req.body;
-    console.log('DELETE SERVICE', id, email);
+
     const superAdmin = await getSuperAdminByEmail(email);
     if (!superAdmin)
       return {
