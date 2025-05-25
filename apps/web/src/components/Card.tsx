@@ -138,7 +138,7 @@ export function Card({ product }: { product: IProduct }) {
                         height={60}
                         alt=""
                         className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
-                    ${product.availableStocks[0].stores.status === 'CENTRAL' || product.availableStocks[0].quantity === 0 ? 'block' : 'hidden'}`}
+                    ${product.availableStocks[0].stores.status === 'BRANCH' && product.availableStocks[0].quantity === 0 ? 'block' : 'hidden'}`}
                         src="/sold-icon.png"
                       />
                     ) : (
