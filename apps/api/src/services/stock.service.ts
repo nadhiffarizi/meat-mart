@@ -25,6 +25,7 @@ class StockService {
             },
           }
         : {}),
+      store_id: req.query.storeId as string,
     };
 
     if (!req.query.storeId) {
