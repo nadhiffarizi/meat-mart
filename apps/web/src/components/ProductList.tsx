@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
 import {
   getProductBasedLoc,
+  getPromotionProductBasedLoc,
   getProducts,
 } from '@/helper/product/product.helper';
 import { IProduct } from '@/interface/product/product.interface';
@@ -14,7 +15,9 @@ import { Pagination } from '@mui/material';
 export const ProductList = () => {
   // local state
   const [productData, setProductData] = useState<IProduct[]>([]);
+  const [promoProductData, setPromoProductData] = useState<IProduct[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isPromoLoading, setIsPromoLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [nearestStore, setNearestStore] = useState<{
@@ -51,8 +54,35 @@ export const ProductList = () => {
     }
   };
 
+  const fetchPromoProducts = async () => {
+    setIsPromoLoading(true);
+    try {
+      const lastCoords = localStorage.getItem('lastCoords');
+      if (!lastCoords) {
+        console.log('No coordinates found');
+        return;
+      }
+
+      const { lat, lng } = JSON.parse(lastCoords);
+
+      const response = await getPromotionProductBasedLoc(
+        `products/promotions/nearest?lat=${lat}&lng=${lng}&page=1&limit=10`,
+      );
+      const data = await response.json();
+      console.log('PROMO PRODUCT', data);
+      if (data.data) {
+        setPromoProductData(data.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching promotional products:', error);
+    } finally {
+      setIsPromoLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchProducts(currentPage);
+    fetchPromoProducts();
   }, [currentPage]);
 
   const handlePageChange = (
@@ -91,10 +121,10 @@ export const ProductList = () => {
       <div className="py-4">
         <h3 className="text-xl md:text-3xl font-bold ">Promo Menarik</h3>
         <div className="m-auto my-5  grid grid-cols-2 text-xs md:text-sm md:grid-cols-3  lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
-          {isLoading ? (
+          {isPromoLoading ? (
             <CardSkeletonList />
           ) : (
-            productData?.map((product, key) => (
+            promoProductData?.map((product, key) => (
               <Card product={product} key={key} />
             ))
           )}

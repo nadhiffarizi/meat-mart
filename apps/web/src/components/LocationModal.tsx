@@ -48,6 +48,10 @@ export const LocationModal = ({
     checkPermission();
   }, []);
 
+  const reloadPage = () => {
+    window.location.reload();
+  };
+
   const detectLocation = async () => {
     setIsLoading(true);
     setError(null);
@@ -101,6 +105,7 @@ export const LocationModal = ({
                 lng: position.coords.longitude,
               });
               onClose();
+              reloadPage();
             } else {
               throw new Error('No address found for this location');
             }
@@ -167,6 +172,7 @@ export const LocationModal = ({
         onLocationSelect(formattedAddress, { lat, lng });
 
         onClose();
+        reloadPage();
       } else {
         throw new Error('Address not found');
       }

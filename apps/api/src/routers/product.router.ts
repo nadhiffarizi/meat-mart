@@ -22,6 +22,10 @@ export class ProductRouter {
       productController.getProductsBylocation,
     );
     this.router.get(
+      '/promotions/nearest',
+      productController.getPromotionProductsBylocation,
+    );
+    this.router.get(
       '/category/:categoryId',
       productController.getAllProductsByCategoryId,
     );

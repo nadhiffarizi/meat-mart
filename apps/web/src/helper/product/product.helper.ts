@@ -15,6 +15,13 @@ export const getProductBasedLoc = async (apiRoute: string) => {
   return response;
 };
 
+export const getPromotionProductBasedLoc = async (apiRoute: string) => {
+  const response = await apiRequest(apiRoute, 'GET', undefined, {
+    'Content-Type': 'application/json',
+  });
+  return response;
+};
+
 export const currencyFormatter = (amount: number) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',

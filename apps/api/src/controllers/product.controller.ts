@@ -101,6 +101,20 @@ export class ProductController {
       next(error);
     }
   }
+
+  public async getPromotionProductsBylocation(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const data: serviceFeedback =
+        await productService.getPromotionalProductsFromNearestStore(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new ProductController();
