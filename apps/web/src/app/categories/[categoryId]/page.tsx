@@ -4,6 +4,7 @@ import CategoryProducts from '@/components/CategoryProducts';
 import { useEffect, useState } from 'react';
 import { IGetCategories } from '@/interface/product/category.interface';
 import { api } from '@/helper/api';
+import { useSession } from 'next-auth/react';
 
 interface Props {
   params: {
@@ -13,6 +14,7 @@ interface Props {
 
 export default function SubcategoryPage({ params }: Props) {
   const [categoryData, setCategoryData] = useState<IGetCategories>();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     async function getCategoryData() {
@@ -27,11 +29,13 @@ export default function SubcategoryPage({ params }: Props) {
         console.log(error);
       }
     }
-    getCategoryData();
+    if (session?.user.id) {
+      getCategoryData();
+    } else getCategoryData();
   }, [params.categoryId]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 min-h-96 md:mb-40">
       {categoryData && <CategoryProducts categoryData={categoryData} />}
     </div>
   );

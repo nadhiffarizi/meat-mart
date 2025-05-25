@@ -7,7 +7,7 @@ import {
 import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { convertRoleToEnum } from '@/helper/role.helper';
 import { trxUpdateByOrderConfirm } from '@/helper/transaction/transaction.helper';
-import { E_OrderStatus, E_Role } from '@prisma/client';
+import { E_OrderStatus, E_Role } from '.prisma/client';
 import { Request } from 'express';
 
 class OrderService {

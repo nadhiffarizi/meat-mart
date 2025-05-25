@@ -16,7 +16,7 @@ export const createStore = async (
   email: string,
 ): Promise<StoreWithAdmin> => {
   const response = await api('store/', 'POST', {
-    body: { email, store },
+    body: { store, email },
     contentType: 'application/json',
   });
 
@@ -32,7 +32,7 @@ export async function updateStore(
     contentType: 'application/json',
   });
 
-  return response.data;
+  return response;
 }
 
 export const getListStore = async (email: string) => {
@@ -51,12 +51,20 @@ export const getStoreAdmin = async (email: string) => {
   return response.data;
 };
 
-export const deleteStore = async (email: string, id: string) => {
+export const deleteStoreById = async (email: string, id: string) => {
   console.log('IN HANDLERS STORE FOR DELETE');
   const response = await api(`store/delete/${id}`, 'PATCH', {
     body: { email, id },
     contentType: 'application/json',
   });
   console.log('IN HANDLERS STORE FOR DELETE res', response);
-  return response.data;
+  return response;
+};
+
+export const getStoreById = async (email: string, id: string) => {
+  const response = await api(`store/${id}`, 'POST', {
+    body: { email, id },
+    contentType: 'application/json',
+  });
+  return response;
 };

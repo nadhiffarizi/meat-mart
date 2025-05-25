@@ -2,7 +2,7 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 import { Request } from 'express';
 
 class UserService {

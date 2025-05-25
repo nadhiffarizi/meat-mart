@@ -10,7 +10,8 @@ export default function CategoryLayout({ children }: { children: ReactNode }) {
       <div className="pt-0 md:pt-24">
         <SlidingCategories />
       </div>
-      {children}
+      <div>{children}</div>
+
       <Footer />
     </div>
   );

@@ -1,6 +1,6 @@
 import cron from 'node-cron';
-import { E_StockStatus, PrismaClient } from '@prisma/client';
 import { startOfDay } from 'date-fns';
+import { E_StockStatus, PrismaClient } from '.prisma/client';
 
 const prisma = new PrismaClient();
 
