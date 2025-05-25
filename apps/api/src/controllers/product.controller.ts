@@ -88,23 +88,19 @@ export class ProductController {
     }
   }
 
-  // public async getProducts(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const data: serviceFeedback = await productService.getAllProducts(req);
-  //     responseHandler(res, data.message, data.status, data.data, data.code);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
-
-  // public async refreshToken(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const data = await authService.refreshToken(req);
-  //     responseHandler(res, 'refresh token success', data.);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+  public async getProductsBylocation(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const data: serviceFeedback =
+        await productService.getProductsFromNearestStore(req);
+      responseHandler(res, data.message, data.status, data.data, data.code);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new ProductController();

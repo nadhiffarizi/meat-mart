@@ -2,46 +2,65 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from './Card';
-import { getProducts } from '@/helper/product/product.helper';
+import {
+  getProductBasedLoc,
+  getProducts,
+} from '@/helper/product/product.helper';
 import { IProduct } from '@/interface/product/product.interface';
 import { IStock } from '@/interface/stock/stocks.interface';
 import CardSkeletonList from './skeleton/card.skeleton';
+import { Pagination } from '@mui/material';
 
 export const ProductList = () => {
   // local state
   const [productData, setProductData] = useState<IProduct[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [nearestStore, setNearestStore] = useState<{
+    name: string;
+    distance: number;
+  } | null>(null);
+
+  const fetchProducts = async (page: number) => {
+    setIsLoading(true);
+    try {
+      const lastCoords = localStorage.getItem('lastCoords');
+      if (!lastCoords) {
+        console.log('No coordinates found');
+        return;
+      }
+
+      const { lat, lng } = JSON.parse(lastCoords);
+
+      const response = await getProductBasedLoc(
+        `products/from-nearest-store?lat=${lat}&lng=${lng}&page=${page}&limit=10`,
+      );
+      const data = await response.json();
+      console.log('PRODUCT', data);
+      if (data.data) {
+        setProductData(data.data.data);
+        console.log('PRODUCT DATA======', setProductData);
+        setTotalPages(Math.ceil(data.data.total / 10));
+        setNearestStore(data.data.store);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const resProduct = getProducts(`products?page=1&limit=5`);
+    fetchProducts(currentPage);
+  }, [currentPage]);
 
-    resProduct
-      .then((v) => v.json())
-      .then((value) => {
-        const a: IProduct[] = [];
-        value['data'].map((product: any) => {
-          const data: IProduct = {
-            name: product['name'],
-            price: product['price'],
-            id: product['id'],
-            slug: product['slug'],
-            weight: product['weight'],
-            image: product['image'],
-            availableStocks: product['availableStocks'],
-          };
-          a.push(data);
-        });
-        console.log(a);
-
-        setProductData([...a]);
-      })
-      .catch((error) => {
-        console.error('Error fetching products:', error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number,
+  ) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="max-w7-xl lg:w-[70%] m-auto px-4 md:px-6 lg:px-0">
@@ -56,6 +75,18 @@ export const ProductList = () => {
             ))
           )}
         </div>
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              variant="outlined"
+              shape="rounded"
+            />
+          </div>
+        )}
       </div>
       <div className="py-4">
         <h3 className="text-xl md:text-3xl font-bold ">Promo Menarik</h3>

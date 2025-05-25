@@ -18,6 +18,10 @@ export class ProductRouter {
     this.router.get('/count', productController.getProductsCount);
     this.router.get('/all', productController.getAllProducts);
     this.router.get(
+      '/from-nearest-store',
+      productController.getProductsBylocation,
+    );
+    this.router.get(
       '/category/:categoryId',
       productController.getAllProductsByCategoryId,
     );

@@ -7,7 +7,7 @@ import React from 'react';
 import AccountMenu from './AccountMenu';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { getCartDataAPI, syncCartDataFromAPI } from '@/helper/cart/cart.helper';
-import { Backdrop, Button, CircularProgress } from '@mui/material';
+import { Backdrop, Button, CircularProgress, Tooltip } from '@mui/material';
 import CartButtonNavbar from './Cart/CartButton.component';
 import { LocationModal } from './LocationModal';
 import { Search } from '@mui/icons-material';
@@ -117,21 +117,38 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
 
             {/* Desktop Navigation */}
 
-            <button
-              onClick={() => setShowLocationModal(true)}
-              className="hidden md:flex items-center justify-end md:gap-0 max-w-[200px] hover:bg-gray-100 px-2 py-1 rounded-md transition-colors"
+            <Tooltip
+              title={userLocation || 'Select your location'}
+              placement="bottom"
+              arrow
+              sx={{
+                tooltip: {
+                  bgcolor: 'common.white',
+                  color: 'text.primary',
+                  boxShadow: 1,
+                  fontSize: '0.875rem',
+                },
+                arrow: {
+                  color: 'common.white',
+                },
+              }}
             >
-              <Image
-                src="/location-icon.png"
-                alt="Location Icon"
-                width={24}
-                height={8}
-                className="h-4 w-auto flex-shrink-0"
-              />
-              <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1 mr-2">
-                {userLocation || 'Select your location'}
-              </span>
-            </button>
+              <button
+                onClick={() => setShowLocationModal(true)}
+                className="hidden md:flex items-center justify-end md:gap-0 max-w-[200px] hover:bg-gray-100 px-2 py-1 rounded-md transition-colors"
+              >
+                <Image
+                  src="/location-icon.png"
+                  alt="Location Icon"
+                  width={24}
+                  height={8}
+                  className="h-4 w-auto flex-shrink-0"
+                />
+                <span className="text-[#1495e6] text-sm break-words overflow-hidden text-ellipsis line-clamp-1 mr-2">
+                  {userLocation || 'Select your location'}
+                </span>
+              </button>
+            </Tooltip>
           </div>
 
           <div className="hidden md:flex flex-1 max-w-md md:max-w-full">

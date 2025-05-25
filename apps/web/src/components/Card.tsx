@@ -104,14 +104,27 @@ export function Card({ product }: { product: IProduct }) {
                   src={product.image || '/templateproduct.png'}
                   alt="product-image"
                 />
-                <Image
-                  width={60}
-                  height={60}
-                  alt=""
-                  className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
-                    ${product.availableStocks ? 'hidden' : 'block'}`}
-                  src="/sold-icon.png"
-                />
+                {product.availableStocks.length !== 0 ? (
+                  <Image
+                    width={60}
+                    height={60}
+                    alt=""
+                    className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
+                    ${product.availableStocks[0].stores.status === 'CENTRAL' || product.availableStocks[0].quantity === 0 ? 'block' : 'hidden'}`}
+                    src="/sold-icon.png"
+                  />
+                ) : (
+                  <>
+                    <Image
+                      width={60}
+                      height={60}
+                      alt=""
+                      className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
+                    `}
+                      src="/sold-icon.png"
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -128,10 +141,16 @@ export function Card({ product }: { product: IProduct }) {
                 </b>
                 <button
                   onClick={handleAddToCart}
-                  // disabled={!session || props.stock === 0}
+                  disabled={
+                    product.availableStocks.length === 0 ||
+                    product.availableStocks[0].stores.status === 'CENTRAL' ||
+                    product.availableStocks[0].quantity === 0
+                  }
                   className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
                     ${
-                      !session || !product.availableStocks || isMaxAdded
+                      product.availableStocks.length === 0 ||
+                      product.availableStocks[0].stores.status === 'CENTRAL' ||
+                      product.availableStocks[0].quantity === 0
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
                     }`}
