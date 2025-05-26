@@ -1,3 +1,4 @@
+import { useShipping } from '@/context/shippingContext';
 import { countCartTotalPrice } from '@/helper/cart/cart.helper';
 import {
   totalAfterDiscount,
@@ -11,7 +12,12 @@ import * as React from 'react';
 
 export default function PaymentSummaryCart() {
   const cartState = useAppSelector((state) => state.cartState);
+  const shippingPrice = useAppSelector((state) => state.shippingState.price);
   const router = useRouter();
+  const totalWithShipping = shippingPrice
+    ? totalAfterDiscount(cartState) + shippingPrice
+    : totalAfterDiscount(cartState);
+
   return (
     <div className="w-full h-full flex flex-col ">
       <div className="h-1/5 w-full flex items-center ">
@@ -22,9 +28,8 @@ export default function PaymentSummaryCart() {
           <Box
             sx={{
               width: '100%',
-              overflow: 'hidden',
               display: 'flex',
-              alignItems: 'center',
+              justifyContent: 'space-between',
               borderBottom: 'solid 2px rgba(220, 220, 220, 0.7)',
               paddingBottom: '5px',
             }}
@@ -94,14 +99,34 @@ export default function PaymentSummaryCart() {
             }}
           >
             <div className="w-full h-full grid grid-cols-2">
+              <div className="col-span-1">
+                <p>Shipping Cost</p>
+              </div>
+              <div className="col-span-1 flex justify-end">
+                <p>
+                  {shippingPrice
+                    ? currencyFormatter(shippingPrice)
+                    : 'Not calculated'}
+                </p>
+              </div>
+            </div>
+          </Box>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              borderBottom: 'solid 2px rgba(220, 220, 220, 0.7)',
+              paddingBottom: '5px',
+            }}
+          >
+            <div className="w-full h-full grid grid-cols-2">
               <div className="col-span-1 ">
                 <p>Total</p>{' '}
               </div>
               <div className="col-span-1 flex justify-end">
                 <p className=" font-semibold">
-                  {currencyFormatter(
-                    parseFloat(totalAfterDiscount(cartState).toFixed(4)),
-                  )}
+                  {currencyFormatter(parseFloat(totalWithShipping.toFixed(4)))}
                 </p>{' '}
               </div>
             </div>
@@ -118,7 +143,7 @@ export default function PaymentSummaryCart() {
             <Button
               style={{ textTransform: 'none' }}
               onClick={() => router.push('./payment')}
-              className="!rounded-[50px] !bg-secondaryGreen !w-full !h-full !text-white !text-lg"
+              className="!rounded-[50px] !bg-secondaryGreen !w-full !h-full !text-white !text-lg !mt-4"
             >
               Checkout
             </Button>

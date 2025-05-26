@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { getShippingCost } from '@/helper/auth/biteship';
 import { Dialog } from '@mui/material';
+import { useAppDispatch } from '@/redux/store';
+import { setShippingOption } from '@/redux/slice/shipping.slice';
 
 interface ShippingOption {
   courier_name: string;
@@ -21,6 +23,7 @@ export default function CheckoutShipping({
   destination_latitude,
   destination_longitude,
 }: CheckoutShippingProps) {
+  const dispatch = useAppDispatch();
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedOption, setSelectedOption] = useState<ShippingOption | null>(
     null,
@@ -28,7 +31,6 @@ export default function CheckoutShipping({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   useEffect(() => {
     const fetchShippingCost = async () => {
       if (!destination_latitude || !destination_longitude) {
@@ -81,8 +83,18 @@ export default function CheckoutShipping({
   }, [destination_latitude, destination_longitude]);
 
   const handleOptionSelect = (option: ShippingOption) => {
+    console.log('Function is being called!');
     setSelectedOption(option);
     setIsModalOpen(false);
+
+    dispatch(
+      setShippingOption({
+        courier_name: option.courier_name,
+        courier_service_name: option.courier_service_name,
+        price: option.price,
+        duration: option.duration,
+      }),
+    );
   };
 
   return (

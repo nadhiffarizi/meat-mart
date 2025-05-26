@@ -3,6 +3,7 @@ import MyCartList from '@/components/Cart/MyCartList.component';
 import CheckoutProgress from '@/components/Checkout/CheckoutProgress.component';
 import PaymentSummaryCart from '@/components/Checkout/PaymentSummaryCart.component';
 import ChooseAddressCheckout from '@/components/ChooseAddressCheckout';
+import { ShippingProvider } from '@/context/shippingContext';
 import { cartTotalPageAPI } from '@/helper/pagination/pagination.helper';
 import { PageContext, RefreshContext } from '@/interface/pagination.interface';
 import { updateCheckoutProgress } from '@/redux/slice/checkout.slice';
@@ -142,14 +143,17 @@ export default function CartPage() {
                   </RefreshContext.Provider>
                 </div>
               </div>
+
               <div
                 id="rightsidebar-container"
                 className="w-1/3 h-full flex flex-col gap-5"
               >
                 {/**right sidebar container */}
+
                 <div className="w-full py-5 px-7 shadow-md rounded-lg bg-white ">
                   <ChooseAddressCheckout />
                 </div>
+
                 <div className="w-full py-5 px-7 shadow-md rounded-lg bg-white ">
                   <PaymentSummaryCart />
                 </div>

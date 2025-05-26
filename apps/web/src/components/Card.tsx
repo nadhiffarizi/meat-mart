@@ -171,30 +171,36 @@ export function Card({ product }: { product: IProduct }) {
                     <b className="text-[#159953] overflow-hidden">IDR </b>
                     <b className="text-primaryText overflow-hidden">
                       <s>
-                        {product.price == 0
-                          ? 'Free'
-                          : ` ${Number(product.price).toLocaleString('id-ID')}`}
+                        {` ${Number(product.price).toLocaleString('id-ID')}`}
                       </s>
                     </b>
                     <b className="text-[#159953] overflow-hidden">
                       {` ${Number(product.finalPrice).toLocaleString('id-ID')}`}
                     </b>
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={
-                        product.availableStocks.length === 0 ||
-                        product.availableStocks[0].quantity === 0
-                      }
-                      className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
+                    <>
+                      <button
+                        onClick={handleAddToCart}
+                        className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
                     ${
                       product.availableStocks.length === 0 ||
                       product.availableStocks[0].quantity === 0
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
                     }`}
-                    >
-                      <Plus size={18} />
-                    </button>
+                      >
+                        <Plus size={18} />
+                      </button>
+                    </>
+                    {/* ) : (
+                      <button
+                        onClick={handleAddToCart}
+                        className="h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
+                   
+                        bg-gray-400 cursor-not-allowed"
+                      >
+                        <Plus size={18} />
+                      </button>
+                    )} */}
                   </div>
                 </>
               ) : (
@@ -208,16 +214,10 @@ export function Card({ product }: { product: IProduct }) {
                     </b>
                     <button
                       onClick={handleAddToCart}
-                      disabled={
-                        product.availableStocks.length === 0 ||
-                        product.availableStocks[0].stores.status ===
-                          'CENTRAL' ||
-                        product.availableStocks[0].quantity === 0
-                      }
                       className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
                     ${
                       product.availableStocks.length === 0 ||
-                      product.availableStocks[0].stores.status === 'CENTRAL' ||
+                      // product.availableStocks[0].stores.status === 'CENTRAL' ||
                       product.availableStocks[0].quantity === 0
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'

@@ -40,10 +40,10 @@ export const ProductList = () => {
         `products/from-nearest-store?lat=${lat}&lng=${lng}&page=${page}&limit=10`,
       );
       const data = await response.json();
-      console.log('PRODUCT', data);
+
       if (data.data) {
         setProductData(data.data.data);
-        console.log('PRODUCT DATA======', setProductData);
+        //   console.log('PRODUCT DATA======', setProductData);
         setTotalPages(Math.ceil(data.data.total / 10));
         setNearestStore(data.data.store);
       }
@@ -69,9 +69,10 @@ export const ProductList = () => {
         `products/promotions/nearest?lat=${lat}&lng=${lng}&page=1&limit=10`,
       );
       const data = await response.json();
-      console.log('PROMO PRODUCT', data);
+
       if (data.data) {
         setPromoProductData(data.data.data);
+        console.log('PROMO PRODUCT', promoProductData);
       }
     } catch (error) {
       console.error('Error fetching promotional products:', error);
@@ -120,15 +121,22 @@ export const ProductList = () => {
       </div>
       <div className="py-4">
         <h3 className="text-xl md:text-3xl font-bold ">Promo Menarik</h3>
-        <div className="m-auto my-5  grid grid-cols-2 text-xs md:text-sm md:grid-cols-3  lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
-          {isPromoLoading ? (
-            <CardSkeletonList />
-          ) : (
-            promoProductData?.map((product, key) => (
-              <Card product={product} key={key} />
-            ))
-          )}
-        </div>
+
+        {promoProductData.length !== 0 ? (
+          <div className="m-auto my-5  grid grid-cols-2 text-xs md:text-sm md:grid-cols-3  lg:grid-cols-5 gap-4 md:ml-10 lg:ml-0">
+            {isPromoLoading ? (
+              <CardSkeletonList />
+            ) : (
+              promoProductData?.map((product, key) => (
+                <Card product={product} key={key} />
+              ))
+            )}
+          </div>
+        ) : (
+          <p className="w-full py-8">
+            Belum ada promo menarik di toko terdekat
+          </p>
+        )}
       </div>
     </div>
   );
