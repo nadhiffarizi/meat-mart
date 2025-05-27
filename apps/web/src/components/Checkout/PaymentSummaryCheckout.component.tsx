@@ -11,7 +11,11 @@ import * as React from 'react';
 
 export default function PaymentSummaryCheckout() {
   const cartState = useAppSelector((state) => state.cartState);
+  const shippingPrice = useAppSelector((state) => state.shippingState.price);
   const router = useRouter();
+  const totalWithShipping = shippingPrice
+    ? totalAfterDiscount(cartState) + shippingPrice
+    : totalAfterDiscount(cartState);
   return (
     <div className="w-full h-full flex flex-col ">
       <div className="h-1/5 w-full flex items-center ">
@@ -92,14 +96,34 @@ export default function PaymentSummaryCheckout() {
             }}
           >
             <div className="w-full h-full grid grid-cols-2">
+              <div className="col-span-1">
+                <p>Shipping Cost</p>
+              </div>
+              <div className="col-span-1 flex justify-end">
+                <p>
+                  {shippingPrice
+                    ? currencyFormatter(shippingPrice)
+                    : 'Not calculated'}
+                </p>
+              </div>
+            </div>
+          </Box>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              borderBottom: 'solid 2px rgba(220, 220, 220, 0.7)',
+              paddingBottom: '5px',
+            }}
+          >
+            <div className="w-full h-full grid grid-cols-2">
               <div className="col-span-1 ">
                 <p className="font-semibold">Total</p>{' '}
               </div>
               <div className="col-span-1 flex justify-end">
                 <p className=" font-semibold">
-                  {currencyFormatter(
-                    parseFloat(totalAfterDiscount(cartState).toFixed(4)),
-                  )}
+                  {currencyFormatter(parseFloat(totalWithShipping.toFixed(4)))}
                 </p>{' '}
               </div>
             </div>

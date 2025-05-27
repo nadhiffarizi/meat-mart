@@ -49,8 +49,10 @@ export default class App {
         origin: [
           'https://meat-mart-web-5k1u.vercel.app',
           'http://localhost:3000',
+          'https://accounts.google.com',
+          'http://localhost:3000/api/auth/callback/google',
         ],
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
       }),
@@ -89,7 +91,7 @@ export default class App {
   }
 
   private routes(): void {
-    this.app.options('*', cors());
+    // this.app.options('*', cors());
     this.app.use('/api/auth', authRouter.getRouter());
     this.app.use('/api/addresses', addressRouter.getRouter());
     this.app.use('/api/admin', adminRouter.getRouter());

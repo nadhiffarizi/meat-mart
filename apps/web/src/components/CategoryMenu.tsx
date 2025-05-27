@@ -67,13 +67,22 @@ export default function Categories() {
               <SwiperSlide key={category.id} className="!w-auto">
                 <button
                   onClick={() => handleCategoryClick(category.id)}
-                  className={`flex gap-2 items-center justify-center px-5 py-4 rounded-full transition-all duration-200 min-w-[100px]
+                  className={`flex gap-2 items-center justify-center pr-6 pl-1 py-1 rounded-full transition-all duration-200 min-w-[100px]
                     ${
                       currentCategoryId === category.id
                         ? 'bg-primaryGreen text-white'
                         : 'bg-white hover:bg-primaryGreen hover:text-white'
                     }`}
                 >
+                  <span className="text-2xl md:text-4xl pt-2 rounded-full w-12 h-12 md:w-16 md:h-16 bg-primaryBackground">
+                    <Image
+                      src={`/categories/${category.name.toLowerCase()}.png`}
+                      alt={category.name}
+                      width={48}
+                      height={48}
+                      className="h-full w-full object-cover p-1 mb-1"
+                    />
+                  </span>
                   <span className="text-sm md:text-sm font-medium whitespace-nowrap">
                     {category.name}
                   </span>

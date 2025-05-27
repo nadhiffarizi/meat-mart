@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { IProfile } from '@/interface/user/user.interface';
+import { useRouter } from 'next/navigation';
+import { logout } from '@/app/action/auth';
 
 interface ProfileFormProps {
   profile: IProfile;
@@ -14,6 +16,7 @@ export default function ProfileForm({
   onSubmit,
   onCancel,
 }: ProfileFormProps) {
+  const { push } = useRouter();
   const [formData, setFormData] = useState({
     firstName: profile.first_name || '',
     lastName: profile.last_name || '',
@@ -55,43 +58,61 @@ export default function ProfileForm({
     setSuccess('');
 
     try {
-      // Check if password was changed and matches confirmation
-      if (
-        formData.newPassword &&
-        formData.newPassword !== formData.confirmPassword
-      ) {
-        throw new Error('Password baru tidak cocok');
-      }
-      console.log('INI Profil', formData);
+      const isChangingPassword =
+        formData.newPassword || formData.confirmPassword;
       const emailChanged = formData.email !== profile.email;
+      if (isChangingPassword) {
+        if (!formData.currentPassword && profile.provider === 'credentials') {
+          throw new Error(
+            'Password saat ini diperlukan untuk mengubah password',
+          );
+        }
 
-      if (emailChanged) {
-        const changeEmail = await onSubmit({
-          email: profile.email,
-          emailUpdate: formData.email,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone_number: phoneNumber,
-          password: formData.currentPassword,
-          newPassword: formData.newPassword,
-        });
+        if (formData.newPassword !== formData.confirmPassword) {
+          throw new Error('Password baru tidak cocok');
+        }
 
-        setSuccess('Profil berhasil diperbarui! Cek email untuk verifikasi');
-        setTimeout(() => onCancel(), 3000);
+        if (formData.newPassword.length < 8) {
+          throw new Error('Password baru harus minimal 8 karakter');
+        }
       }
-      await onSubmit({
+
+      const submitData: Partial<IProfile> = {
         email: profile.email,
-        emailUpdate: formData.email,
         first_name: formData.firstName,
         last_name: formData.lastName,
         phone_number: formData.phoneNumber,
-        password: formData.currentPassword,
-        newPassword: formData.newPassword,
-      });
+      };
 
-      setSuccess('Profil berhasil diperbarui!');
-      window.location.reload();
-      setTimeout(() => onCancel(), 5000);
+      if (emailChanged) {
+        submitData.emailUpdate = formData.email;
+      }
+      if (isChangingPassword && profile.provider === 'credentials') {
+        submitData.password = formData.currentPassword;
+        submitData.newPassword = formData.newPassword;
+      }
+
+      await onSubmit(submitData);
+
+      if (emailChanged || isChangingPassword) {
+        const message =
+          emailChanged && isChangingPassword
+            ? 'Profile updated! Please verify your new email. Password has been changed. Logging out...'
+            : emailChanged
+              ? 'Profile updated! Please verify your new email. Logging out...'
+              : 'Password updated successfully! Logging out...';
+
+        setSuccess(message);
+
+        await logout();
+
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        setSuccess('Profile updated successfully!');
+        setTimeout(() => onCancel(), 2000);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal memperbarui profil');
     } finally {

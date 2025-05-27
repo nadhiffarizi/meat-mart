@@ -42,7 +42,7 @@ function EditStoreForm({ id }: { id: string }) {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value) || value === '') {
       const numericValue = value === '' ? '' : Math.max(0, Number(value));
-      formik.setFieldValue('postal_code', numericValue);
+      formik.setFieldValue('postal_code', numericValue.toString());
     }
   };
 
@@ -94,6 +94,7 @@ function EditStoreForm({ id }: { id: string }) {
     onSubmit: async (values) => {
       try {
         setDisabled(true);
+        console.log('SEBELUM SUBMITTT', values as StoreWithAdmin);
 
         const response = await updateStore(
           session?.user.email,

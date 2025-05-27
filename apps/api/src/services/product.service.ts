@@ -215,5 +215,361 @@ class ProductService {
     };
     return feedback;
   }
+
+  async getProductsFromNearestStore(req: Request) {
+    try {
+      const { lat, lng } = req.query;
+      if (!lat || !lng) {
+        throw new Error('Latitude and longitude are required');
+      }
+
+      const userLoc: ILocation = {
+        lat: String(lat),
+        lon: String(lng),
+      };
+
+      const { categoryId, productId } = req.query;
+      const rawLimit = Number(req.query.limit);
+      const rawPage = Number(req.query.page);
+      const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+      const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+      const query = typeof req.query.q === 'string' ? req.query.q : undefined;
+
+      const prismaWithDistance = xDistancePrisma(userLoc);
+      const allStores = await prismaWithDistance.stores.findMany({
+        where: { deleted_at: null },
+      });
+
+      const sortedStores = [...allStores].sort((a, b) => {
+        const aDist = (a as any).distance;
+        const bDist = (b as any).distance;
+        return aDist - bDist;
+      });
+
+      if (sortedStores.length === 0) {
+        return returnServiceFeedback(
+          200,
+          [],
+          statusEnum.SUCCESS,
+          'No stores found nearby',
+        );
+      }
+
+      const nearestStore = sortedStores[0];
+      //console.log('========TOKOTERPILIH', nearestStore);
+      const nearestStoreId = nearestStore.id;
+
+      const products = await prisma.products.findMany({
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          price: true,
+          weight: true,
+          created_at: true,
+          updated_at: true,
+          deleted_at: true,
+        },
+        where: {
+          ...(productId ? { id: productId as string } : {}),
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+          Stocks: {
+            some: {
+              store_id: nearestStoreId,
+              deleted_at: null,
+            },
+          },
+          ...(categoryId
+            ? {
+                ProductCategories: {
+                  some: {
+                    category_id: categoryId as string,
+                  },
+                },
+              }
+            : {}),
+        },
+        take: limit,
+        skip: (page - 1) * limit,
+      });
+
+      const data: any[] = [];
+      const loc1: ILocation = {
+        lat: nearestStore.latitude,
+        lon: nearestStore.longitude,
+      };
+
+      for (let product of products) {
+        const availableStocks = await findStocksByProduct(product.id, loc1);
+        const image = await findThumbnailByProductId(product.id);
+        const temp = {
+          ...product,
+          ...{ image: image?.link },
+          ...{ availableStocks: availableStocks },
+        };
+        data.push({ ...temp });
+      }
+
+      // pagination
+      const total = await prisma.products.count({
+        where: {
+          ...(productId ? { id: productId as string } : {}),
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+          Stocks: {
+            some: {
+              store_id: nearestStoreId,
+              deleted_at: null,
+            },
+          },
+          ...(categoryId
+            ? {
+                ProductCategories: {
+                  some: {
+                    category_id: categoryId as string,
+                  },
+                },
+              }
+            : {}),
+        },
+      });
+
+      return returnServiceFeedback(
+        200,
+        {
+          data,
+          total,
+          page,
+          limit,
+          nearestStore: {
+            id: nearestStore.id,
+            name: nearestStore.name,
+            distance: (nearestStore as any).distance,
+          },
+        },
+        statusEnum.SUCCESS,
+        'Products from nearest store fetched successfully',
+      );
+    } catch (error) {
+      console.error('Error in getProductsFromNearestStore:', error);
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'Failed to fetch products from nearest store',
+      );
+    }
+  }
+
+  async getPromotionalProductsFromNearestStore(req: Request) {
+    try {
+      const { lat, lng } = req.query;
+      if (!lat || !lng) {
+        throw new Error('Latitude and longitude are required');
+      }
+
+      const userLoc: ILocation = {
+        lat: String(lat),
+        lon: String(lng),
+      };
+
+      const { categoryId, productId } = req.query;
+      const rawLimit = Number(req.query.limit);
+      const rawPage = Number(req.query.page);
+      const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+      const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+      const query = typeof req.query.q === 'string' ? req.query.q : undefined;
+
+      const prismaWithDistance = xDistancePrisma(userLoc);
+      const allStores = await prismaWithDistance.stores.findMany({
+        where: { deleted_at: null },
+      });
+
+      const sortedStores = [...allStores].sort((a, b) => {
+        const aDist = (a as any).distance;
+        const bDist = (b as any).distance;
+        return aDist - bDist;
+      });
+
+      if (sortedStores.length === 0) {
+        return returnServiceFeedback(
+          200,
+          [],
+          statusEnum.SUCCESS,
+          'No stores found nearby',
+        );
+      }
+
+      const nearestStore = sortedStores[0];
+      const nearestStoreId = nearestStore.id;
+      const currentDate = new Date();
+
+      const products = await prisma.products.findMany({
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          price: true,
+          weight: true,
+          created_at: true,
+          updated_at: true,
+          deleted_at: true,
+          Discounts: {
+            where: {
+              store_id: nearestStoreId,
+              is_valid: true,
+              start_date: { lte: currentDate },
+              end_date: { gte: currentDate },
+              promotion_type: { in: ['CUSTOM', 'BOGO'] },
+            },
+            select: {
+              id: true,
+              promotion_type: true,
+              discount_percentage: true,
+              discount_amount: true,
+              discount_code: true,
+              end_date: true,
+              maximum_discount_amount: true,
+              minimum_purchase: true,
+            },
+          },
+        },
+        where: {
+          ...(productId ? { id: productId as string } : {}),
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+          Stocks: {
+            some: {
+              store_id: nearestStoreId,
+              deleted_at: null,
+              quantity: { gt: 0 },
+            },
+          },
+          Discounts: {
+            some: {
+              store_id: nearestStoreId,
+              is_valid: true,
+              start_date: { lte: currentDate },
+              end_date: { gte: currentDate },
+              promotion_type: { in: ['CUSTOM', 'BOGO'] },
+            },
+          },
+          ...(categoryId
+            ? {
+                ProductCategories: {
+                  some: {
+                    category_id: categoryId as string,
+                  },
+                },
+              }
+            : {}),
+        },
+        take: limit,
+        skip: (page - 1) * limit,
+      });
+
+      const data = await Promise.all(
+        products.map(async (product) => {
+          const [availableStocks, image] = await Promise.all([
+            findStocksByProduct(product.id, {
+              lat: nearestStore.latitude,
+              lon: nearestStore.longitude,
+            }),
+            findThumbnailByProductId(product.id),
+          ]);
+
+          // Calculate final price after discounts
+          const finalPrice = product.Discounts.reduce((price, discount) => {
+            if (discount.promotion_type === 'CUSTOM') {
+              if (discount.discount_percentage) {
+                return price * (1 - discount.discount_percentage / 100);
+              }
+              if (discount.discount_amount) {
+                return price - discount.discount_amount;
+              }
+            }
+            return price;
+          }, product.price);
+
+          return {
+            ...product,
+            image: image?.link,
+            availableStocks,
+            originalPrice: product.price,
+            finalPrice,
+            promotions: product.Discounts.map((d) => ({
+              type: d.promotion_type,
+              code: d.discount_code,
+              percentage: d.discount_percentage,
+              amount: d.discount_amount,
+              endsAt: d.end_date,
+              maxDiscount: d.maximum_discount_amount,
+              minPurchase: d.minimum_purchase,
+            })),
+            hasPromotion: true,
+          };
+        }),
+      );
+
+      const total = await prisma.products.count({
+        where: {
+          ...(productId ? { id: productId as string } : {}),
+          ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+          deleted_at: null,
+          Stocks: {
+            some: {
+              store_id: nearestStoreId,
+              deleted_at: null,
+              quantity: { gt: 0 },
+            },
+          },
+          Discounts: {
+            some: {
+              store_id: nearestStoreId,
+              is_valid: true,
+              start_date: { lte: currentDate },
+              end_date: { gte: currentDate },
+              promotion_type: { in: ['CUSTOM', 'BOGO'] },
+            },
+          },
+          ...(categoryId
+            ? {
+                ProductCategories: {
+                  some: {
+                    category_id: categoryId as string,
+                  },
+                },
+              }
+            : {}),
+        },
+      });
+
+      return returnServiceFeedback(
+        200,
+        {
+          data,
+          total,
+          page,
+          limit,
+          nearestStore: {
+            id: nearestStore.id,
+            name: nearestStore.name,
+            distance: (nearestStore as any).distance,
+          },
+        },
+        statusEnum.SUCCESS,
+        'Promotional products from nearest store fetched successfully',
+      );
+    } catch (error) {
+      console.error('Error in getPromotionalProductsFromNearestStore:', error);
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'Failed to fetch promotional products',
+      );
+    }
+  }
 }
 export default new ProductService();

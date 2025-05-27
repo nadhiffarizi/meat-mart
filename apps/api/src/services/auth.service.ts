@@ -15,6 +15,7 @@ import { isAfter } from 'date-fns';
 import { registerSocialUser } from '@/helper/auth';
 import { hashedPassword } from '@/helper/bcrypt';
 import { ErrorHandler } from '@/helper/responseHandler.helper';
+import { uuid } from '@/helper/verification-token';
 
 class AuthService {
   async register(req: Request) {
@@ -33,7 +34,7 @@ class AuthService {
         message: `Email ${email} is already registered`,
       };
     }
-    const verificationToken = uuidv4();
+    const verificationToken = uuid();
     const tokenExpiry = new Date(Date.now() + 3600000);
 
     const registeredUser = await prisma.users.create({
@@ -101,7 +102,7 @@ class AuthService {
     }
 
     if (!existingUser.is_verified) {
-      const verificationToken = uuidv4();
+      const verificationToken = uuid();
       const tokenExpiry = new Date(Date.now() + 3600000);
 
       await sendVerificationEmail(email, verificationToken);
@@ -246,7 +247,7 @@ class AuthService {
   async resendVerificationEmail(req: Request) {
     const { email } = req.body;
 
-    const verificationToken = uuidv4();
+    const verificationToken = uuid();
     const tokenExpiry = new Date(Date.now() + 3600000);
     console.log('Tanggal sekarang', Date.now());
     console.log('1 jam kemudian', tokenExpiry);
@@ -404,87 +405,101 @@ class AuthService {
 
     const existingUser = (await getUserByEmail(email)) as IUser;
 
-    if (existingUser.email !== emailUpdate) {
-      const verificationToken = uuidv4();
-      const tokenExpiry = new Date(Date.now() + 3600000);
-      console.log('SELISIH WAKTU', Date.now(), tokenExpiry);
-      await sendVerificationEmail(emailUpdate, verificationToken);
+    // Case 1: Changing password
+    if (newPassword && newPassword !== '') {
+      // if (
+      //   existingUser.provider === 'credentials' &&
+      //   existingUser.password !== (await hashedPassword(password))
+      // ) {
+      //   return {
+      //     code: 401,
+      //     data: null,
+      //     status: statusEnum.FAILED,
+      //     message: `The password that you've entered is incorrect.`,
+      //   };
+      // }
 
-      const emailUpdatedUser = await prisma.users.update({
-        where: {
-          email: existingUser.email,
-        },
-        data: {
-          is_verified: false,
-          verification_link: verificationToken,
-          verification_expiry: tokenExpiry,
-          first_name: first_name,
-          last_name: last_name,
-          phone_number: phone_number,
-          email: emailUpdate,
-          // password: await hashedPassword(password),
-        },
-      });
-
-      return {
-        code: 200,
-        data: emailUpdatedUser,
-        status: statusEnum.SUCCESS,
-        message: 'Profile successfully updated',
+      const updateData: any = {
+        first_name,
+        last_name,
+        phone_number,
+        password: await hashedPassword(newPassword),
       };
-    }
 
-    if (existingUser.email === emailUpdate) {
+      // Case 1a: Changing both email and password
+      if (emailUpdate && emailUpdate !== email) {
+        const verificationToken = uuid();
+        const tokenExpiry = new Date(Date.now() + 3600000);
+
+        await sendVerificationEmail(emailUpdate, verificationToken);
+
+        updateData.email = emailUpdate;
+        updateData.is_verified = false;
+        updateData.verification_link = verificationToken;
+        updateData.verification_expiry = tokenExpiry;
+      }
+
+      console.log('Before Updating user with password changing:', updateData);
       const updatedUser = await prisma.users.update({
         where: { email },
-        data: {
-          first_name: first_name,
-          last_name: last_name,
-          phone_number: phone_number,
-          //password: await hashedPassword(password),
-        },
+        data: updateData,
       });
 
-      console.log('UDATEDUSER', updatedUser);
       return {
         code: 200,
         data: updatedUser,
         status: statusEnum.SUCCESS,
-        message: 'Profile successfully updated',
+        message: emailUpdate
+          ? 'Profile and password updated. Please verify your new email.'
+          : 'Profile and password updated successfully',
       };
     }
 
-    if (existingUser.password !== (await hashedPassword(password))) {
-      return {
-        code: 401,
-        data: null,
-        status: statusEnum.FAILED,
-        message: `The password that you've entered is incorrect.`,
-      };
-    }
+    // Case 2: Changing email only (for credential users)
+    if (emailUpdate && emailUpdate !== email) {
+      const verificationToken = uuid();
+      const tokenExpiry = new Date(Date.now() + 3600000);
 
-    if (existingUser.password !== (await hashedPassword(newPassword))) {
-      const updatePass = await prisma.users.update({
+      await sendVerificationEmail(emailUpdate, verificationToken);
+
+      const updatedUser = await prisma.users.update({
         where: { email },
-        data: { password: await hashedPassword(newPassword) },
+        data: {
+          is_verified: false,
+          verification_link: verificationToken,
+          verification_expiry: tokenExpiry,
+          first_name,
+          last_name,
+          phone_number,
+          email: emailUpdate,
+        },
       });
-      console.log('EMAIL TERGANTI', updatePass);
+
       return {
         code: 200,
-        data: updatePass,
+        data: updatedUser,
         status: statusEnum.SUCCESS,
-        message: 'Password successfully updated',
+        message: 'Profile updated. Please verify your new email.',
       };
     }
+
+    // Case 3: Regular profile update (no password or email change)
+    const updatedUser = await prisma.users.update({
+      where: { email },
+      data: {
+        first_name,
+        last_name,
+        phone_number,
+      },
+    });
 
     return {
       code: 200,
-      data: null,
+      data: updatedUser,
       status: statusEnum.SUCCESS,
-      message: 'Profile successfully updated',
+      message: 'Profile updated successfully',
     };
   }
-
   async getUserByEmail(req: Request) {
     const { email } = req.body;
     const getUser = await prisma.users.findUnique({

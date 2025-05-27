@@ -29,13 +29,21 @@ function CreateStoreForm() {
   const [disabled, setDisabled] = useState(false);
   const [openCategoryRecovery, setOpenCategoryRecovery] = useState(false);
   const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAdminUsers = async () => {
       try {
+        if (status === 'loading') return;
+
+        if (!session?.user?.email) {
+          toast.error('No user email found in session');
+          setLoading(false);
+          return;
+        }
         const response = await getStoreAdmin(session?.user.email);
+        console.log('Respon ADMINUSER', response);
         setAdminUsers(response);
-        console.log('Respon ADMINUSER', adminUsers);
       } catch (error) {
         console.error('Error fetching admin users:', error);
         setAdminUsers([]);
@@ -43,11 +51,12 @@ function CreateStoreForm() {
     };
     fetchAdminUsers();
   }, [session?.user.email]);
+
   const handlePostalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value) || value === '') {
       const numericValue = value === '' ? '' : Math.max(0, Number(value));
-      formik.setFieldValue('postal_code', numericValue);
+      formik.setFieldValue('postal_code', numericValue.toString());
     }
   };
 

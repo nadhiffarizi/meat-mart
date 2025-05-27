@@ -20,17 +20,18 @@ export interface payloadCartService {
 }
 
 export interface ICart {
-  id?: string,
-  Stock?: IStock,
-  product: IProduct,
-  quantity: number,
-  discount?: IDiscount,
-  subtotalPrice?: number,
-  pricePerProduct?: number,
-  quantityAfterDisc?: number
+  id?: string;
+  Stock?: IStock;
+  product: IProduct;
+  quantity: number;
+  discount?: IDiscount;
+  subtotalPrice?: number;
+  pricePerProduct?: number;
+  quantityAfterDisc?: number;
+  shippingCost?: number;
 }
 
 export interface payloadCartService {
-  quantity?: number,
-  productId?: string,
-} 
+  quantity?: number;
+  productId?: string;
+}

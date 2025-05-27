@@ -94,6 +94,19 @@ export function Card({ product }: { product: IProduct }) {
 
       <Link href={`/products/${product.id}`} passHref>
         <div className="w-full max-w-[230px] bg-primaryIcon rounded-lg shadow-xl relative">
+          {product.finalPrice && (
+            <div className="absolute -top-2 -left-2 bg-red-500 rounded-md z-10 min-w-[50px] px-2 pt-1.5 min-h-[30px]">
+              <div className="flex items-center gap-2 z-30 ">
+                {product.Discounts?.map((discount, index) =>
+                  discount.promotion_type ? (
+                    <p key={index} className="text-white text-sm font-bold">
+                      {discount.promotion_type}
+                    </p>
+                  ) : null,
+                )}
+              </div>
+            </div>
+          )}
           <div className="w-full">
             <div className="w-full px-2 py-2 rounded-xl">
               <div className="relative">
@@ -104,14 +117,44 @@ export function Card({ product }: { product: IProduct }) {
                   src={product.image || '/templateproduct.png'}
                   alt="product-image"
                 />
-                <Image
-                  width={60}
-                  height={60}
-                  alt=""
-                  className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
-                    ${product.availableStocks ? 'hidden' : 'block'}`}
-                  src="/sold-icon.png"
-                />
+                {product.finalPrice ? (
+                  <>
+                    {' '}
+                    <Image
+                      width={60}
+                      height={60}
+                      alt=""
+                      className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
+                    ${product.availableStocks[0].quantity === 0 ? 'block' : 'hidden'}`}
+                      src="/sold-icon.png"
+                    />
+                  </>
+                ) : (
+                  <>
+                    {' '}
+                    {product.availableStocks.length !== 0 ? (
+                      <Image
+                        width={60}
+                        height={60}
+                        alt=""
+                        className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
+                    ${product.availableStocks[0].stores.status === 'BRANCH' && product.availableStocks[0].quantity === 0 ? 'block' : 'hidden'}`}
+                        src="/sold-icon.png"
+                      />
+                    ) : (
+                      <>
+                        <Image
+                          width={60}
+                          height={60}
+                          alt=""
+                          className={`w-[45px] h-[45px] absolute right-[15%] top-[10%] 
+                    `}
+                          src="/sold-icon.png"
+                        />
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
@@ -120,25 +163,71 @@ export function Card({ product }: { product: IProduct }) {
               <p className="mt-1 md:mt-0 h-4 md:h-6 mb-2 w-full overflow-hidden text-xs md:text-sm text-gray-500">
                 {product.weight}g
               </p>
-              <div className="flex justify-between items-center mb-4 md:mb-4">
-                <b className="text-[#159953] overflow-hidden">
-                  {product.price == 0
-                    ? 'Free'
-                    : `IDR ${Number(product.price).toLocaleString('id-ID')}`}
-                </b>
-                <button
-                  onClick={handleAddToCart}
-                  // disabled={!session || props.stock === 0}
-                  className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
+
+              {product.finalPrice ? (
+                <>
+                  <div className="flex justify-between items-center mb-4 md:mb-4">
+                    {' '}
+                    <b className="text-[#159953] overflow-hidden">IDR </b>
+                    <b className="text-primaryText overflow-hidden">
+                      <s>
+                        {` ${Number(product.price).toLocaleString('id-ID')}`}
+                      </s>
+                    </b>
+                    <b className="text-[#159953] overflow-hidden">
+                      {` ${Number(product.finalPrice).toLocaleString('id-ID')}`}
+                    </b>
+                    <>
+                      <button
+                        onClick={handleAddToCart}
+                        className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
                     ${
-                      !session || !product.availableStocks || isMaxAdded
+                      product.availableStocks.length === 0 ||
+                      product.availableStocks[0].quantity === 0
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
                     }`}
-                >
-                  <Plus size={18} />
-                </button>
-              </div>
+                      >
+                        <Plus size={18} />
+                      </button>
+                    </>
+                    {/* ) : (
+                      <button
+                        onClick={handleAddToCart}
+                        className="h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
+                   
+                        bg-gray-400 cursor-not-allowed"
+                      >
+                        <Plus size={18} />
+                      </button>
+                    )} */}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between items-center mb-4 md:mb-4">
+                    {' '}
+                    <b className="text-[#159953] overflow-hidden">
+                      {product.price == 0
+                        ? 'Free'
+                        : `IDR ${Number(product.price).toLocaleString('id-ID')}`}
+                    </b>
+                    <button
+                      onClick={handleAddToCart}
+                      className={`h-8 w-8 md:h-8 md:w-8 font-semibold rounded-full text-xl md:text-2xl flex items-center justify-center
+                    ${
+                      product.availableStocks.length === 0 ||
+                      // product.availableStocks[0].stores.status === 'CENTRAL' ||
+                      product.availableStocks[0].quantity === 0
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-orangeAccent hover:text-white hover:bg-orange-600'
+                    }`}
+                    >
+                      <Plus size={18} />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
