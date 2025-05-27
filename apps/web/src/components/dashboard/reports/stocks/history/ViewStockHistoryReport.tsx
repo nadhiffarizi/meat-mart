@@ -6,10 +6,7 @@ import { DataTable } from './DataTable';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';
 import { StockHistory } from './columns';
-import {
-  IGetStockHistory,
-  IGetStockHistoryRange,
-} from '@/interface/stockHistory/stockHistory.interface';
+import { IGetStockHistoryRange } from '@/interface/stockHistory/stockHistory.interface';
 import dayjs from 'dayjs';
 
 interface IDropDownOptions {

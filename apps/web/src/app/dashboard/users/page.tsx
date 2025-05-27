@@ -1,6 +1,4 @@
-import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
 import ViewUsers from '@/components/dashboard/admin/ViewUsers';
-import Dropdown from '@/components/dashboard/DropDown';
 import React from 'react';
 
 function page() {

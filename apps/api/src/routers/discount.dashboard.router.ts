@@ -1,6 +1,5 @@
 import discountController from '@/controllers/discount.dashboard.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
-import { validateCategoryCreateAndUpdateBody } from '@/middleware/category.middleware';
 import {
   validateDiscountCreateBody,
   validateDiscountUpdateBody,

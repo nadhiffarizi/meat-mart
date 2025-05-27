@@ -1,35 +1,36 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Dropdown from '../DropDown';
 import { api } from '@/helper/api';
 import { DataTable } from './DataTable';
 import { columns, User } from './columns';
-import { Toaster, toast } from 'sonner';
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { useSession } from 'next-auth/react';
 import { IGetUsers } from '@/interface/user/user.interface';
 
 function ViewUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const { data: session, update, status } = useSession();
+  const [search, setSearch] = useState<string>('');
+  const [totalCount, setTotalCount] = useState<number>();
+  const [page, setPage] = useState<number>(1);
+  const limit = 10;
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   useEffect(() => {
     async function getUsers() {
       try {
         const response = await api(
-          `admin/users/all`,
+          `admin/users/all?page=${page}&limit=${limit}&q=${search}`,
           'GET',
           {},
           session?.user.access_token,
         );
 
-        const simplifiedUsers: User[] = response.data.map(
+        setTotalCount(response.data.count);
+
+        const simplifiedUsers: User[] = response.data.users.map(
           (user: IGetUsers) => ({
             id: user.id,
             email: user.email,
@@ -43,26 +44,19 @@ function ViewUsers() {
       }
     }
     getUsers();
-  }, [session?.user.access_token, session]);
+  }, [session?.user.access_token, session, page, search]);
 
   return (
-    // <Dropdown buttonLabel="View all Users">
-    //   <DataTable columns={columns} data={dummyUsers} />
-    // </Dropdown>
-
-    // <Accordion type="single" collapsible>
-    //   <AccordionItem value="item-1">
-    //     <AccordionTrigger className="bg-red-200">
-    //       View All Users
-    //     </AccordionTrigger>
-    //     <AccordionContent>
-    //       <DataTable columns={columns} data={dummyUsers} />
-    //     </AccordionContent>
-    //   </AccordionItem>
-    // </Accordion>
-
     <>
-      <DataTable columns={columns} data={users} />
+      <DataTable
+        columns={columns}
+        data={users}
+        setSearch={setSearch}
+        totalCount={totalCount}
+        page={page}
+        setPage={setPage}
+        limit={limit}
+      />
     </>
   );
 }

@@ -9,10 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Toaster, toast } from 'sonner';
 import { api } from '@/helper/api';

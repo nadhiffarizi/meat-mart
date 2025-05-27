@@ -23,7 +23,6 @@ import {
 import { Button } from '../../../../ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import Link from 'next/link';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,7 +55,7 @@ export function DataTable<TData, TValue>({
     <div className="overflow-x-auto">
       <div className="flex items-center py-4 w-full justify-between gap-2">
         <Input
-          placeholder="Filter products..."
+          placeholder="Search products..."
           value={
             (table.getColumn('product_name')?.getFilterValue() as string) ?? ''
           }

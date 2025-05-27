@@ -64,7 +64,7 @@ function EditProductForm({ id }: { id: string }) {
           {},
           session?.user.access_token,
         );
-        setAllCategories(allCategories.data);
+        setAllCategories(allCategories.data.categories);
       }
       getAllCategories();
     } catch (error) {
@@ -135,13 +135,16 @@ function EditProductForm({ id }: { id: string }) {
               }
             } catch (error) {
               console.error(error);
-              toast.error('Something went wrong in uploading your pictures!', {
-                duration: Infinity,
-                action: {
-                  label: 'Dismiss',
-                  onClick: () => toast.dismiss(),
+              toast.error(
+                'Something went wrong in uploading your pictures!. Your file is either too large or is not compatible.',
+                {
+                  duration: Infinity,
+                  action: {
+                    label: 'Dismiss',
+                    onClick: () => toast.dismiss(),
+                  },
                 },
-              });
+              );
               return;
             }
           }
@@ -216,7 +219,7 @@ function EditProductForm({ id }: { id: string }) {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="weight">
-          Weight <span className="text-red-500">*</span>
+          Weight (g)<span className="text-red-500">*</span>
         </label>
         <input
           type="text"

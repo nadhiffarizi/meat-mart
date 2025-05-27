@@ -1,9 +1,6 @@
 import * as React from 'react';
-
-import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -22,7 +19,6 @@ export function ReportTypeCard({
   description: string;
 }) {
   return (
-    // /dashboard/reports/store/${store_id}/${reportType}
     <Link href={link}>
       <Card className="flex flex-col justify-between w-[200px] md:w-[350px] break-words ">
         <CardHeader>

@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import prisma from '@/prisma';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { responseHandler } from '@/helper/responseHandler.helper';
 import productService from '@/services/product.dashboard.service';

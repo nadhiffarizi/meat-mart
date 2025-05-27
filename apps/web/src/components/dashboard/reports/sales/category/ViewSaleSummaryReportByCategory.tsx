@@ -6,10 +6,6 @@ import { DataTable } from './DataTable';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';
 import { TransactionDetailSummary } from './columns';
-import {
-  IGetStockHistory,
-  IGetStockHistoryRange,
-} from '@/interface/stockHistory/stockHistory.interface';
 import dayjs from 'dayjs';
 import { IGetStores } from '@/interface/store/store.interface';
 
@@ -38,7 +34,7 @@ function ViewSaleSummaryReportByCategory({ storeId }: { storeId: string }) {
           {},
           session?.user.access_token,
         );
-        const { created_at } = response.data as IGetStores;
+        const { created_at } = response.data[0] as IGetStores;
         const earliestDate = dayjs(new Date(created_at)).startOf('month');
         const currentMonth = dayjs().startOf('month');
         const options: IDropDownOptions[] = [];
