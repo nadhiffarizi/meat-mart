@@ -25,19 +25,31 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { PaginationComponent } from '@/components/Pagination';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  totalCount: number | undefined;
+  limit: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  setSearch,
+  page,
+  setPage,
+  totalCount,
+  limit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const { data: session, update } = useSession();
+  const [searchInput, setSearchInput] = useState<string>('');
 
   const table = useReactTable({
     data,
@@ -57,14 +69,19 @@ export function DataTable<TData, TValue>({
   return (
     <div className="overflow-x-auto">
       <div className="flex flex-col sm:flex-row items-center py-4 w-full justify-between gap-2">
-        <Input
-          placeholder="Filter products..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSearch(searchInput);
+          }}
+        >
+          <Input
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search products..."
+            className="max-w-sm"
+          />
+        </form>
         <Link href={'/dashboard/products/new'}>
           {' '}
           {session?.user.role === 'SUPER_ADMIN' && (
@@ -78,7 +95,7 @@ export function DataTable<TData, TValue>({
           )}
         </Link>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border mb-4">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -127,26 +144,14 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       {/* Pagination Buttons */}
-      <div className="flex items-center justify-between p-2">
-        <Button
-          variant="outline"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <span className="text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </span>
-        <Button
-          variant="outline"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      {totalCount && (
+        <PaginationComponent
+          page={page}
+          setPage={setPage}
+          totalCount={totalCount}
+          itemsPerPage={limit}
+        />
+      )}
     </div>
   );
 }

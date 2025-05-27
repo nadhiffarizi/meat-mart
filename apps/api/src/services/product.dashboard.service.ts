@@ -8,26 +8,34 @@ import {
 } from '@/helper/product/product.helper';
 import { cloudinaryRemove, cloudinaryUpload } from '@/helper/cloudinary.helper';
 import { createSlug } from '@/helper/slug.helper';
+import { Prisma } from '@prisma/client';
 
 class ProductService {
   async getAllProducts(req: Request) {
-    const includeDeleted = req.query.includeDeleted === 'true';
-    const allProducts = await prisma.products.findMany({
-      include: {
-        ProductCategories: true,
-        ProductPictures: true,
-        Stocks: true,
-      },
-      where: includeDeleted
-        ? undefined
-        : {
-            deleted_at: null,
-          },
-    });
+    const rawLimit = Number(req.query.limit);
+    const rawPage = Number(req.query.page);
+    const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+    const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+    const query = typeof req.query.q === 'string' ? req.query.q : undefined;
+
+    const where: Prisma.ProductsWhereInput = {
+      ...(req.query.includeDeleted === 'true' ? {} : { deleted_at: null }),
+      ...(query ? { name: { contains: query, mode: 'insensitive' } } : {}),
+    };
+
+    const [allProducts, count] = await Promise.all([
+      prisma.products.findMany({
+        where,
+        take: limit,
+        skip: (page - 1) * limit,
+        orderBy: { created_at: 'desc' },
+      }),
+      prisma.products.count({ where }),
+    ]);
 
     const feedback: serviceFeedback = {
       code: 200,
-      data: allProducts,
+      data: { products: allProducts, count: count },
       status: statusEnum.SUCCESS,
       message: `Successfully fetched all products.`,
     };

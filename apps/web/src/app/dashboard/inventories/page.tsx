@@ -7,13 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { api } from '@/helper/api';
 import { IGetStores } from '@/interface/store/store.interface';
 import { ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function Page() {
   const [allStores, setAllStores] = useState<IGetStores[]>();

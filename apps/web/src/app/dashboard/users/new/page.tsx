@@ -1,8 +1,5 @@
-import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
-import ViewUsers from '@/components/dashboard/admin/ViewUsers';
-import Dropdown from '@/components/dashboard/DropDown';
+import CreateAdminForm from '@/components/dashboard/admin/forms/CreateAdminForm';
 import React from 'react';
-import { CornerDownLeft } from 'lucide-react';
 
 function page() {
   return (
@@ -11,7 +8,7 @@ function page() {
         Add Employees
       </div>
 
-      <CreateAdmin />
+      <CreateAdminForm />
     </div>
   );
 }

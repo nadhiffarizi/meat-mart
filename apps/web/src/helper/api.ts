@@ -16,7 +16,7 @@ export const api = async (
   const headers: HeadersInit = {};
 
   if (data?.contentType) headers['Content-Type'] = data.contentType;
-  console.log('APAKAH LEWAT SINI3');
+
   if (token) {
     const expiresIn = jwtDecode(token).exp! * 1000;
     if (new Date().valueOf() >= expiresIn) {

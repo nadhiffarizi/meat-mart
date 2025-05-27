@@ -28,7 +28,7 @@ import ILocation from '@/interface/location.interface';
 import { IOrderInput } from '@/interface/order.interface';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import prisma from '@/prisma';
-import { E_OrderStatus, E_Role, E_TransactionStatus } from '@prisma/client';
+import { E_OrderStatus, E_Role, E_TransactionStatus } from '.prisma/client';
 import { Request } from 'express';
 
 class TransactionService {

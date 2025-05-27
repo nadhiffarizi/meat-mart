@@ -2,25 +2,36 @@ import { statusEnum } from '@/enums/statusEnum.enums';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { Request } from 'express';
 import prisma from '@/prisma';
+import { Prisma } from '@prisma/client';
 import { getUserByEmail, getUserById } from '@/helper/user.prisma';
 import { hashedPassword } from '@/helper/bcrypt';
 
 class AdminService {
   async getAllUsers(req: Request) {
-    let allUsers;
-    if (req.query.includeDeleted === 'true') {
-      allUsers = await prisma.users.findMany();
-    } else {
-      allUsers = await prisma.users.findMany({
-        where: {
-          deleted_at: null,
-        },
-      });
-    }
+    const rawLimit = Number(req.query.limit);
+    const rawPage = Number(req.query.page);
+    const limit = !Number.isNaN(rawLimit) && rawLimit > 0 ? rawLimit : 10;
+    const page = !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+    const query = typeof req.query.q === 'string' ? req.query.q : undefined;
+
+    const where: Prisma.UsersWhereInput = {
+      ...(req.query.includeDeleted === 'true' ? {} : { deleted_at: null }),
+      ...(query ? { email: { contains: query, mode: 'insensitive' } } : {}),
+    };
+
+    const [allUsers, count] = await Promise.all([
+      prisma.users.findMany({
+        where,
+        take: limit,
+        skip: (page - 1) * limit,
+        orderBy: { created_at: 'desc' },
+      }),
+      prisma.users.count({ where }),
+    ]);
 
     const feedback: serviceFeedback = {
       code: 200,
-      data: allUsers,
+      data: { users: allUsers, count: count },
       status: statusEnum.SUCCESS,
       message: `Successfully fetched all users.`,
     };

@@ -3,6 +3,7 @@ import { ReportTypeCard } from '@/components/dashboard/reports/ReportTypeCard';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
+// dashboard homepage
 function Page() {
   const { data: session, update } = useSession();
   return (
@@ -15,9 +16,18 @@ function Page() {
         {session?.user.role === 'SUPER_ADMIN' && (
           <div className="flex gap-4 flex-wrap">
             <ReportTypeCard
-              title="user management"
+              title="Users"
               link={`/dashboard/users`}
-              description="Manage your users."
+              description="View and manage your users."
+            />
+          </div>
+        )}
+        {session?.user.role === 'SUPER_ADMIN' && (
+          <div className="flex gap-4 flex-wrap">
+            <ReportTypeCard
+              title="Stores"
+              link={`/dashboard/stores`}
+              description="View and manage your stores."
             />
           </div>
         )}
@@ -25,14 +35,14 @@ function Page() {
           <ReportTypeCard
             title="products"
             link={`/dashboard/products`}
-            description="Manage your products."
+            description="View and manage your products."
           />
         </div>
         <div className="flex gap-4 flex-wrap">
           <ReportTypeCard
             title="inventories"
             link={`/dashboard/inventories`}
-            description="Manage your inventories."
+            description="View and manage your inventories."
           />
         </div>
         {session?.user.role === 'ADMIN' && (
@@ -40,27 +50,27 @@ function Page() {
             <ReportTypeCard
               title="Discounts"
               link={`/dashboard/discounts`}
-              description="Manage your discounts."
+              description="View and manage your discounts."
             />
           </div>
         )}
         <div className="flex gap-4 flex-wrap">
           <ReportTypeCard
-            title="report"
+            title="Reports"
             link={`/dashboard/reports`}
             description="View your sale and stock reports."
           />
         </div>
         <div className="flex gap-4 flex-wrap">
           <ReportTypeCard
-            title="Transaction"
+            title="Transactions"
             link={`/dashboard/transaction-list`}
             description="View and manage your transactions."
           />
         </div>
         <div className="flex gap-4 flex-wrap">
           <ReportTypeCard
-            title="Order"
+            title="Orders"
             link={`/dashboard/order-list`}
             description="View and manage your orders."
           />

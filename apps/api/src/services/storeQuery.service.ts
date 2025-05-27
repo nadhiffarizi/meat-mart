@@ -5,7 +5,7 @@ import {
   findStoreByAdmin,
   findStoreBySuperAdmin,
 } from '@/helper/store/store.helper';
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 import { Request } from 'express';
 
 class StoreServiceQuery {

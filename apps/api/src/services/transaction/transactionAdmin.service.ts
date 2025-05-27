@@ -6,7 +6,7 @@ import {
   getTrxById,
   updateTrxStatus,
 } from '@/helper/transaction/transaction.helper';
-import { E_OrderStatus, E_Role, E_TransactionStatus } from '@prisma/client';
+import { E_OrderStatus, E_Role, E_TransactionStatus } from '.prisma/client';
 import { Request } from 'express';
 
 class TransactionServiceAdmin {

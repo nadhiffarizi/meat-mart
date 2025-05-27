@@ -16,7 +16,7 @@ import { findProductByStockId } from '@/helper/product/product.helper';
 import { ICart, ICartAfterDIsc } from '@/interface/cart.interface';
 import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { convertRoleToEnum } from '@/helper/role.helper';
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 import { IDiscount } from '@/interface/discount.interface';
 
 class DiscountService {

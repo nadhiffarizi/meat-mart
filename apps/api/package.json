@@ -4,11 +4,14 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
+    "start": "node dist/index.js",
     "dev": "cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register src/index.ts",
     "build": "tsc && tsc-alias",
     "serve": "cross-env NODE_ENV=production node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prisma": "npx prisma"
+    "prisma": "npx prisma",
+    "prepare": "is-ci || exit 0",
+    "vercel-build": "npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -35,9 +38,9 @@
     "node-cron": "^4.0.5",
     "nodemailer": "^6.10.1",
     "nodemon": "^3.1.9",
-    "package.json": "^0.0.0",
     "resend": "^4.2.0",
     "streamifier": "^0.1.1",
+    "dayjs": "^1.11.13",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3",
@@ -51,6 +54,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "prisma": "^5.7.1",
+    "dayjs": "^1.11.13",
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0"
   }

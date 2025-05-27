@@ -1,20 +1,6 @@
 'use client';
-import { IGetStores } from '@/interface/store/store.interface';
-import { LocationCard } from '@/components/dashboard/inventories/LocationCard';
 import { ReportTypeCard } from '@/components/dashboard/reports/ReportTypeCard';
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { api } from '@/helper/api';
-import { ChevronRight } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 
 type Props = {
   params: {

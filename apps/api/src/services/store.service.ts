@@ -75,7 +75,7 @@ class StoreService {
         throw new Error('Could not geocode the provided address');
       }
 
-      const adminId = store.adminId || superAdmin.id;
+      const adminId = store.storeadmin_id || superAdmin.id;
 
       const newStore = await prisma.stores.create({
         data: {
@@ -128,8 +128,15 @@ class StoreService {
   }
 
   async getStoreById(req: Request) {
-    const { id } = req.params;
+    const { email, id } = req.body;
     console.log('INSIDE SERVICE', id);
+
+    const superAdmin = await getSuperAdminByEmail(email);
+
+    if (!superAdmin) {
+      throw new Error('Super Admin not found');
+    }
+
     try {
       const store = await prisma.stores.findUnique({
         where: { id: id as string },
@@ -206,7 +213,7 @@ class StoreService {
     });
 
     await prisma.stocks.updateMany({
-      where: { store_id: req.params },
+      where: { store_id: req.params.id },
       data: { deleted_at: new Date() },
     });
 

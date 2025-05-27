@@ -1,41 +1,25 @@
 'use client';
 import {
-  Calendar,
-  CircleUser,
   CreditCard,
   FileChartColumn,
   Forklift,
-  Home,
-  Inbox,
   Package,
   PackageSearch,
-  Search,
-  Settings,
   StoreIcon,
   TicketPercent,
   UserRoundPen,
 } from 'lucide-react';
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
 import Image from 'next/image';
 import meatMartDashboard from '@/media/image/meat-mart-dashboard.png';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 
-// Menu items.
 const items = [
   {
-    title: 'User Management',
+    title: 'Users',
     url: '/dashboard/users',
     icon: UserRoundPen,
     hideTo: 'ADMIN',

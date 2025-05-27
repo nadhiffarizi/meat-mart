@@ -1,6 +1,5 @@
 import stockHistoryController from '@/controllers/stockHistory.controller';
 import { verifyToken } from '@/middleware/authorize.middleware';
-import { validateCategoryCreateAndUpdateBody } from '@/middleware/category.middleware';
 import { Router } from 'express';
 
 export class StockHistoryRouter {

@@ -1,10 +1,4 @@
-import CreateAdmin from '@/components/dashboard/admin/CreateAdmin';
-import ViewUsers from '@/components/dashboard/admin/ViewUsers';
-import Dropdown from '@/components/dashboard/DropDown';
 import ViewSaleSummaryReportByCategory from '@/components/dashboard/reports/sales/category/ViewSaleSummaryReportByCategory';
-import ViewSaleSummaryReport from '@/components/dashboard/reports/sales/category/ViewSaleSummaryReportByCategory';
-import ViewStockHistoryReport from '@/components/dashboard/reports/stocks/history/ViewStockHistoryReport';
-import ViewStockSummaryReport from '@/components/dashboard/reports/stocks/overview/ViewStockSummaryReport';
 import React from 'react';
 
 type Props = {

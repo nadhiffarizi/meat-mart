@@ -1,4 +1,4 @@
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 
 export interface IUser {
   id: string;

@@ -16,7 +16,7 @@ import {
   findThumbnailByStockId,
 } from '@/helper/product/product.helper';
 import { convertRoleToEnum } from '@/helper/role.helper';
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 
 class CartService {
   async add(req: Request) {
@@ -117,7 +117,7 @@ class CartService {
           user_id: user?.id!,
         },
         orderBy: {
-          created_at: 'desc'
+          created_at: 'desc',
         },
         skip: Number(page) === 0 ? 0 : (Number(page) - 1) * 3,
         take: Number(page) === 0 ? countCart : 3,

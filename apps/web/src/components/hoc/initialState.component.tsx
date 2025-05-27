@@ -17,7 +17,6 @@ export default function InitialState({
 
   useEffect(() => {
     if (status === 'loading') {
-      console.log('status', status);
       setLoading(true);
       return;
     }

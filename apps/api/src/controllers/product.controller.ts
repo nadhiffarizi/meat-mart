@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { serviceFeedback } from '@/interface/serviceFeedback.interface';
 import { responseHandler } from '@/helper/responseHandler.helper';
-import authService from '@/services/auth.service';
-import orderService from '@/services/transaction/transaction.service';
 import productService from '@/services/product.service';
 
 export class ProductController {

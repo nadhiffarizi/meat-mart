@@ -1,19 +1,10 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
-import {
-  ChevronDown,
-  ChevronDownIcon,
-  ChevronUp,
-  ChevronUpIcon,
-  Dot,
-  MoreHorizontal,
-} from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { ArrowUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type TransactionDetailSummary = {
   category_id: string;
   category_name: string;

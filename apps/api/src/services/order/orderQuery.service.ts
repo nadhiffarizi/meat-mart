@@ -10,7 +10,7 @@ import {
 } from '@/helper/order/orderQuery.helper';
 import { returnServiceFeedback } from '@/helper/responseHandler.helper';
 import { convertRoleToEnum } from '@/helper/role.helper';
-import { E_Role } from '@prisma/client';
+import { E_Role } from '.prisma/client';
 import { Request } from 'express';
 
 class OrderService {
@@ -40,7 +40,7 @@ class OrderService {
             status as string[],
             from as string,
             until as string,
-            page as string
+            page as string,
           )),
         ];
         // console.log(orderList);
@@ -72,11 +72,25 @@ class OrderService {
       const role = convertRoleToEnum(user?.role!);
       if (role !== E_Role.CUSTOMER)
         throw new Error('Unauthorized role, cannot access this service');
-      const count = await getOrderByParamsTotalPage(user?.id!, status as string[], from as string, until as string)
-      return returnServiceFeedback(200, { "totalPage": count }, statusEnum.SUCCESS, "fetching total page success")
-
+      const count = await getOrderByParamsTotalPage(
+        user?.id!,
+        status as string[],
+        from as string,
+        until as string,
+      );
+      return returnServiceFeedback(
+        200,
+        { totalPage: count },
+        statusEnum.SUCCESS,
+        'fetching total page success',
+      );
     } catch (error) {
-      return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "fetching total page error")
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'fetching total page error',
+      );
     }
   }
 
@@ -107,7 +121,7 @@ class OrderService {
           from as string,
           until as string,
           store as string[],
-          page as string
+          page as string,
         );
         orderList = [...orderByParams];
       }
@@ -137,11 +151,25 @@ class OrderService {
       const role = convertRoleToEnum(user?.role!);
       if (role === E_Role.CUSTOMER)
         throw new Error('Unauthorized role, cannot access this service');
-      const count = await getOrderAdminByParamsTotalPage(user, status as string[], from as string, until as string)
-      return returnServiceFeedback(200, { "totalPage": count }, statusEnum.SUCCESS, "fetching total page success")
-
+      const count = await getOrderAdminByParamsTotalPage(
+        user,
+        status as string[],
+        from as string,
+        until as string,
+      );
+      return returnServiceFeedback(
+        200,
+        { totalPage: count },
+        statusEnum.SUCCESS,
+        'fetching total page success',
+      );
     } catch (error) {
-      return returnServiceFeedback(400, (error as Error).message, statusEnum.FAILED, "fetching total page error")
+      return returnServiceFeedback(
+        400,
+        (error as Error).message,
+        statusEnum.FAILED,
+        'fetching total page error',
+      );
     }
   }
 }
